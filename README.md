@@ -12,3 +12,19 @@ Prerequisites
 Add the package SerratedSharp.SerratedJQ.Lite to your WebASsembly project from the Nuget pacakge manager.  Currently you must check **Include prerelease** as only alpha versions are available.
 
 ![image](https://user-images.githubusercontent.com/97156524/155268895-cef3df20-0a1d-4cfb-beaf-4d85c21e1474.png)
+
+## Example
+```C#
+static void Main(string[] args)
+{
+  var clickMe = JQueryBox.FromHtml("<span>Click Me</span>");
+  JQueryBox.Select("body").Append(clickMe);
+  clickMe.OnClick += Test_OnClick;
+}
+
+void Test_OnClick(JQueryBox sender, object e)
+{
+  var newElement = JQueryBox.FromHtml("<span>Clicked</span>");
+  JQueryBox.Select("body").Append(newElement);
+}
+```
