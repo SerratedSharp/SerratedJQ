@@ -25,6 +25,7 @@ Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from t
 This example WebAssembly code shows how you might subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
 
 ```C#
+using SerratedSharp.SerratedJQ;
 static void Main(string[] args)
 {
   var clickMe = JQueryBox.FromHtml("<span>Click Me</span>");
