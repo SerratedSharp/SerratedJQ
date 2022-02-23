@@ -5,6 +5,9 @@
 		<!-- Change this to the name/folder of your web project. -->
 		<DestinationWebProjectName>GetStarted.Mvc</DestinationWebProjectName>
 		
+		<!-- This setting strips out unused classes and methods to reduce the WASM Package size. 
+			 It may remove code that isn't directly reference but accessed via reflection or dependency injection. 
+		-->
 		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
 	</PropertyGroup>
 
