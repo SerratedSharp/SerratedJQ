@@ -9,12 +9,12 @@ Emphasis on "static".  There's no server side code in this demo.  The .NET assem
 
 ## Installation
 
-Prerequisites:
+Prerequisites:  
 - Uno.Wasm.Bootstrap 3.2 
     - (See Release Notes tab for current version support info: https://www.nuget.org/packages/SerratedSharp.SerratedJQ.Lite/)
 - .NET 5 or 6
 
-Setup/Getting Started Video (includes Uno.Wasm.Bootstrap setup): https://www.youtube.com/watch?v=lyebV4v1T_A
+Setup/Getting Started Video (includes Uno.Wasm.Bootstrap setup): https://www.youtube.com/watch?v=lyebV4v1T_A  
 Code from Video: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQGetStarted
 
 Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from the Nuget package manager.  Currently you must check **Include prerelease** as only alpha versions are available.  See above video for setting up Uno.Wasm.Bootstrap.
