@@ -47,4 +47,4 @@ This is an experimental proof of concept and not appropriate for production use.
 
 Event handlers and ManagedObjectAttach() potentially generate memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.    
 
-Some methods could potentially be exploited by XSS where uncleaned data originating from users is passed into library methods.  Many methods internally generate and execute javascript or manipulate the DOM, and hardening has not been done to ensure JS or HTML is appropriately cleaned/escaped.
+Some methods could potentially be exploited by XSS where uncleaned data originating from users is passed into library methods.  Many methods internally generate and execute javascript or manipulate the DOM, and hardening has not been done to ensure parameters embedded in JS or HTML is appropriately cleaned/escaped.
