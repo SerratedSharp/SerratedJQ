@@ -1,6 +1,6 @@
 # SerratedJQ
 
-A C# WebAssembly wrapper for JQuery which provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, hold references to DOM elements from C# WASM, and attach data or managed references to HTML DOM element datasets.  Leverages Uno.Wasm.Bootstrap for WebAssembly support, but does not require consumers to use full Uno Platform.  The intention is that this wrapper would be used by those building traditional web applications(e.g. ASP.NET MVC) but who wish to use a .NET language such as C# to implement client side UI logic rather than javascript.  Please see Nuget package Release Notes for specific version compatibility information.
+A C# WebAssembly wrapper for JQuery which provides the capability to read and manipulate the HTML DOM, create .NET event handlers for HTML DOM events, hold references to DOM elements from C# WASM, attach data or managed references to HTML DOM element datasets, and expose static .NET methods as javascript methods.  Leverages Uno.Wasm.Bootstrap for WebAssembly support, but does not require consumers to use full Uno Platform.  The intention is that this wrapper would be used by those building traditional web applications(e.g. ASP.NET MVC) but who wish to use a .NET language such as C# to implement client side UI logic rather than javascript.  Please see Nuget package Release Notes for specific version compatibility information.
 
 ## Demo
 A demo is published as a static site at https://serratedsharp.github.io/CSharpWasmJQueryDemo/
