@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+@{
+    // Get most recently generated WASM package and reference it.  A better approach would clear previous packages during each build.
+    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
+    string wasmPackageName = directories.First().Name;
+    string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";
+
+    // Note we must also set the application base path in the build property <WasmShellWebAppBasePath>. See Sample.Wasm/Build.props
+    
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Demo.Mvc</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/mono-config.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/uno-config.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/uno-bootstrap.js"></script>
+    <script async type="text/javascript" src="@wasmBaseUrl/dotnet.js"></script>
+    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css" />
+
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Demo.Mvc</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Client Side Validation Demo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ListDemo">List Demo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="AdvListDemo" asp-action="AdvListDemo">Advanced List Demo</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div>URL: @wasmBaseUrl</div>
+    <div id="uno-body" class="container-fluid uno-body">
+        <div class="uno-loader"
+             loading-position="bottom"
+             loading-alert="none">
+
+            <!-- Logo: change src to customize the logo -->
+            <img class="logo"
+                 src=""
+                 title="Uno is loading your application" />
+
+            <progress></progress>
+            <span class="alert"></span>
+        </div>
+    </div>
+    <noscript>
+        <p>This application requires Javascript and WebAssembly to be enabled.</p>
+    </noscript>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - Demo.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Advanced List Demo";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Demonstrates basic client side view model binding between HTML DOM and client side C# models.  Clicking on a row shows an editor, and modifying values live updates HTML views. Demonstrates integration of HTML DOM event handling with client side C#, encapsulating UI elements as C# references, and creating associative relationships between C# models and HTML DOM elements to support decoupling of UI interactions through the data model. </p>
+<p>For example, to support sorting we can use LINQ-to-Objects to sort the client side models, re-append the UI rows leveraging their C# references, and use the SerratedJQ Append wrapper to move the corresponding UI elements.  While a production scenario would likely involve paging and a data API query, the point stands that having C# client side allows developers to leverage many of their existing skills and the expressive power that C# enables.</p>
+@*<p>Additionally, this approach compliments the DOM rather than hiding it away as many UI frameworks do with a Virtual DOM.  This maximizes interopability with existing CSS and JS libraries.  It also allows developers to switch modalities depending on the needs of the feature, implementing in pure JS or through C# as needed, or using a hybrid of both to address specific needs. Additionally they can leverage existing knowledge of HTML DOM structure, manipulation, and event handling. </p>
+<p>The challenge of many frameworks that completely abstract the HTML DOM model is that legacy knowledge and skills are deprecated, developers are painted into a corner of using only the subset of capabilities the framework exposes, 
+    and while ~90% of scenarios are easier and cleaner to implement the remaining ~10% are significantly more complex and sometimes require heavy handed workarounds to get the desired results.</p>
+*@
+<div class="tab-pane container-fluid" id="controlcontainer">
+    <div class="row text-info">
+        <div class="col"><b>Total Revenue: $<span id="totalRevenue"></span></b></div>
+    </div>
+    <div class="row">
+        <div class="col-4 btn btn-secondary" id="sortByRep"><b>Sort by Rep Name</b></div>
+        <div class="col-4 btn btn-secondary" id="sortByProduct"><b>Sort by Product Name</b></div>
+        <div class="col-4 btn btn-secondary" id="sortByRevenue"><b>Sort by Sales Revenue</b></div>
+    </div>
+</div>
+<div class="tab-pane container-fluid" id="listcontainer">
+    
+</div>
+
+@*@foreach(var )*@
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
+            $(function () { // Wait for JQuery to be ready
+                Serrated.Callbacks.InitAdvListDemo(); // Initialize this page's script.
+            });
+        }
+    </script>
+}

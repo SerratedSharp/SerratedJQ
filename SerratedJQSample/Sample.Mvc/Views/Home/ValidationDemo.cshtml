@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Client Side Validation Demo";
+}
+
+<div class="row">
+    <div class="col">
+        <label for="cardInput">Credit Card #</label>
+        <input type="text" class="form-control" id="cardInput" value="">
+        <div class="valid-feedback">
+            Valid Luhn checkdigit.
+        </div>
+        <div class="invalid-feedback">
+            Invalid Luhn checkdigit.
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
+            $(function () { // Wait for JQuery to be ready
+                Serrated.Callbacks.InitValidationDemo(); // Initialize this page's script.
+            });
+        }
+    </script>
+}

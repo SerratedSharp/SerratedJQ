@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Tests.Wasm": {
+      "commandName": "Project",
+      "launchBrowser": true
+    }
+  }
+}

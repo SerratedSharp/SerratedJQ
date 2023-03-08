@@ -1,0 +1,10 @@
+{
+  "//": "npm config file",
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "@types/jquery": "3.5.1",
+    "jquery": "3.5.1"
+  }
+}

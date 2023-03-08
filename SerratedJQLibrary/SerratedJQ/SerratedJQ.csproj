@@ -1,0 +1,128 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <Configurations>Debug;Release;Lite;Pro</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
+    <PackageId>SerratedSharp.SerratedJQ.Lite</PackageId>
+    <Version>0.0.1-alpha.2</Version>
+    <Authors>SerratedSharpSolutions</Authors>
+    <Company>SerratedSharpSolutions</Company>
+    <Description>A JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.</Description>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <Copyright>Copyright (c) SerratedSharpSolutions 2022</Copyright>
+    <PackageReleaseNotes>This alpha version has only been tested with Uno.Wasm.Bootstrap 3.2 under .NET Core 5 and 6, and should not be used in public production applications.</PackageReleaseNotes>
+    <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
+    <AssemblyVersion>0.0.1.2</AssemblyVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <FileVersion>0.0.1.2</FileVersion>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
+	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
+    <DefineConstants>TRACE;LITE</DefineConstants>
+    <Optimize>true</Optimize>
+	<PackageLicenseFile>LicenseLite.txt</PackageLicenseFile>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Pro|AnyCPU'">
+    <DefineConstants>TRACE;PRO</DefineConstants>
+    <Optimize>true</Optimize>
+    <PackageLicenseFile>LicenseLite.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
+  	<None Include="LicenseLite.txt">
+  		<Pack>True</Pack>
+  		<PackagePath></PackagePath>
+  	</None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Pro|AnyCPU'">
+    <None Include="LicensePro.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Include="readme.md" Pack="true" PackagePath="\" />
+    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="3.11.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>1.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+
+  <!-- Post build - Making backup of original, obfuscating, then nuget packaging. -->
+  <Target Name="CopyWasmAfterBuild" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
+
+    <Message Importance="high" Text="After Build Start" />
+    <Message Importance="high" Text="OutDir: $(OutDir)" />
+    <Message Importance="high" Text="PublishDir: $(PublishDir)" />
+	<Message Importance="high" Text="Configuration: $(Configuration)" />
+	<Message Importance="high" Text="TargetPath: $(TargetPath)" />
+	<Message Importance="high" Text="ProjectDir: $(ProjectDir)" />
+
+	  <!-- Backup original file -->
+	<!--<Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetPath).ori" />
+	  -->
+	  <!--  
+    <ItemGroup>
+      <WasmDistFiles Include="$(WasmShellOutputDistPath)\**\*.*"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <WRoot>$(SolutionDir)JQDemo1.Mvc\wwwroot\</WRoot>
+    </PropertyGroup>
+    <Message Importance="high" Text="WRoot: $(WRoot)" />
+
+    <ItemGroup>
+      <OldWasmFiles Include="$([System.IO.Directory]::GetDirectories(`$(WRoot)`,`package_*`))" />
+    </ItemGroup>
+    <Message Importance="high" Text="OldWasmFiles: @(OldWasmFiles)"/>
+    <RemoveDir Directories="@(OldWasmFiles)" />
+
+    <Message Importance="high" Text="WasmDistFiles: @(WasmDistFiles)" />
+    <Copy
+			  SourceFiles="$(ProjectDir)"
+			  DestinationFiles="@(WasmDistFiles->'$(WRoot)%(RecursiveDir)%(Filename)%(Extension)')"
+			  SkipUnchangedFiles="true" />-->
+    <Message Importance="high" Text="After Build End" />
+
+  </Target>
+	
+
+	
+	    
+</Project>
