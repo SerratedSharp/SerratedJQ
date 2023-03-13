@@ -6,18 +6,21 @@ using System.Linq;
 
 namespace Sample.Wasm
 {
+	// Note: The Sample.Mvc project should be set as the startup project.
+	// The WASM project is not run directly, but compiled into a web assmebly compatible assembly and loaded in the browser.
 
 	// Runtime Overview
-	// 1) The Controller Action is called, the CSHTML rendered to HTML, and returned to the browser.
-	// 2) The HTML contains references to the Uno.Wasm.Bootstrap javascript files which load
-	//		and run, then begin loading the WASM assemblies. (i.e. this the "boostrapping" process, see )
-	// 3) Program.Main() is called, which is running client side in the browser.
-	// 4) Using CallbacksHelper.Export we expose C# client side methods to javascript.
+	// 1) Request is made from browser to the MVC's home page.
+	// 2) The Controller Action is called, the CSHTML rendered to HTML, and returned to the browser.
+	// 3) The HTML(via shared Layout) contains references to the Uno.Wasm.Bootstrap javascript files which load
+	//		and run, then begin loading the WASM assemblies. (i.e. this is the "boostrapping" process)
+	// 4) Program.Main() is called, which is running client side in the browser.
+	// 5) Using CallbacksHelper.Export we expose C# client side methods to javascript.
 	//		These methods will be available to perform setup/initialization for each specific page.
-	// 5) In each individual CSHTML page, we have javascript in the $() document ready event,
+	// 6) In each individual CSHTML page, we have javascript in the $() document ready event,
 	//		which calls the specific JS-to-C# method init for that page.  This ensures our C# code for the page isn't run until
 	//		the JQuery is loaded, WASM is loaded, and the DOM/Page is loaded/ready.
-	// 6) Once the JQuery doc ready event fires, our page specific Init() method does any setup,
+	// 7) Once the JQuery doc ready event fires, our page specific Init() method does any setup,
 	//		typically wiring up to page/UI events via the SerratedJQ wrapper or doing initial HTML/DOM manipulation.
 
 	public class Program

@@ -80,7 +80,8 @@ namespace Sample.Wasm
 
 			Container = JQueryBox.Select("#listcontainer");//selector);
 
-            data.ProductSales = RepoFake.GetProductSales();
+            // We generate models client side.  For an example using a remote API call to retrieve data see AdvListDemoPage
+            data.ProductSales = RepositoryClient.GenerateFakeProductSales();
 
             foreach (var sale in data.ProductSales)
             {

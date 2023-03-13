@@ -1,32 +1,28 @@
 ﻿using SerratedSharp.SerratedJQ;
 using System;
 using System.Collections.Generic;
+using System.DirectoryServices;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static Sample.Wasm.ClientSideModels.ProductSaleRow;
 
 namespace Sample.Wasm.ClientSideModels
 {
 
-
-
-    internal class ProductSaleRow //: JQueryBox
+    /// <summary>
+    /// This is a rough example of a UI "component".  
+    /// It provides it's own data model, 
+    /// a data driven HTML template,
+    /// events where appropriate.
+    /// </summary>
+    internal class ProductSaleRow
     {
-        
 
-        //public ProductSaleRow():base(){}
-
-        public ProductSaleRow(ProductSalesModel productSalesModel) //: base(CreateJQBox(productSalesModel))
-        {
+        public ProductSaleRow(ProductSalesModel productSalesModel){
             Model = productSalesModel;            
         }
-
-        //private static JQueryBox CreateJQBox(ProductSalesModel productSalesModel)
-        //{
-        //    return JQueryBox.FromHtml(GetHtml(productSalesModel));
-        //}
-
-
 
         public ProductSalesModel Model { get; set; }
 
@@ -38,7 +34,8 @@ namespace Sample.Wasm.ClientSideModels
                 if (this.jQBox == null)
                 {
                     jQBox = JQueryBox.FromHtml(GetHtml(Model));
-                    jQBox.DataBag.Control = this;
+                    jQBox.OnClick += JQRowOnClick;
+
                 }
                 return jQBox;
             }
@@ -54,6 +51,31 @@ namespace Sample.Wasm.ClientSideModels
             ";
         }
 
+
+
+        // Callers could easily subscribe to row.JQBox.OnClick, but the handler of the event
+        // would be on a JQBox without the model.
+        // They'd be able to access the model through the DataBag, but would require
+        // a dirty cast from `object` to ProductSalesModel.
+        // Providing our own event here makes this more like a component and allows
+        // the model to be passed to the event strongly typed.
+        private void JQRowOnClick(JQueryBox sender, object e)
+        {
+            // Pass thru event from JQueryBox to our strongly typed event
+            var ourEvent = OnClick;
+            if (ourEvent != null)
+            {
+                ourEvent(sender, this, e); //include strongly typed `this`/ ProductSalesRow for subscribers
+            }
+        }
+
+
+        public delegate void JQueryTypedEventHandler<in TSender, in TComponent, in TEventArgs>
+            (TSender sender, TComponent component, TEventArgs e)
+            where TSender : JQueryBox;
+
+        // We use explicit event so that we can only create the JQuery listener when necessary
+        public event JQueryTypedEventHandler<JQueryBox, ProductSaleRow, object> OnClick;
 
 
     }
