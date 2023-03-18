@@ -28,8 +28,6 @@ namespace Sample.Mvc.Controllers
             return View("ListDemo");
         }
 
-
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

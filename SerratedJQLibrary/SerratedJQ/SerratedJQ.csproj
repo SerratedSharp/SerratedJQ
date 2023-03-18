@@ -12,7 +12,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
     <PackageId>SerratedSharp.SerratedJQ.Lite</PackageId>
-    <Version>0.0.1-alpha.2</Version>
+    <Version>0.0.1-alpha.3</Version>
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
     <Description>A JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.</Description>
@@ -29,7 +29,7 @@
   </PropertyGroup>
 	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
-    <DefineConstants>TRACE;LITE</DefineConstants>
+    <DefineConstants>TRACE;PRO</DefineConstants>
     <Optimize>true</Optimize>
 	<PackageLicenseFile>LicenseLite.txt</PackageLicenseFile>
   </PropertyGroup>

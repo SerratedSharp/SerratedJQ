@@ -15,18 +15,13 @@
   </PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="SerratedSharp.SerratedJQ.Lite" Version="0.0.1-alpha.3" />
 	  <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="3.11.19" />
 	  <PackageReference Include="Uno.Wasm.Bootstrap" Version="3.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Sample.ApiModels\Sample.ApiModels.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="SerratedSharp.SerratedJQ">
-	    <HintPath>..\..\SerratedJQLibrary\SerratedJQ\bin\Pro\net6.0\SerratedSharp.SerratedJQ.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 
 	<Import Project=".\Build.props" />

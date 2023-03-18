@@ -10,33 +10,24 @@ using Sample.Wasm.ClientSideModels;
 
 namespace Sample.Mvc.Controllers
 {
-    public class AdvListDemoController : Controller
+    public class ListDemoController : Controller
     {
-        private readonly ILogger<AdvListDemoController> _logger;
+        private readonly ILogger<ListDemoController> _logger;
 
-        public AdvListDemoController(ILogger<AdvListDemoController> logger)
+        public ListDemoController(ILogger<ListDemoController> logger)
         {
             _logger = logger;
         }
 
-
-
-        public IActionResult AdvListDemo()
+        public IActionResult ListDemo()
         {
             return View();
         }
 
+        // API endpoint called by client side WASM
         public JsonResult GetSales()
         {
-            ProductSalesModel sale = new ProductSalesModel
-            {
-                Product = new ProductModel { Name = "PName" }
-                ,Price = 13
-                ,Quantity = 5
-                ,Rep = new RepModel { Name = "Bob"}
-            };
-
-            var sales = RepoFake.GetProductSales(); //new List<ProductSalesModel>{ sale };
+            var sales = RepoFake.GetProductSales();
             return Json(sales);
         }
 

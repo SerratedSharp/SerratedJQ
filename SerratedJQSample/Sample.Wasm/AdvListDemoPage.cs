@@ -13,10 +13,10 @@ namespace Sample.Wasm
 	/// <summary>
 	/// This class has the client side C# specific to the ListDemo page.  
 	/// </summary>
-    public class AdvListDemoPage
+    public class ListDemoPage
     {
 
-        private static AdvListDemoPage singleton = null;// We use a singleton so the majority of state/members are instance instead of static
+        private static ListDemoPage singleton = null;// We use a singleton so the majority of state/members are instance instead of static
 		private const string globalJSVarName = "spaWasm";
 
 		// Client side state
@@ -46,11 +46,11 @@ namespace Sample.Wasm
 		}
 
 		// The Wasm.Bootstrap type generator only generates proxy methods for instance methods, so we create an instance for this singleton.
-		public static AdvListDemoPage Get()
+		public static ListDemoPage Get()
 		{
 			if (singleton == null)
 			{
-				var page = new AdvListDemoPage();
+				var page = new ListDemoPage();
 
                 // Optionally establish a global JS var `listDemoWasm` that expooses this singleton instance to javascript, allowing us to interact with the client side C# object from javascript.
                 // Add `:IJSObject` to ListDemoPage class to support this, and uncomment the private constructor and handle.

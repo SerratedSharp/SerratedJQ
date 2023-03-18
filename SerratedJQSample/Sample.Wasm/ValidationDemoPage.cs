@@ -35,6 +35,7 @@ namespace Sample.Wasm
 			}
 		}
 
+		// This could be factored into a common class library so it could be used both client side and server side.
         public static bool LuhnIsValid(string creditCardNumber) 
 		{
 			if (creditCardNumber.Any(c => !char.IsDigit(c)))
@@ -44,15 +45,13 @@ namespace Sample.Wasm
 			digits.RemoveAt(0);
 
 			var multiplied = digits
-				.Select((d, i) =>
-				{
+				.Select((d, i) => {
 					if ((i + 1) % 2 == 0)
 					{
 						return d;
 					}
 					else
 					{
-
 						if (d * 2 > 9)
 						{
 							return d * 2 - 9;
@@ -62,8 +61,7 @@ namespace Sample.Wasm
 							return d * 2;
 						}
 					}
-				}
-				);
+				});
 
 			var sum = multiplied.Sum();
 			int checkDigit = (10 - (sum % 10)) % 10;

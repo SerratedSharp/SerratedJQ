@@ -31,10 +31,9 @@ namespace Sample.Wasm
         {
             Console.WriteLine("The main entry point is executed on page load once WASM is bootstrapped/loaded. This message should appear in the browser console confirming the WASM is loaded.");
 
-            // Register C# functions that can be called from Javascript.  Primarily for setup/initialization for specific pages.
-            CallbacksHelper.Export(jsMethodName: "InitValidationDemo", () => ValidationDemoPage.Init());
+			// Register C# functions that can be called from Javascript.  Primarily for setup/initialization for specific pages.
+			CallbacksHelper.Export(jsMethodName: "InitValidationDemo", () => ValidationDemoPage.Init());
             CallbacksHelper.Export(jsMethodName: "InitListDemo", () => ListDemoPage.Init());
-            CallbacksHelper.Export(jsMethodName: "InitAdvListDemo", () => AdvListDemoPage.Init());
             // For example calling InitListDemo() from javascript will call C# ListDemoPage.Init()
 
             // Now that callbacks are registered and available,
