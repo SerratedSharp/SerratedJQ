@@ -16,7 +16,6 @@ namespace Sample.Wasm.ClientSideModels
     {
         public static async Task<List<ProductSalesModel>> GetRemoteProductSales()
         {
-            
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://localhost:44386/ListDemo/");
             
@@ -28,7 +27,6 @@ namespace Sample.Wasm.ClientSideModels
             foreach (var sale in prods)
             {
                 Console.WriteLine("Prod:" + sale.Product.Name);
-                
                 Console.WriteLine("Rep:" + sale.Rep.Name);
             }
 
