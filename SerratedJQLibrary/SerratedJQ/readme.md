@@ -1,13 +1,17 @@
 
-A C# WASM JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.
+# SerratedJQ
+
+A C# WebAssembly wrapper for JQuery which provides the capability to read and manipulate the HTML DOM, create .NET event handlers for HTML DOM events, hold references to DOM elements from C# WASM, attach data or managed references to HTML DOM element datasets, and expose static .NET methods as javascript methods.  Leverages Uno.Wasm.Bootstrap for WebAssembly support, but does not require consumers to use full Uno Platform.  The intention is that this wrapper would be used by those building traditional web applications(e.g. ASP.NET MVC) but who wish to use a .NET language such as C# to implement client side UI logic rather than javascript.  Please see Nuget package Release Notes for specific version compatibility information.
 
 ## Demo
 A demo is published as a static site at https://serratedsharp.github.io/CSharpWasmJQueryDemo/
 
 Emphasis on "static".  There's no server side code in this demo.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, and run inside a WebAssembly sandbox.  No .NET server side hosting is needed, but this approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic. 
 
-A more extensive demo including API requests and a walkthru of the code:
+A more extensive demo including integration with a MVC project and API requests from the WASM client to MVC host, including a walkthru of the code:
 https://www.youtube.com/watch?v=0BrGf99K6CU
+
+Code from Demo: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
 
 ## Example
 This example WebAssembly code shows how you might subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
@@ -38,12 +42,17 @@ Prerequisites:
 Setup/Getting Started Video (includes Uno.Wasm.Bootstrap setup): https://www.youtube.com/watch?v=lyebV4v1T_A  
 Code from Video: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQGetStarted
 
-Sample/Demo Code: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
-    - The SerratedJQSample is more comprehensive than the static demo site and GetStarted projects.  It includes client to server API calls, facotring of UI elements into self-contained component, and strongly typed event handling.
-
 Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from the Nuget package manager.  Currently you must check **Include prerelease** as only alpha versions are available.  See above video for setting up Uno.Wasm.Bootstrap.
 
-Note the Lite version now includes everything I had slated for a Pro version. Due to time constraints I haven't been able to get this package to a production ready state as quickly as I hoped, so I am fully open sourcing it and doing away with tiered access.
+![image](https://user-images.githubusercontent.com/97156524/155268895-cef3df20-0a1d-4cfb-beaf-4d85c21e1474.png)
+
+
+## Warning
+This is an experimental proof of concept and not appropriate for production use.
+
+Event handlers and ManagedObjectAttach() potentially generate memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.    
+
+Some methods could be vulnerable to XSS where uncleaned data originating from users is passed into library methods.  Many methods internally generate and execute javascript or manipulate the DOM, and hardening has not been done to ensure parameters embedded in JS or HTML is appropriately cleaned/escaped.  This would be equivalent to the risk posed by use of JS eval().
 
 ## Release Notes
 
@@ -62,5 +71,7 @@ void Test_OnClick(JQueryBox sender, dynamic e)
   Assert.Equal(eventName == "click");
 }
 ```
+
+Note the Lite version now includes everything I had slated for a Pro version. Due to time constraints I haven't been able to get this package to a production ready state as quickly as I hoped, so I am fully open sourcing it and doing away with tiered access.
 
 
