@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace SerratedSharp.SerratedJQ
 {
@@ -224,18 +226,6 @@ namespace SerratedSharp.SerratedJQ
         //    // Review events and determine which ones to support in Lite
         //};
 
-        // Handles the JQuery event and fires the C# event
-        [Obsolete("For internal use only.")]
-        public void InternalClickCallback(string eEncoded, string eventType)
-        {
-            onClick?.Invoke(this, null);
-        }
-
-        [Obsolete("For internal use only.")]
-        public void InternalInputCallback(string eEncoded, string eventType)
-        {
-            onInput?.Invoke(this, null);
-        }
 
         // generic event susbcription
         private Dictionary<string, JQueryEventHandler<JQueryBox, object>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryBox, object>>();
@@ -285,10 +275,34 @@ namespace SerratedSharp.SerratedJQ
         /// Do not use. Exposed for Javascript->C# interop.
         /// </summary>        
         [Obsolete("For internal use only.")]
-        public void InternalEventCallback(string eEncoded, string eventType)
+        public void InternalEventCallback(string eventB64Encoded, string eventType)
         {
-            //Console.WriteLine(eventType);
-            onEvent[eventType]?.Invoke(this, eEncoded);
+            dynamic eventData = EncodedEventToDynamic(eventB64Encoded);
+            onEvent[eventType]?.Invoke(this, eventData);
+        }
+
+        // Handles the JQuery event and fires the C# event, they have to be public for them to be invokable from Javascript delegates
+        [Obsolete("For internal use only.")]
+        public void InternalClickCallback(string eventB64Encoded, string eventType)
+        {
+            dynamic eventData = EncodedEventToDynamic(eventB64Encoded);
+            onClick?.Invoke(this, eventData);
+        }
+
+        [Obsolete("For internal use only.")]
+        public void InternalInputCallback(string eventB64Encoded, string eventType)
+        {
+            dynamic eventData = EncodedEventToDynamic(eventB64Encoded); 
+            onInput?.Invoke(this, eventData);
+        }
+
+        private dynamic EncodedEventToDynamic(string encodedEvent)
+        {
+            // TODO: We're only base 64 encoding this to get around a bug in Uno Platform when we try to use JSON.  Recent versions have fixed this so can likely be removed
+            var base64EncodedBytes = System.Convert.FromBase64String(encodedEvent);
+            string jsonString = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            dynamic eventData = JsonConvert.DeserializeObject<dynamic>(jsonString);
+            return eventData;
         }
 
         private static List<JQueryBox> eventObjects = new List<JQueryBox>();

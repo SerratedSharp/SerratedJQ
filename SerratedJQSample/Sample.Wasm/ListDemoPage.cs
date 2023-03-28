@@ -130,7 +130,7 @@ namespace Sample.Wasm
             
             //If we were using the JQueryBox events directly, we'd have to do this hoop jumping to get the model
             //var model = ((ProductSaleRow)sender.DataBag.Control).Model; // ProductSalesModel
-            // Instead of doing dirty cast from object to model, the component implemented as strongly typed event handle passing su trhe component
+            // Instead of doing dirty cast from object to model, we use the strongly typed component to access its model
             var model = component.Model;
 
             // prepopulate form
@@ -205,41 +205,6 @@ namespace Sample.Wasm
                 revenueSpan.Text = data.ProductSales.Sum(s => s.Quantity * s.Price).ToString();
             };
         }
-
-        // Make a strongly typed edit row
-
-        //private void priceInput_OnInput(JQueryBox sender, object e)
-        //{
-        //    Model.Price = Int32.Parse(sender.Value);
-        //    var ourEvent = OnInput;
-        //    if (ourEvent != null)
-        //    {
-        //        ourEvent(sender, this, e);
-        //    }
-        //}
-
-        //private void quantityInput_OnInput(JQueryBox sender, object e)
-        //{
-        //    Model.Quantity = Int32.Parse(sender.Value);
-        //    var ourEvent = OnInput;
-        //    if (ourEvent != null)
-        //    {
-        //        ourEvent(sender, this, e);
-        //    }
-        //}
-
-        //private void InvokeOnInput(JQueryBox sender, object e)
-        //{
-        //    var ourEvent = OnInput;
-        //    if (ourEvent != null)
-        //    {
-        //        ourEvent(sender, this, e);
-        //    }
-        //}
-        //
-        //public event JQueryTypedEventHandler<JQueryBox, ProductSaleRow, object> OnInput;
-
-
 
     }
 }

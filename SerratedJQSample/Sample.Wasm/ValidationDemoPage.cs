@@ -13,16 +13,14 @@ namespace Sample.Wasm
         {
             Console.WriteLine("Luhn Page WASM Executed.");
 
-			var input = JQueryBox.Select("#cardInput");
-            input.OnInput += Input_OnInput;// subscribe to HTML DOM input event on the #cardInput textbox, fire on each keystroke
-
-
+			var inputElement = JQueryBox.Select("#cardInput");
+            inputElement.OnInput += Input_OnInput;// subscribe to HTML DOM input event on the #cardInput textbox, fire on each keystroke
         }
 
 		// Event handler, called by JQuery event handler
-        private static void Input_OnInput(JQueryBox sender, object e)
+        private static void Input_OnInput(JQueryBox sender, dynamic e)
         {
-			bool isValid = LuhnIsValid(sender.Value);
+			bool isValid = LuhnIsValid(sender.Value);// perform validation on textbox Value
 			if (isValid)
 			{
 				sender.AddClass("is-valid");

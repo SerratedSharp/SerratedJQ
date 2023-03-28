@@ -1,12 +1,4 @@
 ﻿using SerratedSharp.SerratedJQ;
-using System;
-using System.Collections.Generic;
-using System.DirectoryServices;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static Sample.Wasm.ClientSideModels.ProductSaleRow;
 
 namespace Sample.Wasm.ClientSideModels
 {
@@ -51,8 +43,6 @@ namespace Sample.Wasm.ClientSideModels
             ";
         }
 
-
-
         // Callers could easily subscribe to row.JQBox.OnClick, but the handler of the event
         // would be on a JQBox without the model.
         // They'd be able to access the model through the DataBag, but would require
@@ -69,14 +59,12 @@ namespace Sample.Wasm.ClientSideModels
             }
         }
 
-
         public delegate void JQueryTypedEventHandler<in TSender, in TComponent, in TEventArgs>
             (TSender sender, TComponent component, TEventArgs e)
             where TSender : JQueryBox;
 
         // We use explicit event so that we can only create the JQuery listener when necessary
         public event JQueryTypedEventHandler<JQueryBox, ProductSaleRow, object> OnClick;
-
 
     }
 }
