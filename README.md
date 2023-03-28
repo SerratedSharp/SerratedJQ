@@ -60,7 +60,7 @@ Some methods could be vulnerable to XSS where uncleaned data originating from us
 
 The event object is now passed to handlers as a C# dynamic type allowing those who know the structure to navigate to desired values.
 I would recommend favoring using the `JQueryBox sender` over the loosely typed `dynamic event` where there is overlap, such as retrieving the value on an input event.
-Support is accomplished through a serialization/derialization since references cannot be passed across the WASM boundary.  
+Support is accomplished through a serialization/deserialization since references cannot be passed across the WASM boundary.  
 This means properties such as `e.originalEvent.target` are an object ID rather than an object reference.
 
 ```C#
