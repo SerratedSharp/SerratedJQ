@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Pro|AnyCPU'">
-    <None Include="LicensePro.txt">
+    <None Include="LicenseLite.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
