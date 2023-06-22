@@ -50,11 +50,15 @@ Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from t
 ## Warning
 This is an experimental proof of concept and not appropriate for production use.
 
-Event handlers and ManagedObjectAttach() potentially generate memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.    
+~~Event handlers~~(Fixed in 0.0.2) and ManagedObjectAttach() potentially generate memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.    
 
 Some methods could be vulnerable to XSS where uncleaned data originating from users is passed into library methods.  Many methods internally generate and execute javascript or manipulate the DOM, and hardening has not been done to ensure parameters embedded in JS or HTML is appropriately cleaned/escaped.  This would be equivalent to the risk posed by use of JS eval().
 
 ## Release Notes
+
+### 0.0.1-alpha.5
+
+Implemented automatic management of pinning/unpinning event listeners to ensure managed listeners are made elgible for garbage collection when no unmanaged JS handles/event publishers reference them.  
 
 ### 0.0.1-alpha.4
 
