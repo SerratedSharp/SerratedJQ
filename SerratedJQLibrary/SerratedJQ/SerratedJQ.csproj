@@ -21,7 +21,7 @@
     <PackageReleaseNotes>This alpha version has only been tested with Uno.Wasm.Bootstrap 3.2 under .NET Core 5 and 6, and should not be used in public production applications.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
     <AssemblyVersion>0.0.1.4</AssemblyVersion>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <FileVersion>0.0.1.4</FileVersion>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
@@ -66,6 +66,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>1.resx</DependentUpon>
     </Compile>
+    <Compile Update="EmbeddedFiles.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EmbeddedFiles.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -77,6 +82,10 @@
     <EmbeddedResource Update="1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="EmbeddedFiles.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EmbeddedFiles.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -13,7 +13,7 @@ namespace Tests.Wasm
         public override void Run()
         {
             tc.Append(JQueryBox.FromHtml("<div class='w'></div><div class='x'></div><div class='y'></div><div class='y'></div><div class='z'></div>"));
-            
+
             Assert(tc.Find(".y").Length == 2);
         }
     }

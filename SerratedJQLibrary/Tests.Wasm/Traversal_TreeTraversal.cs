@@ -49,8 +49,8 @@ namespace Tests.Wasm
         public override void Run()
         {
             tc.Append(JQueryBox.FromHtml("<div><b></b></div><b></b>"));
-            var t = tc.Find("b");            
-            Assert(t.Length == 2);            
+            var t = tc.Find("b");
+            Assert(t.Length == 2);
         }
     }
 
@@ -87,7 +87,7 @@ namespace Tests.Wasm
             var child = JQueryBox.FromHtml("<div></div>");
             tc.Append(child);
             tc.Append(JQueryBox.FromHtml("<div class='next'></div><div class='next2'></div><div class='next'></div>"));
-            var t = child.NextAll();            
+            var t = child.NextAll();
             Assert(t.Length == 3);
         }
     }
@@ -125,7 +125,7 @@ namespace Tests.Wasm
             var child = JQueryBox.FromHtml("<div></div>");
             tc.Append(child);
             tc.Append(JQueryBox.FromHtml("<div class='y x'></div><div class='x'></div><div class='z'></div>"));
-            var t = child.NextUntil(".z");            
+            var t = child.NextUntil(".z");
             Assert(t.Length == 2);
         }
     }
@@ -157,7 +157,7 @@ namespace Tests.Wasm
         }
     }
 
-    
+
     public class Traversal_TreeTraversal_Parents1 : JQTest
     {
         public override void Run()
@@ -177,7 +177,7 @@ namespace Tests.Wasm
         {
             var parents = JQueryBox.FromHtml("<div class='win'><div class='y x'></div><div class='x'><div class='z'></div></div></div>");
             tc.Append(parents);
-             var child = tc.Find(".z");
+            var child = tc.Find(".z");
             var t = child.Parents();
             Assert(t.Length > 2);
         }
@@ -211,13 +211,13 @@ namespace Tests.Wasm
         {
             tc.Append(JQueryBox.FromHtml("<div class='y x'><div class='x'><div class='z'></div></div></div>"));
             var child = tc.Find(".z");
-            var t = child.ParentsUntil(".y", ".x");            
+            var t = child.ParentsUntil(".y", ".x");
             Assert(t.Length == 1);
         }
     }
 
-    
-    public class Traversal_TreeTraversal_PrevAll1 :JQTest
+
+    public class Traversal_TreeTraversal_PrevAll1 : JQTest
     {
         public override void Run()
         {

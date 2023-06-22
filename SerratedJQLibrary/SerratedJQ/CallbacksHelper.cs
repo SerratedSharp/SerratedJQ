@@ -82,7 +82,7 @@ namespace SerratedSharp.SerratedJQ
                     }
                     , PublicNamespace
                     );
-
+                //Console.WriteLine(exportJS.ToString() );
                 WebAssemblyRuntime.InvokeJS(exportJS.ToString());
             }
 

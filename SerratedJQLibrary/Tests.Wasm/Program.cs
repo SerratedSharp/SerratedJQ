@@ -70,11 +70,14 @@ namespace Wasm
             }, null, 5000, 15000);
 
             Console.WriteLine("After sleep test...");
-
+            JQueryBox.Select("html").Styles["position"] = "static";
+            JQueryBox.Select("html").Styles["overflow"] = "auto";
+            JQueryBox.Select("body").Styles["position"] = "static";
+            JQueryBox.Select("body").Styles["overflow"] = "auto";
 
             //AsyncContext.Run(() => MainAsync(args));
 
-           // }, null, 5000, 5000);
+            // }, null, 5000, 5000);
 
             var orch = new TestOrchestrator();
             // TODO: I disabled the linker. Isntead disable a namespace jsut for tests: https://platform.uno/docs/articles/features/using-il-linker-webassembly.html

@@ -19,7 +19,7 @@ namespace Tests.Wasm
 
             Assert(tc.Find("div:hidden").Length == 5);
 
-            
+
         }
     }
 

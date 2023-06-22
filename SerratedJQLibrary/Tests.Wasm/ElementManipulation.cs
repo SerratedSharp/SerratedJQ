@@ -66,7 +66,7 @@ namespace Tests.Wasm
         }
     }
 
-    public class ElementManipulation_Properties1 :JQTest
+    public class ElementManipulation_Properties1 : JQTest
     {
         public override void Run()
         {

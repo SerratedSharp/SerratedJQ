@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SerratedSharp.SerratedJQ.Properties {
+namespace SerratedSharp.SerratedJQ {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace SerratedSharp.SerratedJQ.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class EmbeddedFiles {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal EmbeddedFiles() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace SerratedSharp.SerratedJQ.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerratedSharp.SerratedJQ.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerratedSharp.SerratedJQ.EmbeddedFiles", typeof(EmbeddedFiles).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,29 @@ namespace SerratedSharp.SerratedJQ.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted by C# startup code at runtime.
+        ///
+        /////var targetNodes = $(document.documentElement); // $(&apos;.myclass&apos;);
+        ///var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+        ///var observer = new MutationObserver(mutationHandler);
+        ///var obsConfig = {
+        ///    childList: true,
+        ///    characterData: true,
+        ///    attributes: true,
+        ///    subtree: true
+        ///};
+        ///
+        /////--- Add a target node to the observer. Can only add one node at a time.
+        ///
+        ///observer.o [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ObserveRemovedJs {
+            get {
+                return ResourceManager.GetString("ObserveRemovedJs", resourceCulture);
             }
         }
     }

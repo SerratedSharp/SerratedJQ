@@ -29,7 +29,7 @@ namespace Tests.Wasm
             tc.Append(uiModel);
 
             var child = tc.Find(".w");
-            
+
             child.DataBag.One = 1;
             child.DataBag.Two = 2;
             Console.WriteLine("Databag" + child.DataBag.Two);
@@ -106,7 +106,7 @@ namespace Tests.Wasm
             var model2 = child.DataGet<string>("someModel");
 
             Assert(model2 == "simplestring");
-           
+
         }
 
     }

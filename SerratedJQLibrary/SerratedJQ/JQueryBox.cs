@@ -12,17 +12,40 @@ using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
 
 namespace SerratedSharp.SerratedJQ
 {
 
     public class JQueryBox : IJSObject
     {
+        private const string JSClassName = "InternalSerratedJQBox";
         private static int keep = 2;
         static JQueryBox()
         {
             // Add javascript declaration that is used by WebAssembly but was declared in incorrect Uno Platform project.
             WebAssemblyRuntime.InvokeJS(_1.ManagedObjectJavascriptDispatcherDeclaration);
+
+            //CallbacksHelper.Export(jsMethodName: "UnpinEventListener", () => JQueryBox.UnpinEventListener());
+
+            //string exportScript = 
+            //    @"var Serrated = window.Serrated || {};
+            //        (function (Serrated) {var Callbacks = Serrated.Callbacks || {};
+            //            Callbacks.UnpinEventListener = function(){
+            //                InternalSJQ.Listener('UnpinEventListener');
+            //             };
+            //             Serrated.Callbacks = Callbacks;
+            //        })(Serrated = window.Serrated || (window.Serrated = {}));";
+
+            WebAssemblyRuntime.InvokeJS(@$"     
+                    window.{JSClassName} = window.{JSClassName} || {{}};
+
+                    window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');
+                         
+                ");
+
+            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.ObserveRemovedJs);
 
             //(function (Uno) {
             //    var Http;
@@ -173,8 +196,6 @@ namespace SerratedSharp.SerratedJQ
 
         #region Events
 
-
-
         // TODO: Implement static .ready?
 
         // Strongly typed event handler signature 
@@ -188,13 +209,14 @@ namespace SerratedSharp.SerratedJQ
             add
             {
                 if (onClick == null)// if first event subscriber
-                    this.InnerOn("click", this, nameof(InternalClickCallback));// then add JQuery listener
+                    this.InnerOn("click", nameof(InternalClickCallback));// then add JQuery listener
 
                 onClick += value;
             }
             remove
             {
                 onClick -= value;
+
                 if (onClick == null) // if last subscriber removed, then remove JQuery listener
                     this.InnerOff("click");
             }
@@ -207,7 +229,7 @@ namespace SerratedSharp.SerratedJQ
             add
             {
                 if (onInput == null)// if first event subscriber
-                    this.InnerOn("input", this, nameof(InternalInputCallback));// then add JQuery listener
+                    this.InnerOn("input", nameof(InternalInputCallback));// then add JQuery listener
 
                 onInput += value;
             }
@@ -219,23 +241,14 @@ namespace SerratedSharp.SerratedJQ
             }
         }
 
-        //private Dictionary<string, string> liteOnlyEvents = new Dictionary<string, string>
-        //{
-        //    {_1.click,"" },
-        //    {_1.input,"" }
-        //    // Review events and determine which ones to support in Lite
-        //};
-
-
         // generic event susbcription
         private Dictionary<string, JQueryEventHandler<JQueryBox, object>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryBox, object>>();
 
         /// <summary>
-        /// Subscribe to an HTML DOM event. Note you must maintain a reference to the publishing object to prevent garbage collection.
+        /// Subscribe to an HTML DOM event by HTML DOM event name.
         /// <example><code>
         /// var someButton = JQueryBox.Select("#someButtonId");
         /// someButton.On("click", SomeButton_OnClick);// Note if the reference someButton(event publisher) is garbage collected, then the listener will no longer receive events.
-        /// controlsKeeper.Add(someButton);
         /// 
         /// private void SomeButton_OnClick(JQueryBox sender, object e)
         /// {
@@ -248,17 +261,12 @@ namespace SerratedSharp.SerratedJQ
         /// <param name="handler">Function/delegate to handle the event.</param>
         public void On(string eventName, JQueryEventHandler<JQueryBox, object> handler)
         {
-            //if (!liteOnlyEvents.ContainsKey(eventName))
-            //    throw new NotImplementedException($"Event {eventName} is not supported in the Lite version. Supported events: " + string.Join(", ", liteOnlyEvents));
-
-            eventObjects.Add(this);// HACK: Prevent GC on C#/JQ object publishing the event.
-
             if (!onEvent.ContainsKey(eventName) || onEvent[eventName] == null)// if first event subscriber
             {
-                this.InnerOn(eventName, this, nameof(InternalEventCallback));// then add JQuery listener (the list.Add is a hack to prevent GC
+                this.InnerOn(eventName, nameof(InternalEventCallback));// then add JQuery listener 
             }
 
-            onEvent[eventName] = handler;
+            onEvent[eventName] += handler;
         }
 
         public void Off(string eventName, JQueryEventHandler<JQueryBox, object> handler)
@@ -269,6 +277,51 @@ namespace SerratedSharp.SerratedJQ
             onEvent[eventName] -= handler;
             if (onEvent[eventName] == null) // if last subscriber removed, then remove JQuery listener
                 this.InnerOff(eventName);
+        }
+
+
+        /// <summary>
+        /// Called only for first subscriber added. Subscribes to JS JQuery event.  Pins this object to eventOBjectsByPointer 
+        /// </summary>
+        private JQueryBox InnerOn(string events, string listenerFunctionName)
+        {
+            // {eventListener} is the JQueryBox box, and .{listeneerFunctionName} is usually "InternalEventCallback".
+            // Uno WebAssembly generates a javascript wrapper for this managed type.
+            // From the perspective of javascript there is a javascript method JQueryBox.InternalEventCallback which proxies calls from JS back to the managed C# object
+            // The javascript JQueryBox.InternalEventCallback is registered as the handler for the event, and so proxies events firing back to this managed C# object
+            // Note the JS object isn't literally "JQueryBox", InvokeJSWithInteropt takes interpolation parameters of type IJSObject and translates that into an activeObject[id] dereference.
+            
+            WebAssemblyRuntime.InvokeJSWithInterop($@"
+                var handler = function(e){{
+                    console.log('On Fired');
+                    var eEncoded = btoa(JSON.stringify(e));
+                    {this}.{listenerFunctionName}(eEncoded, e.type);
+                }}.bind({this});
+
+                {this}.{_1.jqbj}.on('{events}', handler);
+            ");
+
+            PinEventListener();
+            return this;
+        }
+
+        /// <summary>
+        /// Called only when last subscriber removed. Unsubscribes to JS JQuery event.  Unpins this object from eventObjectsByPointer 
+        /// </summary>
+        private JQueryBox InnerOff(string events)
+        {
+            //var newBox = new JQueryBox();
+            // CONSIDER: It's possible to unsubscribe only our handler, but we can't use an anonymous handler above.
+            // TODO: This removes all events instead of just ours
+            //{newBox}.{_1.jqbj} = 
+
+            WebAssemblyRuntime.InvokeJSWithInterop($@"
+                    {this}.{_1.jqbj}.off('{events}');
+                ");
+
+            TryUnpinEventListener();
+
+            return this;//newBox;
         }
 
         /// <summary>
@@ -292,7 +345,7 @@ namespace SerratedSharp.SerratedJQ
         [Obsolete("For internal use only.")]
         public void InternalInputCallback(string eventB64Encoded, string eventType)
         {
-            dynamic eventData = EncodedEventToDynamic(eventB64Encoded); 
+            dynamic eventData = EncodedEventToDynamic(eventB64Encoded);
             onInput?.Invoke(this, eventData);
         }
 
@@ -305,42 +358,86 @@ namespace SerratedSharp.SerratedJQ
             return eventData;
         }
 
-        private static List<JQueryBox> eventObjects = new List<JQueryBox>();
 
-        /// <summary>
-        /// It is recommended to use the C# events rather than this method. 
-        /// </summary>
-        private JQueryBox InnerOn(string events, IJSObject eventListener, string listenerFunctionName)
+
+        #endregion
+
+        #region Event Listener Pinning - Memory Management
+
+        // Called by InnerOn to "pin" this object if it has any event subscribers, to prevent it from being garbage collected.
+        // This Pubisher object is also the listener of the javascript event.  The listenerFunctionName handles passing the event through to the C# event.
+        // HTML Publisher Element -> JQuery JS Handler -> JQBox wrapping HTML Element(eventObject pinned, listens to JS event, publishes C# event)-> C# Event Listener 
+        // This is essentially an unmanaged object -> managed object reference problem,
+        // where the GC does not see the reference from unamanaged JS and thus could GC our object when it is still listening for JS events of a DOM element.
+
+        // eventObjectsByPointer prevents the JQ Box from being garbage collected since it may have no managed references while the DOM element is still publishing events.
+        // Indexed by ptr of the managed object.
+        public static Dictionary<IntPtr, JQueryBox> eventObjectsByPointer = new Dictionary<IntPtr, JQueryBox>();
+
+        private System.IntPtr PinEventListener()
         {
-            var newBox = new JQueryBox();
-            eventObjects.Add(this);// HACK: Prevent GC on C#/JQ object publishing the event.  CONSIDER: Removing if last unsubscriber.  Really we'd want a way to detect the object no longer exists on the page.
-
-            // {eventListener} is the JQueryBox box, and .{listeneerFunctionName} is usually "InternalEventCallback".
-            // Uno WebAssembly generates a javascript wrapper for this managed type.
-            // From the perspective of javascript there is a javascript method JQueryBox.InternalEventCallback which proxies calls from JS back to the managed C# object
-            // The javascript JQueryBox.InternalEventCallback is registered as the handler for the event, and so proxies events firing back to this managed C# object
-            // Note the JS object isn't literally "JQueryBox", InvokeJSWithInteropt takes interpolation parameters of type IJSObject and translates that into an activeObject[id] dereference.
-            WebAssemblyRuntime.InvokeJSWithInterop($@"
-                     
-                    var handler = function(e){{
-                        console.log('On Fired');
-                        var eEncoded = btoa(JSON.stringify(e));                        
-                        {eventListener}.{listenerFunctionName}(eEncoded, e.type);
-                    }}.bind({eventListener});
-
-                    {newBox}.{_1.jqbj} = {this}.{_1.jqbj}.on('{events}', handler);
+            System.IntPtr ptr = _managedHandle(this.handle);
+            if (!eventObjectsByPointer.ContainsKey(ptr))
+            {
+                eventObjectsByPointer[ptr] = this; // prevent GC of this, indexed by it's pointer so it can be looked up later by the weak map
+                
+                // Iterate over all HTML elements and add them to WeakMap, which the Mutation Observer uses to notify the managed object when the HTML elemnt is removed
+                // The key of the map is the HTML element(node) which is what the mutation observer receives during a removed element event,
+                // and value is the managed pointer so it can call back to us 
+                WebAssemblyRuntime.InvokeJSWithInterop($@"
+                    {this}.{_1.jqbj}.each( function(index) {{ nodePtrs.set(this,'{ptr}'); }} );
                 ");
-            return newBox;
+                //nodePtrs.set({this}.{_1.jqbj}[0],'{ptr}');
+            }
+            return ptr;
         }
 
-        private JQueryBox InnerOff(string events)
+        // UnpinEventListener handles notifications of removed DOM/HTML elements to determine if listeners can be unpinned
+        // TryUnpinEventListener handles event unssubcriptions to determine if there's no subscribers left, in which case we can unpin to make eligible for GC
+
+        // Called by MutationObserver when DOM HTML element is removed which was related to managed object by pointer
+        // TODO: Consider if this JQueryBox used a query that matched multiple elements (I believe this is handled now, write unit test for scenario)
+        private static void UnpinEventListener(string pointerString)
         {
-            var newBox = new JQueryBox();
-            // CONSIDER: It's possible to unsubscribe only our handler, but we can't use an anonymous handler above.
-            WebAssemblyRuntime.InvokeJSWithInterop($@"
-                    {newBox}.{_1.jqbj} = {this}.{_1.jqbj}.off('{events}');
-                ");
-            return newBox;
+            //Console.WriteLine("Unpin called for pointer: " + pointerString);
+            var handle = PointerStringToObject(pointerString) as JSObjectHandle;
+            var weakRef = _target(handle);
+            JQueryBox jqBox = weakRef.GetTarget() as JQueryBox;
+
+            // determine if all elements in this jQuery collection have been removed ( $element.parents('html').length > 0 )
+            string countElementsInDom = WebAssemblyRuntime.InvokeJSWithInterop($@"
+                    return {jqBox}.{_1.jqbj}.parents('html').length;  
+            ");
+            //Console.WriteLine($"countElementsInDom for ptr{ pointerString }: {countElementsInDom}");
+            // if last HTML in jquery collection removed, then remove the pinned managed object
+            if (int.TryParse(countElementsInDom, out int count) && count == 0)
+            {
+                //Console.WriteLine("Item remove for pointer: " + pointerString);
+                //Console.WriteLine("MemLoad RemoveBefore: " + JQueryBox.eventObjectsByPointer.Count);
+                IntPtr ptr = new IntPtr(Convert.ToInt32(pointerString));
+                bool isRemoved = eventObjectsByPointer.Remove(ptr);
+                //Console.WriteLine("Pointer removed? " + isRemoved);
+                //Console.WriteLine("MemLoad RemoveAfter: " + JQueryBox.eventObjectsByPointer.Count);
+            }
+        }
+
+        // Conditionally unpins if no remaining events, called during event unsubscription in InnerOff to unpin object if last listener removed
+        private void TryUnpinEventListener()
+        {
+            //Console.WriteLine("TryUnpin called");
+            // if there are not any events with handlers, then unpin this object
+            if (!HasListeners())
+            {
+                System.IntPtr ptr = _managedHandle(this.handle);
+                bool isRemoved = eventObjectsByPointer.Remove(ptr);
+                //Console.WriteLine("TryUnpin pointer removed? " + isRemoved);
+            }
+        }
+
+        // determines if any listeners are subscribed to events on this instance, used to determine if this instance can be un pinned
+        public bool HasListeners()
+        {
+            return this.onEvent.Any(e => e.Value != null) || onInput != null || onClick != null;
         }
 
         #endregion
@@ -414,8 +511,16 @@ namespace SerratedSharp.SerratedJQ
             string ptrStr = WebAssemblyRuntime.InvokeJSWithInterop(
                 $@"return {this}.{_1.jqbj}.data('{key}');"
             );
-            var intr = Convert.ToInt32(ptrStr);
+            object managedObject = PointerStringToObject(ptrStr);
+            return managedObject;
+        }
+
+        private static object PointerStringToObject(string ptrStr)
+        {
+            var intr = Convert.ToInt32(ptrStr);// TODO: ToInt32 might be wrong on 64bit systems might truncate
+            //Console.WriteLine(intr);
             IntPtr pntr = new IntPtr(intr);
+            //Console.WriteLine(pntr);
             var managedGcHandle = GCHandle.FromIntPtr(pntr);
             return managedGcHandle.Target;
         }
@@ -1036,12 +1141,6 @@ namespace SerratedSharp.SerratedJQ
 
 
 
-
-
-
-
-
-
         /// <summary>
         /// Format types suitable for passing to javascript.
         /// </summary>        
@@ -1114,7 +1213,6 @@ namespace SerratedSharp.SerratedJQ
         {
             JQueryBox newBox = new JQueryBox();
             //Console.WriteLine(funcName);
-
 
             string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
             //Console.WriteLine(jsParameters);
@@ -1208,8 +1306,6 @@ namespace SerratedSharp.SerratedJQ
             return $"WasmGenerator.{ GetType().Name}.getInstance(0,{jsHandle})";
         }
 
-
-
         // Get jsHandle ID via reflection
         static long _jsHandle(JSObjectHandle jsHandle)
         {
@@ -1219,6 +1315,11 @@ namespace SerratedSharp.SerratedJQ
         static IntPtr _managedHandle(JSObjectHandle jsHandle)
         {
             return GetPrivate<IntPtr>(jsHandle);
+        }
+
+        static Uno.WeakReference<object> _target(JSObjectHandle jsHandle)
+        {
+            return GetPrivate<Uno.WeakReference<object>>(jsHandle);
         }
 
         // Reflection to access private fields needed for getting JS handle ID when making instance interopt calls
