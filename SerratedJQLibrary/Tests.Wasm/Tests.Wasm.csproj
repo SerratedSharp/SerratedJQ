@@ -19,6 +19,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="XssPayloads1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="XssPayloads1.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="3.11.16" />
     <PackageReference Include="Uno.UI.WebAssembly" Version="3.11.16" />
     <PackageReference Include="Uno.Wasm.Bootstrap" Version="3.2.0" />
@@ -27,6 +37,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="EmbeddedTestFiles.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EmbeddedTestFiles.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="EmbeddedTestFiles.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EmbeddedTestFiles.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

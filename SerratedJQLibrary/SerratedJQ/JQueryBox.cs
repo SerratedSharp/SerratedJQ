@@ -169,30 +169,51 @@ namespace SerratedSharp.SerratedJQ
         JSObjectHandle IJSObject.Handle { get => handle; }
 
         // this is effectively a factory method since it and other static methods are the main way to generate new JQBox
+        /// <summary>
+        /// Calls $(document).find('selector')
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns>A JQueryBox wrapping the JQuery collection returned by .find()</returns>
         public static JQueryBox Select(string selector)
         {
             var box = new JQueryBox();
-
-            // Call {_1._2}(selector) and add the return to the new JS JQueryBox.{_1.jqbj}
+            
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{box}.{_1.jqbj} = {_1.jQueryRef}('{selector}');"
+                $@"{box}.{_1.jqbj} = {_1.jQueryRef}(document).find({FormatParam(selector)});"
                 );
-
             return box;
         }
 
+
+        /// <summary>
+        /// Note internally this routes to parseHTML(string) with keepScripts= false which strips script tags.  This doesn't cover all XSS scenarios such as sanatizing attribute embedded scripts.
+        /// </summary>
         public static JQueryBox FromHtml(string html)
         {
-            // Escape single quotes and remove breaking control characters
-            html = html.Replace("'", "\\'").Replace("\t", "").Replace("\r", "").Replace("\n", "");
             var box = new JQueryBox();
+            // Call parseHTML to get DOM nodes, then convert to JQ collection
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{box}.{_1.jqbj} = {_1.jQueryRef}('{html}');"
+                $@"{box}.{_1.jqbj} = {_1.jQueryRef}( {_1.jQueryRef}.parseHTML({FormatParam(html)}, undefined, false));"
                 );
-
+            
             return box;
         }
 
+        // TODO implement optional params jQuery.parseHTML( data [, JQ context ] [, bool keepScripts ] )
+        /// <summary>
+        /// Similar to FromHtml, but exposes option to keep script tags(defaults to false).  This doesn't cover all XSS scenarios such as sanatizing attribute embedded scripts.
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="keepScripts"></param>
+        /// <returns></returns>
+        public static JQueryBox ParseHtml(string html, bool keepScripts = false)
+        {
+            var box = new JQueryBox();
+            WebAssemblyRuntime.InvokeJSWithInterop(
+                $@"{box}.{_1.jqbj} = {_1.jQueryRef}( {_1.jQueryRef}.parseHTML({FormatParam(html)}, undefined, {FormatParam(keepScripts)}) );"
+                );
+            return box;
+        }
 
         #region Events
 
@@ -298,7 +319,7 @@ namespace SerratedSharp.SerratedJQ
                     {this}.{listenerFunctionName}(eEncoded, e.type);
                 }}.bind({this});
 
-                {this}.{_1.jqbj}.on('{events}', handler);
+                {this}.{_1.jqbj}.on({FormatParam(events)}, handler);
             ");
 
             PinEventListener();
@@ -316,7 +337,7 @@ namespace SerratedSharp.SerratedJQ
             //{newBox}.{_1.jqbj} = 
 
             WebAssemblyRuntime.InvokeJSWithInterop($@"
-                    {this}.{_1.jqbj}.off('{events}');
+                    {this}.{_1.jqbj}.off({FormatParam(events)});
                 ");
 
             TryUnpinEventListener();
@@ -492,9 +513,8 @@ namespace SerratedSharp.SerratedJQ
             // This prevents garbage collection during period where managed code has no reference to the object
             var managedGcHandle = GCHandle.Alloc(value, GCHandleType.Normal);  // GCHandleType.Weak
             IntPtr managedHandle = GCHandle.ToIntPtr(managedGcHandle);
-            Console.WriteLine(managedHandle);
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{this}.{_1.jqbj}.data('{key}','{managedHandle}');"
+                $@"{this}.{_1.jqbj}.data({FormatParam(key)},'{managedHandle}');"
             );
 
             return this;
@@ -509,7 +529,7 @@ namespace SerratedSharp.SerratedJQ
         public object ManagedObjectGet(string key)
         {
             string ptrStr = WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"return {this}.{_1.jqbj}.data('{key}');"
+                $@"return {this}.{_1.jqbj}.data({FormatParam(key)});"
             );
             object managedObject = PointerStringToObject(ptrStr);
             return managedObject;
@@ -535,8 +555,8 @@ namespace SerratedSharp.SerratedJQ
         public object ManagedObjectRemove(string key)
         {
             string ptrStr = WebAssemblyRuntime.InvokeJSWithInterop(
-                $@" var ptr = {this}.{_1.jqbj}.data('{key}');
-                    {this}.{_1.jqbj}.removeData('{key}');
+                $@" var ptr = {this}.{_1.jqbj}.data({FormatParam(key)});
+                    {this}.{_1.jqbj}.removeData({FormatParam(key)});
                     return ptr;"
             );
 
@@ -570,7 +590,7 @@ namespace SerratedSharp.SerratedJQ
             }
 
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{this}.{_1.jqbj}.data('{key}','{dataString}');"
+                $@"{this}.{_1.jqbj}.data({FormatParam(key)},{FormatParam(dataString)});"
             );
 
             return this;
@@ -579,7 +599,7 @@ namespace SerratedSharp.SerratedJQ
         public JQueryBox DataRemove(string key)
         {
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{this}.{_1.jqbj}.removeData('{key}');"
+                $@"{this}.{_1.jqbj}.removeData({FormatParam(key)});"
             );
             return this;
         }
@@ -588,10 +608,9 @@ namespace SerratedSharp.SerratedJQ
         /// <typeparam name="T">Must be the same type as value passed to DataAdd()</typeparam>        
         public T DataGet<T>(string key)
         {
-            object v;
-
+            
             string dataString = WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"return {this}.{_1.jqbj}.data('{key}');"
+                $@"return {this}.{_1.jqbj}.data({FormatParam(key)});"
             );
 
             if(typeof(T) == typeof(string) )
@@ -827,13 +846,13 @@ namespace SerratedSharp.SerratedJQ
         public string Html
         {
             get { return FuncString("html"); }
-            set { ChainedFunc("html", CleanHtml(value)); }
+            set { ChainedFunc("html", value); }
         }
 
         public string Text
         {
             get { return FuncString("text"); }
-            set { ChainedFunc("text", value.Replace("'", "\\'")); }
+            set { ChainedFunc("text", value); }
         }
 
 #if PRO
@@ -996,11 +1015,10 @@ namespace SerratedSharp.SerratedJQ
 
         #region Helpers
 
-        // TODO: Review Uno's escapeJS method and similar methods.  Review JQuery's pattern for when embedded <script> is or is not included in HTML manipulation.
         internal static string CleanHtml(string html)
         {
             // Escape single quotes and remove control characters that break append
-            return html.Replace("'", "\\'").Replace("\t", "").Replace("\r", "").Replace("\n", "");
+            return WebAssemblyRuntime.EscapeJs(html).Replace("'", @"\'") ;
         }
 
         /// <summary>Generic function for JQuery instances methods that </summary>
@@ -1009,11 +1027,9 @@ namespace SerratedSharp.SerratedJQ
         /// </example>
         private JQueryBox JQueryFuncHtml(string funcName, string html)
         {
-            html = CleanHtml(html);
-            //Console.WriteLine(html);
             var newBox = new JQueryBox();
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{newBox}.{_1.jqbj} = {this}.{_1.jqbj}.{funcName}('{html}');"
+                $@"{newBox}.{_1.jqbj} = {this}.{_1.jqbj}.{funcName}({FormatParam(html)});"
             );
             return newBox;
         }
@@ -1029,7 +1045,7 @@ namespace SerratedSharp.SerratedJQ
             //Console.WriteLine(html);
             var newBox = new JQueryBox();
             WebAssemblyRuntime.InvokeJSWithInterop(
-                $@"{newBox}.{_1.jqbj} = {_1.jQueryRef}('{html}').{funcName}({this}.{_1.jqbj});"
+                $@"{newBox}.{_1.jqbj} = {_1.jQueryRef}({FormatParam(html)}).{funcName}({this}.{_1.jqbj});"
             );
             return newBox;
         }
@@ -1037,7 +1053,7 @@ namespace SerratedSharp.SerratedJQ
         /// <summary>Generic function for JQuery instances methods that take string params and return a string. </summary>
         internal string FuncString(string funcName, params string[] parameters)
         {
-            string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
+            string jsParameters = string.Join(",", parameters.Select(p => $"{FormatParam(p)}"));
 
             string result = WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"return {this}.{_1.jqbj}.{funcName}({jsParameters});"
@@ -1170,12 +1186,12 @@ namespace SerratedSharp.SerratedJQ
         //}
 
         // TODO: Determine if other types need special formatting such as numbers
-        private object FormatParam(object param)
+        private static object FormatParam(object param)
         {
             string str = null;
 
             if (param is string s)
-                str = $"'{s.Replace("'", "\\'")}'";
+                str = "'" + WebAssemblyRuntime.EscapeJs(s).Replace("'", @"\'") + "'";
             else if (param is bool b)
                 str = (b ? "true" : "false");
             else if (param == null)
@@ -1199,9 +1215,9 @@ namespace SerratedSharp.SerratedJQ
         {
             JQueryBox newBox = new JQueryBox();
 
-            string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
+            string jsParameters = string.Join(",", parameters.Select(p => $"{FormatParam(p)}"));
             if (!jsParameters.IsNullOrWhiteSpace())
-                jsParameters = "," + jsParameters;
+                jsParameters = "," + jsParameters;// if any parameters being added, then comma preceding them to seperate from first parameter 
 
             WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"{newBox}.{_1.jqbj} = {this}.{_1.jqbj}.{funcName}({jQueryBox}.{_1.jqbj}{jsParameters});"
@@ -1214,7 +1230,7 @@ namespace SerratedSharp.SerratedJQ
             JQueryBox newBox = new JQueryBox();
             //Console.WriteLine(funcName);
 
-            string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
+            string jsParameters = string.Join(",", parameters.Select(p => $"{FormatParam(p)}"));
             //Console.WriteLine(jsParameters);
             WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"{newBox}.{_1.jqbj} = {this}.{_1.jqbj}.{funcName}({jsParameters});"
@@ -1254,7 +1270,7 @@ namespace SerratedSharp.SerratedJQ
         /// <summary> Does not create a new instance. </summary>
         internal JQueryBox ChainedFunc(string funcName, params string[] parameters)
         {
-            string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
+            string jsParameters = string.Join(",", parameters.Select(p => $"{FormatParam(p)}"));
 
             WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"{this}.{_1.jqbj}.{funcName}({jsParameters});"

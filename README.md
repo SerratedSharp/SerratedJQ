@@ -14,7 +14,7 @@ https://www.youtube.com/watch?v=0BrGf99K6CU
 Code from Demo: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
 
 ## Example
-This example WebAssembly code shows how you might subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
+This example WebAssembly code shows how you might select an HTML element, subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
 
 ```C#
 using SerratedSharp.SerratedJQ;
@@ -42,19 +42,23 @@ Prerequisites:
 Setup/Getting Started Video (includes Uno.Wasm.Bootstrap setup): https://www.youtube.com/watch?v=lyebV4v1T_A  
 Code from Video: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQGetStarted
 
-Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from the Nuget package manager.  Currently you must check **Include prerelease** as only alpha versions are available.  See above video for setting up Uno.Wasm.Bootstrap.
+Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from the Nuget package manager.  See above video for setting up Uno.Wasm.Bootstrap.
 
 ![image](https://user-images.githubusercontent.com/97156524/155268895-cef3df20-0a1d-4cfb-beaf-4d85c21e1474.png)
 
-
 ## Warning
-This is an experimental proof of concept and not appropriate for production use.
+ManagedObjectAttach() potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
 
-~~Event handlers~~(Fixed in 0.0.1-alpha.5) and ManagedObjectAttach() potentially generate memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.    
+# Security Considerations
 
-Some methods could be vulnerable to XSS where uncleaned data originating from users is passed into library methods.  Many methods internally generate and execute javascript or manipulate the DOM, and hardening has not been done to ensure parameters embedded in JS or HTML is appropriately cleaned/escaped.  This would be equivalent to the risk posed by use of JS eval().
+The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
+
+Demo videos may note security concerns in pre-release versions related to the interopt layer, and steps have since been taken to ensure parameters are appropriately encoded to prevent breakout of the parameter context.
 
 ## Release Notes
+
+### 0.0.2
+Appropriate encoding applied to ensure parameters used in the javascript interopt layer cannot break out of the parameter context.  This addresses remaining security concerns regarding javascript generated in the interopt layer.  
 
 ### 0.0.1-alpha.5
 
