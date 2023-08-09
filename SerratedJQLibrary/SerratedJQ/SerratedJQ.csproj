@@ -93,6 +93,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
 
   <!-- Post build - Making backup of original, obfuscating, then nuget packaging. -->
   <Target Name="CopyWasmAfterBuild" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">

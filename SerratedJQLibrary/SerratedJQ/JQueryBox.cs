@@ -12,8 +12,7 @@ using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
-using System.Xml.Linq;
+
 
 namespace SerratedSharp.SerratedJQ
 {
@@ -24,8 +23,19 @@ namespace SerratedSharp.SerratedJQ
         private static int keep = 2;
         static JQueryBox()
         {
+            
             // Add javascript declaration that is used by WebAssembly but was declared in incorrect Uno Platform project.
             WebAssemblyRuntime.InvokeJS(_1.ManagedObjectJavascriptDispatcherDeclaration);
+
+            WebAssemblyRuntime.InvokeJS(@$"     
+                    window.{JSClassName} = window.{JSClassName} || {{}};
+                    window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');                         
+                ");
+
+            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.ObserveRemovedJs);
+
+
+            // Alternative export approaches
 
             //CallbacksHelper.Export(jsMethodName: "UnpinEventListener", () => JQueryBox.UnpinEventListener());
 
@@ -38,86 +48,13 @@ namespace SerratedSharp.SerratedJQ
             //             Serrated.Callbacks = Callbacks;
             //        })(Serrated = window.Serrated || (window.Serrated = {}));";
 
-            WebAssemblyRuntime.InvokeJS(@$"     
-                    window.{JSClassName} = window.{JSClassName} || {{}};
-
-                    window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');
-                         
-                ");
-
-            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.ObserveRemovedJs);
-
-            //(function (Uno) {
-            //    var Http;
-            //    (function (Http) {
-            //        class HttpClient {
-            //            static async send(config) {
-            //                const params = {
-            //                    method: config.method,
-            //                    cache: config.cacheMode || 'default',
-            //                    headers: new Headers(config.headers)
-            //                };
-            //                if (config.payload) {
-            //                    params.body = await this.blobFromBase64(config.payload, config.payloadType);
-            //                }
-            //                try {
-            //                    const response = await fetch(config.url, params);
-            //                    let responseHeaders = '';
-            //                    response.headers.forEach((v, k) => responseHeaders += `${k}:${v}\n`);
-            //                    const responseBlob = await response.blob();
-            //                    const responsePayload = responseBlob ? await this.base64FromBlob(responseBlob) : '';
-            //                    this.dispatchResponse(config.id, response.status, responseHeaders, responsePayload);
-            //                }
-            //                catch (error) {
-            //                    this.dispatchError(config.id, `${error.message || error}`);
-            //                    console.error(error);
-            //                }
-            //            }
-            //            static async blobFromBase64(base64, contentType) {
-            //                contentType = contentType || 'application/octet-stream';
-            //                const url = `data:${contentType};base64,${base64}`;
-            //                return await (await fetch(url)).blob();
-            //            }
-            //            static base64FromBlob(blob) {
-            //                return new Promise(resolve => {
-            //                    const reader = new FileReader();
-            //                    reader.onloadend = () => {
-            //                        const dataUrl = reader.result;
-            //                        const base64 = dataUrl.split(',', 2)[1];
-            //                        resolve(base64);
-            //                    };
-            //                    reader.readAsDataURL(blob);
-            //                });
-            //            }
-            //            static dispatchResponse(requestId, status, headers, payload) {
-            //                this.initMethods();
-            //                const requestIdStr = MonoRuntime.mono_string(requestId);
-            //                const statusStr = MonoRuntime.mono_string('' + status);
-            //                const headersStr = MonoRuntime.mono_string(headers);
-            //                const payloadStr = MonoRuntime.mono_string(payload);
-            //                MonoRuntime.call_method(this.dispatchResponseMethod, null, [requestIdStr, statusStr, headersStr, payloadStr]);
-            //            }
-            //            static dispatchError(requestId, error) {
-            //                this.initMethods();
-            //                const requestIdStr = MonoRuntime.mono_string(requestId);
-            //                const errorStr = MonoRuntime.mono_string(error);
-            //                MonoRuntime.call_method(this.dispatchErrorMethod, null, [requestIdStr, errorStr]);
-            //            }
-            //            static initMethods() {
-            //                if (this.dispatchResponseMethod) {
-            //                    return; // already initialized.
-            //                }
-            //                const asm = MonoRuntime.assembly_load('Uno.UI.Runtime.WebAssembly');
-            //                const httpClass = MonoRuntime.find_class(asm, 'Uno.UI.Wasm', 'WasmHttpHandler');
-            //                this.dispatchResponseMethod = MonoRuntime.find_method(httpClass, 'DispatchResponse', -1);
-            //                this.dispatchErrorMethod = MonoRuntime.find_method(httpClass, 'DispatchError', -1);
-            //            }
-            //        }
-            //        Http.HttpClient = HttpClient;
-            //    })(Http = Uno.Http || (Uno.Http = {}));
-            //})(Uno || (Uno = {}));
-
-            //            ");
+            //  WebAssemblyRuntime.InvokeJS(@"
+            //      SerratedSharp.SerratedJQ.JQueryBox.prototype.ClickCallback = function(eEncoded, eventType) {
+            //          var parameters = {'eEncoded': eEncoded, 'eventType': eventType};
+            //          var serializedParameters = JSON.stringify(parameters);
+            //          //method name passed to .dispatch must be a public instance method (cannot be an explicit interface)
+            //          Uno.Foundation.Interop.ManagedObject.dispatch(this.__managedHandle, 'ClickCallback', serializedParameters);
+            //      };");
 
             if (keep == 1)// Prevent these methods from being removed by ILLinker at compile time. The condition being false prevents these from actually being called at runtime, but indeterministic so that linker doesn't remove them. 
             {
@@ -136,18 +73,6 @@ namespace SerratedSharp.SerratedJQ
             styles = new JQIndexer(this, "css");
             //properties = new JQIndexer(this, "prop");
             attributes = new JQIndexer(this, "attr");
-
-            // How to manually add a JS->C# callback
-            //         WebAssemblyRuntime.InvokeJS(@"
-            //   SerratedSharp.SerratedJQ.JQueryBox.prototype.ClickCallback = function(eEncoded, eventType) {
-            //var parameters = {'eEncoded': eEncoded, 'eventType': eventType};
-
-            //         var serializedParameters = JSON.stringify(parameters);
-            // method name passed to .dispatch must be a public instance method (cannot be an explicit interface)
-            //         Uno.Foundation.Interop.ManagedObject.dispatch(this.__managedHandle, 'ClickCallback', serializedParameters);
-            //     };
-            //         ");
-
         }
 
         public JQueryBox(JQueryBox jQueryBox)
@@ -157,10 +82,8 @@ namespace SerratedSharp.SerratedJQ
             // https://github.com/unoplatform/uno/blob/768d3ef773cad95a9fb0d1d27ba0ce45e8c75267/src/Uno.Foundation.Runtime.WebAssembly/Interop/Runtime.wasm.cs
 
             handle = JSObjectHandle.Create(this);
-
             //var _managedGcHandle = GCHandle.Alloc(handle, GCHandleType.Weak);
             //var _managedHandle = GCHandle.ToIntPtr(_managedGcHandle);
-
             styles = new JQIndexer(this, "css");
             attributes = new JQIndexer(this, "attr");
         }
@@ -168,7 +91,8 @@ namespace SerratedSharp.SerratedJQ
         internal JSObjectHandle handle;
         JSObjectHandle IJSObject.Handle { get => handle; }
 
-        // this is effectively a factory method since it and other static methods are the main way to generate new JQBox
+        #region Static/Factory Methods
+
         /// <summary>
         /// Calls $(document).find('selector')
         /// </summary>
@@ -215,6 +139,8 @@ namespace SerratedSharp.SerratedJQ
             return box;
         }
 
+        #endregion
+
         #region Events
 
         // TODO: Implement static .ready?
@@ -224,38 +150,31 @@ namespace SerratedSharp.SerratedJQ
             where TSender : JQueryBox;
 
         private JQueryEventHandler<JQueryBox, object> onClick;
-        // We use explicit event so that we can only create the JQuery listener when necessary        
         public event JQueryEventHandler<JQueryBox, object> OnClick
         {
-            add
-            {
+            add {
                 if (onClick == null)// if first event subscriber
                     this.InnerOn("click", nameof(InternalClickCallback));// then add JQuery listener
 
                 onClick += value;
             }
-            remove
-            {
+            remove {
                 onClick -= value;
-
                 if (onClick == null) // if last subscriber removed, then remove JQuery listener
                     this.InnerOff("click");
             }
         }
 
-        private JQueryEventHandler<JQueryBox, object> onInput;
-        // We use explicit event so that we can only create the JQuery listener when necessary        
+        private JQueryEventHandler<JQueryBox, object> onInput;        
         public event JQueryEventHandler<JQueryBox, object> OnInput
         {
-            add
-            {
+            add {
                 if (onInput == null)// if first event subscriber
                     this.InnerOn("input", nameof(InternalInputCallback));// then add JQuery listener
 
                 onInput += value;
             }
-            remove
-            {
+            remove {
                 onInput -= value;
                 if (onInput == null) // if last subscriber removed, then remove JQuery listener
                     this.InnerOff("input");
@@ -379,8 +298,6 @@ namespace SerratedSharp.SerratedJQ
             return eventData;
         }
 
-
-
         #endregion
 
         #region Event Listener Pinning - Memory Management
@@ -391,7 +308,7 @@ namespace SerratedSharp.SerratedJQ
         // This is essentially an unmanaged object -> managed object reference problem,
         // where the GC does not see the reference from unamanaged JS and thus could GC our object when it is still listening for JS events of a DOM element.
 
-        // eventObjectsByPointer prevents the JQ Box from being garbage collected since it may have no managed references while the DOM element is still publishing events.
+        // eventObjectsByPointer prevents the JQ Box from being garbage collected since it may have no managed references while the DOM element is still publishing events to it.
         // Indexed by ptr of the managed object.
         public static Dictionary<IntPtr, JQueryBox> eventObjectsByPointer = new Dictionary<IntPtr, JQueryBox>();
 
@@ -518,7 +435,6 @@ namespace SerratedSharp.SerratedJQ
             );
 
             return this;
-
         }
 
         /// <summary>
@@ -537,7 +453,7 @@ namespace SerratedSharp.SerratedJQ
 
         private static object PointerStringToObject(string ptrStr)
         {
-            var intr = Convert.ToInt32(ptrStr);// TODO: ToInt32 might be wrong on 64bit systems might truncate
+            var intr = Convert.ToInt32(ptrStr);// TODO: ToInt32 might be wrong on 64bit systems, may truncate
             //Console.WriteLine(intr);
             IntPtr pntr = new IntPtr(intr);
             //Console.WriteLine(pntr);
@@ -578,14 +494,13 @@ namespace SerratedSharp.SerratedJQ
         /// <returns></returns>
         public JQueryBox DataAdd(string key, object value)
         {
-            // TODO: Determine if this properly handles nullable types.  Also review FuncGenericOut to determine if the casting approach and also FormatPArameter is appropriate here
+            // TODO: Determine if this properly handles nullable types.  Also review FuncGenericOut to determine if the casting approach is appropriate here
 
             string dataString;
             if (value.GetType() == typeof(string) || value.GetType().IsValueType) {
                 dataString = value.ToString();    
             }
-            else
-            {
+            else{
                 dataString = System.Text.Json.JsonSerializer.Serialize(value);
             }
 
@@ -613,21 +528,17 @@ namespace SerratedSharp.SerratedJQ
                 $@"return {this}.{_1.jqbj}.data({FormatParam(key)});"
             );
 
-            if(typeof(T) == typeof(string) )
-            {
+            if(typeof(T) == typeof(string) ) {
                 return (T)Convert.ChangeType(dataString, typeof(T));                
             }
-            else if(typeof(T).IsValueType )
-            {
+            else if(typeof(T).IsValueType ) {
                 return (T)Convert.ChangeType(dataString, typeof(T));
             }
-            else
-            {
+            else {
                 return System.Text.Json.JsonSerializer.Deserialize<T>(dataString);
             }
 
         }
-
 
         #endregion
 
@@ -635,8 +546,7 @@ namespace SerratedSharp.SerratedJQ
         #region JQuery Object Properties
         public long Length
         {
-            get
-            {
+            get {
                 return Convert.ToInt64(WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"return {this}.{_1.jqbj}.length;"
                 ));
@@ -646,13 +556,10 @@ namespace SerratedSharp.SerratedJQ
         public string Version =>
             WebAssemblyRuntime.InvokeJSWithInterop($@"return {this}.{_1.jqbj}.jquery;");
 
-
-
         #endregion
 
         #region DOM Manipulation
 
-#if PRO
         /// <summary> Adds <paramref name="newSiblingHtml"/> before this element.  Returns the new HTML JQuery object. </summary>     
         /// <example>
         ///   jQuery( "<h2>Greetings</h2>" ).insertAfter( jQuery( ".container" ) );
@@ -727,7 +634,7 @@ namespace SerratedSharp.SerratedJQ
             return FuncJQuery("unwrap", selector);
         }
 
-                // TODO: This is a good way to document the method.  Also add <example><code> INSIDE the summary showing example and resulting HTML.
+        // TODO: This is a good way to document the method.  Also add <example><code> INSIDE the summary showing example and resulting HTML.
         /// <summary>
         /// Calls JQuery <paramref name="this"/>.wrap( <paramref name="outerWrapper"/> ).
         /// If <paramref name="this"/> JQuery object is a collection of elements, 
@@ -749,8 +656,6 @@ namespace SerratedSharp.SerratedJQ
         {
             return FuncJQuery("wrapInner", innerWrapper);
         }
-
-#endif
 
         // Consider: Append will accept non-HTML text and append it.  AppendTo will only accept HTML.  So currently without Append(string) we can't append non-HTML text.
         /// <summary> Adds <paramref name="child"/> to container and returns the container contents(i.e. all siblings of the appended item).</summary>        
@@ -788,16 +693,13 @@ namespace SerratedSharp.SerratedJQ
 
         public JQueryBox AddClass(string className) => FuncJQueryCallerName(className);
 
-#if PRO
         public JQueryBox AddClasses(string[] classNames) {
             return FuncJQuery("addClass", string.Join(' ', classNames));
         }
-#endif
 
         // Consider: exposing as indexer of Attributes collection. REview Html agility Pack        
         // TODO: Implement attribute that takes a collection of attributes
         /// <summary>
-        /// 
         /// Note some values should be retrieved using <c>Property</c> instead of <c>Attribute</c>.
         /// Data-* attributes should be retrieved with <c>.Data</c>. See JQuery documentation.
         /// </summary>
@@ -809,7 +711,6 @@ namespace SerratedSharp.SerratedJQ
 
         //public string Property(string attributeName) => FuncString("prop", attributeName);
         //public JQueryBox Property(string attributeName, string value) => ChainedFunc("prop", attributeName);
-
 
         //public JQIndexer Properties { get => properties; }
         //private JQIndexer properties;
@@ -835,9 +736,6 @@ namespace SerratedSharp.SerratedJQ
         public JQIndexer Styles { get => styles; }
         internal JQIndexer styles;
 
-
-
-
         public bool HasClass(string className)
         {
             return FuncString("hasClass", className) == "true";
@@ -855,7 +753,6 @@ namespace SerratedSharp.SerratedJQ
             set { ChainedFunc("text", value); }
         }
 
-#if PRO
         public decimal Height {
             get { return Convert.ToDecimal(FuncString("height")); }
             set { ChainedFunc("height", value.ToString()); }
@@ -886,7 +783,6 @@ namespace SerratedSharp.SerratedJQ
             set { ChainedFunc("outerWidth", value.ToString()); }
         }
 
-        
         public decimal ScrollLeft {
             get { return Convert.ToDecimal(FuncString("scrollLeft")); }
             set { ChainedFunc("scrollLeft", value.ToString()); }
@@ -902,11 +798,10 @@ namespace SerratedSharp.SerratedJQ
         }
         // TODO: Implement ToggleClass overloads
 
-
         // TODO: cssNumber
         // TODO: offset
         // TODO: position
-#endif
+
         public JQueryBox RemoveAttribute(string attributeName)
         {
             return ChainedFunc("removeAttr", attributeName);
@@ -928,7 +823,6 @@ namespace SerratedSharp.SerratedJQ
             set => FuncString("val", value);
         }
 
-
         // TODO: .val() can return string, number, or array: https://api.jquery.com/val/#val1
 
         //public string ValueGet()
@@ -936,7 +830,6 @@ namespace SerratedSharp.SerratedJQ
         //    return WebAssemblyRuntime.InvokeJSWithInterop(
         //        $@"return {this}.{_1.jqbj}.val();"
         //    );
-
         //}
 
         //public string Value(string value)
@@ -966,7 +859,6 @@ namespace SerratedSharp.SerratedJQ
 
         // TODO: Misc. Traversal https://api.jquery.com/category/traversing/miscellaneous-traversal/
 
-#if PRO
         /// <summary>Implements Closest() with filter on elements positioned with relative, absolute, or fixed.  Implements jQuery's offsetParent.</summary>
         public JQueryBox ClosestPositioned() => FuncJQuery("offsetParent");
         public JQueryBox Parents(string selector = null) => FuncJQueryCallerName(selector);
@@ -976,8 +868,6 @@ namespace SerratedSharp.SerratedJQ
         public JQueryBox PrevAll(string selector = null) => FuncJQueryCallerName(selector);
         public JQueryBox PrevUntil(string stopAtSelector = null, string filterResultsSelector = null) => FuncJQueryCallerName(stopAtSelector, filterResultsSelector);
         public JQueryBox Siblings(string selector = null) => FuncJQueryCallerName(selector);
-#endif
-
 
         #endregion
 
@@ -987,8 +877,6 @@ namespace SerratedSharp.SerratedJQ
 
         public JQueryBox First() => FuncJQueryCallerName();
         public JQueryBox Last() => FuncJQueryCallerName();
-
-#if PRO
         public JQueryBox Eq(int index) => FuncJQueryCallerName(index.ToString());
         public JQueryBox Even() => FuncJQueryCallerName();
         public JQueryBox Filter(string selector) => FuncJQueryCallerName(selector);
@@ -1000,17 +888,10 @@ namespace SerratedSharp.SerratedJQ
         public JQueryBox Not(string selector) => FuncJQueryCallerName(selector);
         public JQueryBox Odd() => FuncJQueryCallerName();
         //TODO: public JQueryBox Slice() => FuncJQueryCallerName();
-#endif
-
 
         #endregion
 
-
-
-
-
-
-        // TODO: Some JQuery methods actually return the same instance.  We should consider testing the JS object equality
+        // TODO: Some JQuery methods actually return the same instance.  We should consider testing the JS object equality, see "Example()"
         // and returning this instead of newBox in those cases and explicitely Dispose of newBox, or not even create the return and default to returning `this`.
 
         #region Helpers
@@ -1034,15 +915,12 @@ namespace SerratedSharp.SerratedJQ
             return newBox;
         }
 
-
         /// <example>
         ///   $( "<h2>Greetings</h2>" ).insertAfter( $( ".container" ) );
         /// </example>
         private JQueryBox HtmlFuncJQuery(string funcName, string html)
         {
-
             html = CleanHtml(html);
-            //Console.WriteLine(html);
             var newBox = new JQueryBox();
             WebAssemblyRuntime.InvokeJSWithInterop(
                 $@"{newBox}.{_1.jqbj} = {_1.jQueryRef}({FormatParam(html)}).{funcName}({this}.{_1.jqbj});"
@@ -1061,131 +939,27 @@ namespace SerratedSharp.SerratedJQ
             return result;
         }
 
-
         internal O FuncGenericOut<O>(string funcName, object param)
         {
             string stringResult = WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"return {this}.{_1.jqbj}.{funcName}({FormatParam(param)});"
             );
-            //Console.WriteLine("Result: " + stringResult);
 
             Type o = Nullable.GetUnderlyingType(typeof(O));
             if (o == null)
                 o = typeof(O);
-            //Console.WriteLine("O: " + o.ToString());
-
+            
             O safeValue = (O)((stringResult == null) ? null : Convert.ChangeType(stringResult, o));
             return safeValue;
         }
 
-        //internal O FuncGenericOut<I, O>(string funcName, I param)
-        //{
-
-        //    // TODO: Detect if <I> param is string and escape.  
-        //    // TODO: Determine if other types need special formatting such as numbers
-        //    //string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
-
-
-        //    string stringResult = WebAssemblyRuntime.InvokeJSWithInterop(
-        //            $@"return {this}.{_1.jqbj}.{funcName}({FormatParam(param)});"
-        //    );
-
-        //    //Console.WriteLine("Result: " + stringResult);
-
-
-        //    Type o = Nullable.GetUnderlyingType(typeof(O));
-        //    if (o == null)
-        //        o = typeof(O);
-
-        //    Console.WriteLine("O: " + o.ToString());
-        //    O safeValue = (O)((stringResult == null) ? null : Convert.ChangeType(stringResult, o));
-        //    //property.SetValue(entity, safeValue, null);
-
-
-        //    return safeValue;
-        //}
-
-
-
-
         internal void FuncGenericVoid(string funcName, object param1, object param2)
         {
-
-            //Console.WriteLine($"P1: {FormatParam(param1)}");
-            //Console.WriteLine($"P2: {FormatParam(param2)}");
-
-            // TODO: Detect if <I> param is string and escape.  
-            // TODO: Determine if other types need special formatting such as numbers
-            //string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
-
             string stringResult = WebAssemblyRuntime.InvokeJSWithInterop(
                 $@"return {this}.{_1.jqbj}.{funcName}({FormatParam(param1)},{FormatParam(param2)});"
             );
-
-            //Type o = Nullable.GetUnderlyingType(typeof(O));
-            //O safeValue = (O)((stringResult == null) ? null : Convert.ChangeType(stringResult, o));
-            //property.SetValue(entity, safeValue, null);
-
-
-            //return safeValue;
         }
 
-
-        //internal void FuncGenericVoid<I1, I2>(string funcName, I1 param1, I2 param2)
-        //{
-
-        //    //Console.WriteLine($"P1: {FormatParam(param1)}");
-        //    //Console.WriteLine($"P2: {FormatParam(param2)}");
-
-
-
-        //    // TODO: Detect if <I> param is string and escape.  
-        //    // TODO: Determine if other types need special formatting such as numbers
-        //    //string jsParameters = string.Join(",", parameters.Select(p => $"'{p}'"));
-
-        //    string stringResult = WebAssemblyRuntime.InvokeJSWithInterop(
-        //        $@"return {this}.{_1.jqbj}.{funcName}({FormatParam(param1)},{FormatParam(param2)});"
-        //    );
-
-        //    //Type o = Nullable.GetUnderlyingType(typeof(O));
-        //    //O safeValue = (O)((stringResult == null) ? null : Convert.ChangeType(stringResult, o));
-        //    //property.SetValue(entity, safeValue, null);
-
-
-        //    //return safeValue;
-        //}
-
-
-
-        /// <summary>
-        /// Format types suitable for passing to javascript.
-        /// </summary>        
-        //private string FormatParam<T>(T param)
-        //{
-
-        //    string str = null;
-        //    switch (param)
-        //    {
-        //        case string s:
-
-        //    //if (typeof(T) == typeof(string))// TODO: Test with null?
-        //    //{
-        //    //str = param as string;
-        //    str = $"'{ s.Replace("'", "\\'") }'";
-        //            break;
-        //        //}
-        //        //else // all other types use .ToString
-        //        //{
-        //        default:
-        //    str = param.ToString();
-        //            break;
-        //    //}
-        //}
-
-        //    return str;
-        //}
-
-        // TODO: Determine if other types need special formatting such as numbers
         private static object FormatParam(object param)
         {
             string str = null;
@@ -1204,13 +978,6 @@ namespace SerratedSharp.SerratedJQ
             return str;
         }
 
-        //private string FormatParameters(object p1, object p2)
-        //{
-        //    return $"{ FormatParam(p1) },{ FormatParam(p2) }";
-        //}
-
-
-
         internal JQueryBox FuncJQuery(string funcName, JQueryBox jQueryBox, params string[] parameters)
         {
             JQueryBox newBox = new JQueryBox();
@@ -1227,11 +994,9 @@ namespace SerratedSharp.SerratedJQ
 
         internal JQueryBox FuncJQuery(string funcName, params string[] parameters)
         {
-            JQueryBox newBox = new JQueryBox();
-            //Console.WriteLine(funcName);
-
+            JQueryBox newBox = new JQueryBox();            
             string jsParameters = string.Join(",", parameters.Select(p => $"{FormatParam(p)}"));
-            //Console.WriteLine(jsParameters);
+            
             WebAssemblyRuntime.InvokeJSWithInterop(
                     $@"{newBox}.{_1.jqbj} = {this}.{_1.jqbj}.{funcName}({jsParameters});"
             );
@@ -1240,8 +1005,6 @@ namespace SerratedSharp.SerratedJQ
 
         internal JQueryBox FuncJQueryCallerName(string parameter = null, string parameter2 = null, [CallerMemberName] string funcName = null)
         {
-            //Console.WriteLine("Caller: '" + funcName + "'");
-
             return FuncJQuery(Char.ToLowerInvariant(funcName[0]) + funcName.Substring(1), parameter, parameter2);
         }
 
@@ -1302,7 +1065,6 @@ namespace SerratedSharp.SerratedJQ
             }
         }
 
-
         // Debugging: C# methods that are exposed to JS must meet this criteria
         private static void EchoValidMethods()
         {
@@ -1314,8 +1076,6 @@ namespace SerratedSharp.SerratedJQ
             Console.WriteLine(string.Join(", ", methods.Select(m => m.Name)));
         }
 
-
-#if PRO
         internal string GenGetInstance()
         {
             var jsHandle = _jsHandle(handle);
@@ -1345,9 +1105,6 @@ namespace SerratedSharp.SerratedJQ
             var value = (T)field.GetValue(obj);
             return value;
         }
-
-
-
         
         private JQueryBox Example(string propertyName, string value)
         {
@@ -1360,7 +1117,7 @@ namespace SerratedSharp.SerratedJQ
                 "
             );
 
-            if (result == "same") // if a new instance was not created, then discard our wrapper and returnt he existing object
+            if (result == "same") // if a new instance was not created, then discard our wrapper and return the existing object
             {
                 newBox.handle.Dispose();
                 return this;
@@ -1368,30 +1125,29 @@ namespace SerratedSharp.SerratedJQ
             else
                 return newBox;
 
-            // InvokeJSWithInterop has special behavior when used with string interpolation. 
-            // It is able to inspect the interpolated string via FormatableString, which allows it to detect
-            // the references to {newBox} and {this} as IJSObject instances, and replace them with .getInstance calls against the
-            // client side activeInstances array.  The resulting javascript is an immediately invoked function expression. 
-            // This pattern is used simply to execute the snippet and ensure the local variables don't pollute global.
-            // Since {propertyName} and {value} are string types, it performs no special replacements and standard string interpolation behavior applies.
-
-            //(function() {
-            //    var __parameter_0 = WasmGenerator.JQueryBox.getInstance("162", "4");
-            //    var __parameter_1 = WasmGenerator.JQueryBox.getInstance("130", "3");
-            //    __parameter_0.{_1.jqbj} = __parameter_1.{_1.jqbj}.css('color', 'red');
-            //    return "ok";
-            //})();
-
 
         }
-#endif
+
+
+
+        // InvokeJSWithInterop has special behavior when used with string interpolation. 
+        // It is able to inspect the interpolated string via FormatableString, which allows it to detect
+        // the references to {newBox} and {this} as IJSObject instances, and replace them with .getInstance calls against the
+        // client side activeInstances array.  The resulting javascript is an immediately invoked function expression. 
+        // This pattern is used simply to execute the snippet and ensure the local variables don't pollute global.
+        // Since {propertyName} and {value} are string types, it performs no special replacements and standard string interpolation behavior applies.
+
+        //(function() {
+        //    var __parameter_0 = WasmGenerator.JQueryBox.getInstance("162", "4");
+        //    var __parameter_1 = WasmGenerator.JQueryBox.getInstance("130", "3");
+        //    __parameter_0.{_1.jqbj} = __parameter_1.{_1.jqbj}.css('color', 'red');
+        //    return "ok";
+        //})();
 
 
         //// This method demonstrates a brute force approach to using the JS handles. It might be useful in edge cases.
         //public JQueryBox Find(string selector)
         //{
-
-
         //    //long currentJsHandle = _jsHandle(Handle);
 
         //    //var newBox = new JQueryBox();
@@ -1409,7 +1165,6 @@ namespace SerratedSharp.SerratedJQ
 
         //    return FuncJQuery("find", selector);
         //}
-
 
         #endregion
 

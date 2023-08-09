@@ -61,8 +61,28 @@ namespace SerratedSharp.SerratedJQ {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted by C# startup code at runtime.
-        ///
+        ///   Looks up a localized string similar to 
+        ///            //(function (Uno) {
+        ///            //    var Http;
+        ///            //    (function (Http) {
+        ///            //        class HttpClient {
+        ///            //            static async send(config) {
+        ///            //                const params = {
+        ///            //                    method: config.method,
+        ///            //                    cache: config.cacheMode || &apos;default&apos;,
+        ///            //                    headers: new Headers(config.headers)
+        ///            //                };
+        ///            //               [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DeprecatedHttpClient {
+            get {
+                return ResourceManager.GetString("DeprecatedHttpClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
+        ///console.log(&quot;Observe declared&quot;);
         /////var targetNodes = $(document.documentElement); // $(&apos;.myclass&apos;);
         ///var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
         ///var observer = new MutationObserver(mutationHandler);
@@ -73,9 +93,7 @@ namespace SerratedSharp.SerratedJQ {
         ///    subtree: true
         ///};
         ///
-        /////--- Add a target node to the observer. Can only add one node at a time.
-        ///
-        ///observer.o [rest of string was truncated]&quot;;.
+        /////--- Add a target node to the observer. Ca [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ObserveRemovedJs {
             get {
