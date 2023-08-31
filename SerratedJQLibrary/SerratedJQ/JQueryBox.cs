@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Uno.Extensions;
+//using Uno.Extensions;
 using Uno.Foundation;
 using Uno.Foundation.Interop;
 using static System.Console;
@@ -340,7 +340,9 @@ namespace SerratedSharp.SerratedJQ
             //Console.WriteLine("Unpin called for pointer: " + pointerString);
             var handle = PointerStringToObject(pointerString) as JSObjectHandle;
             var weakRef = _target(handle);
-            JQueryBox jqBox = weakRef.GetTarget() as JQueryBox;
+            object jqBoxObj;
+            weakRef.TryGetTarget(out jqBoxObj);
+            JQueryBox jqBox = jqBoxObj as JQueryBox;
 
             // determine if all elements in this jQuery collection have been removed ( $element.parents('html').length > 0 )
             string countElementsInDom = WebAssemblyRuntime.InvokeJSWithInterop($@"
@@ -1093,9 +1095,9 @@ namespace SerratedSharp.SerratedJQ
             return GetPrivate<IntPtr>(jsHandle);
         }
 
-        static Uno.WeakReference<object> _target(JSObjectHandle jsHandle)
+        static WeakReference<object> _target(JSObjectHandle jsHandle)
         {
-            return GetPrivate<Uno.WeakReference<object>>(jsHandle);
+            return GetPrivate<WeakReference<object>>(jsHandle);
         }
 
         // Reflection to access private fields needed for getting JS handle ID when making instance interopt calls

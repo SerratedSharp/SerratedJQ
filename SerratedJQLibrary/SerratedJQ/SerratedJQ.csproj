@@ -5,59 +5,38 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
-    <Configurations>Debug;Release;Lite;Pro</Configurations>
+    <Configurations>Debug;Release;</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
-    <PackageId>SerratedSharp.SerratedJQ.Lite</PackageId>
-    <Version>0.0.2</Version>
+    <PackageId>SerratedSharp.SerratedJQ</PackageId>
+    <Version>0.0.3</Version>
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
     <Description>A JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.</Description>
-    <PackageLicenseExpression></PackageLicenseExpression>
-    <Copyright>Copyright (c) SerratedSharpSolutions 2022</Copyright>
-    <PackageReleaseNotes>This alpha version has only been tested with Uno.Wasm.Bootstrap 3.2 under .NET Core 5 and 6, and should not be used in public production applications.</PackageReleaseNotes>
+    <Copyright>Copyright (c) SerratedSharpSolutions 2023</Copyright>
+    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 7.0.27 and Uno.Foundation.Runtime.WebAssembly 4.9.45 under .NET Core 7.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
-    <AssemblyVersion>0.0.2.0</AssemblyVersion>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>0.0.2.0</FileVersion>
+    <AssemblyVersion>0.0.3.0</AssemblyVersion>
+    <FileVersion>0.0.3.0</FileVersion>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<PackageLicenseFile />
   </PropertyGroup>
 	
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
-    <DefineConstants>TRACE;PRO</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
-	<PackageLicenseFile>LicenseLite.txt</PackageLicenseFile>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-	
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Pro|AnyCPU'">
-    <DefineConstants>TRACE;PRO</DefineConstants>
-    <Optimize>true</Optimize>
-    <PackageLicenseFile>LicenseLite.txt</PackageLicenseFile>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
-  	<None Include="LicenseLite.txt">
-  		<Pack>True</Pack>
-  		<PackagePath></PackagePath>
-  	</None>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Pro|AnyCPU'">
-    <None Include="LicenseLite.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
 	<None Include="readme.md" Pack="true" PackagePath="\" />
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="3.11.16" />
+    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="4.9.45" />
   </ItemGroup>
 
   <ItemGroup>
@@ -99,7 +78,7 @@
 
 
   <!-- Post build - Making backup of original, obfuscating, then nuget packaging. -->
-  <Target Name="CopyWasmAfterBuild" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Lite|AnyCPU'">
+  <Target Name="CopyWasmAfterBuild" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 
     <Message Importance="high" Text="After Build Start" />
     <Message Importance="high" Text="OutDir: $(OutDir)" />

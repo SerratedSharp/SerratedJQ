@@ -79,7 +79,7 @@ namespace Tests.Wasm
             Assert(t.Length == 1);
         }
     }
-#if PRO
+
     public class Traversal_TreeTraversal_NextAll1 : JQTest
     {
         public override void Run()
@@ -91,7 +91,6 @@ namespace Tests.Wasm
             Assert(t.Length == 3);
         }
     }
-
 
     public class Traversal_TreeTraversal_NextAll2 : JQTest
     {
@@ -295,7 +294,6 @@ namespace Tests.Wasm
         }
     }
 
-#endif
     public class Traversal_TreeTraversal_Parent : JQTest
     {
         public override void Run()
@@ -308,7 +306,6 @@ namespace Tests.Wasm
             Assert(t.Length == 1);
         }
     }
-
 
     public class Traversal_TreeTraversal_Prev1 : JQTest
     {

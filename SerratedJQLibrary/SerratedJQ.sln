@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32002.261
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratedJQ", "SerratedJQ\SerratedJQ.csproj", "{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}"
 EndProject
@@ -10,25 +10,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Lite|Any CPU = Lite|Any CPU
-		Pro|Any CPU = Pro|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Lite|Any CPU.ActiveCfg = Lite|Any CPU
-		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Lite|Any CPU.Build.0 = Lite|Any CPU
-		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Pro|Any CPU.ActiveCfg = Pro|Any CPU
-		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Pro|Any CPU.Build.0 = Pro|Any CPU
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A9B5C877-4C44-4C59-A953-783ED3023801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A9B5C877-4C44-4C59-A953-783ED3023801}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Lite|Any CPU.ActiveCfg = Lite|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Lite|Any CPU.Build.0 = Lite|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Pro|Any CPU.ActiveCfg = Pro|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Pro|Any CPU.Build.0 = Pro|Any CPU
 		{A9B5C877-4C44-4C59-A953-783ED3023801}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9B5C877-4C44-4C59-A953-783ED3023801}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
@@ -37,17 +27,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B1DFD62F-24F1-4798-9FA5-53EF4381DCA1}
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://serrated.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = SerratedJQ\\SerratedJQ.csproj
-		SccProjectName1 = SerratedJQ
-		SccLocalPath1 = SerratedJQ
-		SccProjectUniqueName2 = Tests.Wasm\\Tests.Wasm.csproj
-		SccProjectName2 = Tests.Wasm
-		SccLocalPath2 = Tests.Wasm
 	EndGlobalSection
 EndGlobal

@@ -16,7 +16,7 @@ observer.observe($(document.documentElement)[0], obsConfig); // add observer to 
 //targetNodes.each(function() {
 //  myObserver.observe(this, obsConfig);
 //});
-nodePtrs = new WeakMap();
+globalThis.nodePtrs = new WeakMap();
 
 function mutationHandler(mutationRecords) {
     //console.log('mutationHandler:');
@@ -40,10 +40,10 @@ function mutationHandler(mutationRecords) {
                     //console.log("nodePtrs.get(node)", nodePtrs.get($(node)));
                     //console.log('Remove Observed for pin ID: ' + );
                     //console.log(jq);
-                    if (nodePtrs.get(node) !== undefined) {
+                    if (globalThis.nodePtrs.get(node) !== undefined) {
                         //console.log('Pntr Found in weak map');
                         //console.log('Pntr Found in weak map ' + nodePtrs.get(node));
-                        InternalSerratedJQBox.UnpinEventListener(nodePtrs.get(node));
+                        InternalSerratedJQBox.UnpinEventListener(globalThis.nodePtrs.get(node));
                     }
                     //if (jq2.data('SerratedJQBPntr') !== undefined) {
                     //    console.log('Pntr Found');

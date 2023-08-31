@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+//using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -30,7 +30,7 @@ namespace Wasm
 
             Trace.Listeners.Add(new ThrowingTraceListener());
             WebAssemblyRuntime.InvokeJS(@"
-                isReady = false;
+                var isReady = false;
                 var script = document.createElement('script');
                 script.onload = function () {                    
                     var beginTests = Module.mono_bind_static_method('[Tests.Wasm] Wasm.Program:Begin');

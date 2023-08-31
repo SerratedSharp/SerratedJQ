@@ -8,7 +8,7 @@ A demo is published as a static site at https://serratedsharp.github.io/CSharpWa
 
 Emphasis on "static".  There's no server side code in this demo.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, and run inside a WebAssembly sandbox.  No .NET server side hosting is needed, but this approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic. 
 
-A more extensive demo including integration with a MVC project and API requests from the WASM client to MVC host, including a walkthru of the code:
+A more extensive demo including integration with a MVC project and API requests from the WASM client to MVC host, including a walkthrough of the code:
 https://www.youtube.com/watch?v=0BrGf99K6CU
 
 Code from Demo: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
@@ -34,35 +34,91 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 
 ## Installation
 
-Prerequisites:  
-- Uno.Wasm.Bootstrap 3.3.1, Uno.Foundation.Runtime.WebASsembly 3.11.19
-    - (See Release Notes tab for current version support info: https://www.nuget.org/packages/SerratedSharp.SerratedJQ.Lite/)
-- .NET Core 5 or 6
+### Prerequisites  
+- SerratedSharp.SerratedJQ, Uno.Wasm.Bootstrap, Uno.Foundation.Runtime.WebAssembly
+- .NET Core 7
 
-Setup/Getting Started Video (includes Uno.Wasm.Bootstrap setup): https://www.youtube.com/watch?v=lyebV4v1T_A  
-Code from Video: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQGetStarted
+### Quick Start Guide
+- Create a Blank Solution, add new .NET Console App (.NET 7) and ASP.NET Core Web App (Model-View-Controller) projects.
+- Build the MVC project
+- Add Nuget references to Uno.Wasm.Bootstrap and SerratedSharp.SerratedJQ in the Console project.
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/9a40be28-b420-47d2-90be-e1035bcc7297)
+- Add Build.props file to the Console app, update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
+- Add JQuery to the MVC project, typically accomplished with NPM package.json dependencies.
+- Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach:
+```
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>    
 
-Add the package SerratedSharp.SerratedJQ.Lite to your WebAssembly project from the Nuget package manager.  See above video for setting up Uno.Wasm.Bootstrap.
+    @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+    @{
+        var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
+        string wasmPackageName = directories.First().Name;
+        string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";// Get most recently generated WASM package and reference it.
+        // Note you must also set the web project's folder name in the build property <DestinationWebProjectName>. See Sample.Wasm/Build.props
+    }
+    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/mono-config.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/uno-config.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/uno-bootstrap.js"></script>
+    <script async type="text/javascript" src="@wasmBaseUrl/dotnet.js"></script>
+    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css" />
+```
 
-![image](https://user-images.githubusercontent.com/97156524/155268895-cef3df20-0a1d-4cfb-beaf-4d85c21e1474.png)
+- Place the following just after the ending `</header>`
+```
+    <div id="uno-body" class="container-fluid uno-body">
+        <div class="uno-loader"
+             loading-position="bottom"
+             loading-alert="none">
+
+            <!-- Logo: change src to customize the logo -->
+            <img class="logo"
+                 src=""
+                 title="Uno is loading your application" />
+
+            <progress></progress>
+            <span class="alert"></span>
+        </div>
+    </div>
+    <noscript>
+        <p>This application requires Javascript and WebAssembly to be enabled.</p>
+    </noscript>
+```
+
+- In Startup.cs, preceding the existing `app.UseStaticFiles();` add:
+```
+var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+provider.Mappings[".clr"] = "application/octet-stream";
+provider.Mappings[".dat"] = "application/dat";
+app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
+```
+
+- Build both projects, then launch the MVC project.
+- If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
+- For examples interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
+
+### Overview
+This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
 
 ## Warning
-ManagedObjectAttach() potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
+ManagedObjectAttach() is experimental and potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
 
 # Security Considerations
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
-Demo videos may note security concerns in pre-release versions related to the interopt layer, and steps have since been taken to ensure parameters are appropriately encoded to prevent breakout of the parameter context.
-
 ## Release Notes
+
+### 0.0.3
+Updated to latest stable Uno.Wasm.Bootstrap package.
 
 ### 0.0.2
 Appropriate encoding applied to ensure parameters used in the javascript interopt layer cannot break out of the parameter context.  This addresses remaining security concerns regarding javascript generated in the interopt layer.  
 
 ### 0.0.1-alpha.5
 
-Implemented automatic management of pinning/unpinning event listeners to ensure managed listeners are made elgible for garbage collection when no unmanaged JS handles/event publishers reference them.  
+Implemented automatic management of pinning/unpinning event listeners to ensure managed listeners are made eligible for garbage collection when no unmanaged JS handles/event publishers reference them.  
 
 ### 0.0.1-alpha.4
 
@@ -79,7 +135,5 @@ void Test_OnClick(JQueryBox sender, dynamic e)
   Assert.Equal(eventName == "click");
 }
 ```
-
-Note the Lite version now includes everything I had slated for a Pro version. Due to time constraints I haven't been able to get this package to a production ready state as quickly as I hoped, so I am fully open sourcing it and doing away with tiered access.
 
 
