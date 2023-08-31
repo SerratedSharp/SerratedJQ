@@ -43,11 +43,11 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 - Build the MVC project
 - Add Nuget references to Uno.Wasm.Bootstrap and SerratedSharp.SerratedJQ in the Console project.
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/9a40be28-b420-47d2-90be-e1035bcc7297)
-- Add Build.props file to the Console app, update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
-- Add JQuery to the MVC project, typically accomplished with NPM package.json dependencies.
-- Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach:
+- Add Build.props file to the Console app: https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQSample/Sample.Wasm/Build.props
+- Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
+- Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
 ```
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
     @{
@@ -56,11 +56,8 @@ void Test_OnClick(JQueryBox sender, dynamic e)
         string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";// Get most recently generated WASM package and reference it.
         // Note you must also set the web project's folder name in the build property <DestinationWebProjectName>. See Sample.Wasm/Build.props
     }
-    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
-    <script type="text/javascript" src="@wasmBaseUrl/mono-config.js"></script>
-    <script type="text/javascript" src="@wasmBaseUrl/uno-config.js"></script>
-    <script type="text/javascript" src="@wasmBaseUrl/uno-bootstrap.js"></script>
-    <script async type="text/javascript" src="@wasmBaseUrl/dotnet.js"></script>
+    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>    
+    <script type="text/javascript" src="@wasmBaseUrl/uno-bootstrap.js"></script>    
     <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css" />
     <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css" />
 ```
@@ -96,7 +93,11 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 
 - Build both projects, then launch the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
-- For examples interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
+
+[!NOTE] You must explicitely built the WasmClient when making changes so it rebuilds the package.  Because there is no project levle refeence from the MVC project to the WasmClient project, then it does not automatically rebuild the WasmClient. 
+
+- This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Program.cs
+- For more examples of interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
 
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.

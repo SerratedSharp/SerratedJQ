@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        // Wait for both WASM and JQuery to be loaded:
+        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
+            $(function () { // Wait for JQuery to be ready
+                Serrated.Callbacks.IndexPageReady(); // Initialize this page's script.
+            });
+        }
+    </script>
+}
