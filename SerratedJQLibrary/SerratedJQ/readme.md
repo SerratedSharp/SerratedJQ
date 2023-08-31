@@ -94,7 +94,8 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 - Build both projects, then launch the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
 
-[!NOTE] You must explicitely build the WasmClient when making changes so it rebuilds the package.  Because there is no project levle refeence from the MVC project to the WasmClient project, then it does not automatically rebuild the WasmClient. 
+[!NOTE] 
+You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 - This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Program.cs
 - For more examples of interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
