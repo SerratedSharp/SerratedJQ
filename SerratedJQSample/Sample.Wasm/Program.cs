@@ -30,11 +30,23 @@ namespace Sample.Wasm
 		static void Main(string[] args)
         {
             Console.WriteLine("The main entry point is executed on page load once WASM is bootstrapped/loaded. This message should appear in the browser console confirming the WASM is loaded.");
-
-			// Register C# functions that can be called from Javascript.  Primarily for setup/initialization for specific pages.
-			CallbacksHelper.Export(jsMethodName: "InitValidationDemo", () => ValidationDemoPage.Init());
+            
+            // Register C# functions that can be called from Javascript.  Primarily for setup/initialization for specific pages.
+            CallbacksHelper.Export(jsMethodName: "InitValidationDemo", () => ValidationDemoPage.Init());
             CallbacksHelper.Export(jsMethodName: "InitListDemo", () => ListDemoPage.Init());
             // For example calling InitListDemo() from javascript will call C# ListDemoPage.Init()
+
+            
+   //         Console.WriteLine("Finding uno body");
+   //         var unoBody = JQueryBox.Select("#uno-body");// TODO: JQuery can't select dupe ID's this way, so error state detection doesn't work
+			//if(unoBody.Length > 0 )
+			//{
+   //             unoBody.AppendNew("<div style='display:none'></div>");
+   //         }
+			//else
+			//{
+			//	Console.WriteLine("Warning: #uno-body not found, this may indicate a failure during Uno Bootstrap loading.");
+			//}
 
             // Now that callbacks are registered and available,
             // we signal to the page that WebAssembly is loaded.

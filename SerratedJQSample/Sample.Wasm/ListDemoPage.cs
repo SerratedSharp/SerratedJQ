@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Uno.Foundation;
-using Uno.Foundation.Interop;
 
 namespace Sample.Wasm
 {
