@@ -14,7 +14,7 @@ https://www.youtube.com/watch?v=0BrGf99K6CU
 Code from Demo: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
 
 ## Example
-This example WebAssembly code shows how you might select an HTML element, subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
+This example C# WebAssembly code shows how you might select an HTML element, subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
 
 ```C#
 using SerratedSharp.SerratedJQ;
@@ -46,7 +46,7 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 - Add Build.props file to the Console app: https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQSample/Sample.Wasm/Build.props
 - Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
 - Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
-```
+```Razor
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
@@ -63,7 +63,7 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 ```
 
 - Place the following just after the ending `</header>`
-```
+```HTML
     <div id="uno-body" class="container-fluid uno-body">
         <div class="uno-loader"
              loading-position="bottom"
@@ -84,7 +84,7 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 ```
 
 - In Startup.cs, preceding the existing `app.UseStaticFiles();` add:
-```
+```C#
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".clr"] = "application/octet-stream";
 provider.Mappings[".dat"] = "application/dat";
@@ -94,7 +94,7 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 - Build both projects, then launch the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
 
-[!NOTE] You must explicitely built the WasmClient when making changes so it rebuilds the package.  Because there is no project levle refeence from the MVC project to the WasmClient project, then it does not automatically rebuild the WasmClient. 
+[!NOTE] You must explicitely build the WasmClient when making changes so it rebuilds the package.  Because there is no project levle refeence from the MVC project to the WasmClient project, then it does not automatically rebuild the WasmClient. 
 
 - This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Program.cs
 - For more examples of interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
