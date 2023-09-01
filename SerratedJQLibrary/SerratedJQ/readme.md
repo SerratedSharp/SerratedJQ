@@ -97,11 +97,32 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 [!NOTE] 
 You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
-- This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Program.cs
-- For more examples of interacting with the DOM and subscribing to events, see https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
-
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
+
+## Usage
+
+- This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs
+- For more examples of interacting with the DOM and subscribing to events: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
+
+- To have page specific C# WASM code executed, and wait for both WASM and JQuery to be loaded, see Getting Started 
+[Index.cshtml WasmReady()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.Mvc/Views/Home/Index.cshtml#L16) and [WasmClient Program.cs CallbacksHelper.Export()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.WasmClient/Program.cs#L12)
+```C#
+CallbacksHelper.Export(jsMethodName: "IndexPageReady", () => IndexClient.Init());
+```
+```Razor
+@section Scripts {
+    <script type="text/javascript">
+        // Wait for both WASM and JQuery to be loaded:
+        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
+            $(function () { // Wait for JQuery to be ready
+                Serrated.Callbacks.IndexPageReady(); // Initialize this page's script.
+            });
+        }
+    </script>
+}
+```
+
 
 ## Warning
 ManagedObjectAttach() is experimental and potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
