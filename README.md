@@ -102,9 +102,8 @@ This setup will generate the WebAssembly when the Console project is compiled an
 
 ## Usage
 
-- This demonstrates some basic DOM manipulation and event subscription: https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs
-- For more examples of interacting with the DOM and subscribing to events: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
-
+- The GettingStarted project demonstrates basic DOM manipulation and event subscription: [GettingStarted IndexClient.cs](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs)
+- The SerratedJQSample project includes more advanced examples as well as API requests to the MVC project from the WASM client: [SerratedJQSample](https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample)
 - To have page specific C# WASM code executed, and wait for both WASM and JQuery to be loaded, see Getting Started 
 [Index.cshtml WasmReady()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.Mvc/Views/Home/Index.cshtml#L16) and [WasmClient Program.cs CallbacksHelper.Export()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.WasmClient/Program.cs#L12)
 ```C#
