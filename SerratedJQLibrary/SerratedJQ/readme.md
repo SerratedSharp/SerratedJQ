@@ -41,7 +41,7 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 ### Quick Start Guide
 - Create a Blank Solution, add new .NET Console App (.NET 7) and ASP.NET Core Web App (Model-View-Controller) projects.
 - Build the MVC project
-- Add Nuget references to Uno.Wasm.Bootstrap and SerratedSharp.SerratedJQ in the Console project.
+- Add Nuget references to **Uno.Wasm.Bootstrap**, **Uno.Foundation.Runtime.WebAssembly**, and **SerratedSharp.SerratedJQ** in the Console project.
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/9a40be28-b420-47d2-90be-e1035bcc7297)
 - Add Build.props file to the Console app: https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQSample/Sample.Wasm/Build.props
 - Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
