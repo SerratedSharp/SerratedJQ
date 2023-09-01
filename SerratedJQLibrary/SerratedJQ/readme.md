@@ -107,12 +107,13 @@ This setup will generate the WebAssembly when the Console project is compiled an
 - To have page specific C# WASM code executed, and wait for both WASM and JQuery to be loaded, see Getting Started 
 [Index.cshtml WasmReady()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.Mvc/Views/Home/Index.cshtml#L16) and [WasmClient Program.cs CallbacksHelper.Export()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.WasmClient/Program.cs#L12)
 ```C#
-CallbacksHelper.Export(jsMethodName: "IndexPageReady", () => IndexClient.Init());
+CallbacksHelper.Export(jsMethodName: "IndexPageReady", () => IndexClient.Init());// register a JS to C#WASM callback
+Uno.Foundation.WebAssemblyRuntime.InvokeJS("WasmReady()");// signal WASM as loaded/ready
 ```
 ```Razor
+// In page specific CSHTML, wait for both JQuery and WASM to load
 @section Scripts {
-    <script type="text/javascript">
-        // Wait for both WASM and JQuery to be loaded:
+    <script type="text/javascript">        
         function WasmReady() { // Wait for WASM to initialize and start Program.Main()
             $(function () { // Wait for JQuery to be ready
                 Serrated.Callbacks.IndexPageReady(); // Initialize this page's script.
