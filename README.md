@@ -43,8 +43,8 @@ void Test_OnClick(JQueryBox sender, dynamic e)
 - Build the MVC project
 - Add Nuget references to **Uno.Wasm.Bootstrap**, **Uno.Foundation.Runtime.WebAssembly**, and **SerratedSharp.SerratedJQ** in the Console project.
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/9a40be28-b420-47d2-90be-e1035bcc7297)
-- Add Build.props file to the Console app: https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQSample/Sample.Wasm/Build.props
-- Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj
+- Add a copy of this Build.props file to the Console app: [Build.props](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Build.props)
+- Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj just within the `</Project>` closing tag.
 - Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
 ```Razor
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
