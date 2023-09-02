@@ -41,7 +41,7 @@ private void SortByRep_OnClick(JQueryBox sender, object e)
 }
 ```
 
-JQuery event objects are converted to dynamic objects, but keep in mind this only supports primitives, and there is no current support for complex objects embedded in the event.  The `sender` will typically be the same object you used to subscribe to the event from.
+JQuery event objects are converted to dynamic objects, but keep in mind this only supports primitives thus there is no current support for complex objects embedded in the event.  The `sender` will typically be the same JQuery object you used to subscribe to the event from:
 ```C#
 void Test_OnClick(JQueryBox sender, dynamic e)
 {
@@ -154,7 +154,7 @@ The same security considerations when using JQuery apply when using this wrapper
 
 I'd be happy to hear any passing thoughts or comments on this project, which you may post under Discussions.  Please keep in mind that working within the limitations of current WebAssembly technology/tooling offers unique challenges, and I also operate within the constraints of my free time.  I hope to simplify setup/installation in future versions by leveraging upcoming features in version 8.x of Uno.Wasm.Bootstrap.  I've also considered eliminating the JQuery dependency since I could provide a similar API interface with native JS, but the performance vs. effort trade off isn't worth it for my current use cases.
 
-There are gaps in the current JQuery wrapper implementation which include support for object references passed in events, JS promises support, some variations of event subscription/bubbling, and representing JQuery object collections as a .NET collection rather than a single monolithic object.  Even if you don't have time to make a polished contribution, I'd be happy to see results of any tinkering that achieve any of these basic capabilities.  Note that many capabilities in this library already are implemented despite WASM's lack of support.  Just being able to pass around JQuery instances as managed objects overcomes WASM's advertised limitation of not supporting complex type handles, and is achieved using collections/indexes maintained on each side of the interopt layer.  Although objects aren't truly passed across the interopt layer, identifiers crossing the boundary are translated into object references to accomplish the same capability transparently.
+There are gaps in the current JQuery wrapper implementation which include support for object references passed in events, JS promises support, some variations of event subscription/bubbling, and representing JQuery object collections as a .NET collection rather than a single monolithic object.  Even if you don't have time to make a polished contribution, I'd be happy to see results of any tinkering that achieve any of these basic capabilities.  Note that many capabilities in this library are implemented despite WASM's lack of first class support.  Just being able to pass around JQuery instances as managed objects overcomes WASM's advertised limitation of not supporting complex type handles/parameters, and is achieved using collections/indexes maintained on each side of the interopt layer.  Although objects aren't truly passed across the interopt layer, identifiers crossing the boundary are translated into object references to accomplish the same capability transparently.
 
 ## Release Notes
 
