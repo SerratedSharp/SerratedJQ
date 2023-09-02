@@ -131,7 +131,14 @@ ManagedObjectAttach() is experimental and potentially generates memory leaks due
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
+## Feedback
+
+I'd be happy to hear any passing thoughts or comments on this project, which you may post under Discussions.  Please keep in mind that working within the limitations of current WebAssembly technology/tooling offers unique challenges, and I also operate within the constraints of my free time.  I anticipate being able to simplify setup/installation.  I've also considered eliminating the JQuery dependency since I could provide a similar API interface with native JS, but the performance vs. effort trade off isn't worth it for my current use cases.
+
 ## Release Notes
+
+### 0.0.4
+Nuget package metadata updates.
 
 ### 0.0.3
 Updated to latest stable Uno.Wasm.Bootstrap package.
