@@ -143,14 +143,14 @@ Uno.Foundation.WebAssemblyRuntime.InvokeJS("WasmReady()");// signal WASM as load
 ```
 
 
-## Warning
+# Warning
 ManagedObjectAttach() is experimental and potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
 
 # Security Considerations
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
-## Feedback
+# Feedback
 
 I'd be happy to hear any passing thoughts or comments on this project, which you may post under Discussions.  Please keep in mind that working within the limitations of current WebAssembly technology/tooling offers unique challenges, and I also operate within the constraints of my free time.  I hope to simplify setup/installation in future versions by leveraging upcoming features in version 8.x of Uno.Wasm.Bootstrap.  I've also considered eliminating the JQuery dependency since I could provide a similar API interface with native JS, but the performance vs. effort trade off isn't worth it for my current use cases.
 
