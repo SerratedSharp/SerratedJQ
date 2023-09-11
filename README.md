@@ -113,8 +113,8 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 - Build both projects, then launch the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
 
-[!NOTE] 
-You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
+> [!NOTE] 
+> You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
