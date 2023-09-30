@@ -22,6 +22,7 @@ namespace Wasm
             Console.WriteLine("DEBUG DEFINED");
 #endif
 
+
             
             //CallbacksHelper.Export("blah", () => Console.WriteLine("asdas"));
             //CallbacksHelper.Export("blah", () => Console.WriteLine("override"), true);
@@ -40,7 +41,6 @@ namespace Wasm
                 document.head.appendChild(script);
             ");
 
-            
             if(new Random().Next(2) > 3 ) { // force compile not to optimize away this method
                 Begin(); // Never called here, will be called from JS above
             }
@@ -69,33 +69,52 @@ namespace Wasm
                 
             }, null, 5000, 15000);
 
+
+            JSDeclarations.LoadScripts();
+
             Console.WriteLine("After sleep test...");
-            JQueryBox.Select("html").Styles["position"] = "static";
-            JQueryBox.Select("html").Styles["overflow"] = "auto";
-            JQueryBox.Select("body").Styles["position"] = "static";
-            JQueryBox.Select("body").Styles["overflow"] = "auto";
+            //JQueryBox.Select("html").Styles["position"] = "static";
+            //JQueryBox.Select("html").Styles["overflow"] = "auto";
+            //JQueryBox.Select("body").Styles["position"] = "static";
+            //JQueryBox.Select("body").Styles["overflow"] = "auto";
 
-            //AsyncContext.Run(() => MainAsync(args));
+            //WebAssemblyRuntime.InvokeJS("Serrated.JQueryProxy.Select('div')");
 
-            // }, null, 5000, 5000);
+            JQueryObject jqObject = JQuery.Select("body");
+            JQueryObject children = jqObject.Find("*");
 
-            var orch = new TestOrchestrator();
-            // TODO: I disabled the linker. Isntead disable a namespace jsut for tests: https://platform.uno/docs/articles/features/using-il-linker-webassembly.html
-            var types = System.Reflection.Assembly.GetAssembly(typeof(TestOrchestrator)).GetTypes()
-                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(JQTest)))
-                .ToList();
-            Console.WriteLine("Types found: " + types.Count);
 
-            foreach (Type type in types)
-            {
-                Console.WriteLine("Class");
-                orch.Tests.Add((JQTest)Activator.CreateInstance(type));
-            }
+            Console.WriteLine("***** Testing Properties ******");
+            //var body = JQueryProxy.Select("body");
+            //var items = JQueryProxy.FuncByNameToObject(body, "find", new string[] { "*" });
+            Console.WriteLine(children.Html);
+            children.Html = "<div>Test</div>";
+            Console.WriteLine(children.Html);
 
-            orch.Run();
+            jqObject.After("<div>After</div>");
+            jqObject.After("<div>After1</div>", "<div>After2</div>", "<div>After3</div>");
 
-            //var test = new Traversal_TreeTraversal_Children1();
-            //test.Test1();
+            ////AsyncContext.Run(() => MainAsync(args));
+
+            //// }, null, 5000, 5000);
+
+            //var orch = new TestOrchestrator();
+            //// TODO: I disabled the linker. Isntead disable a namespace jsut for tests: https://platform.uno/docs/articles/features/using-il-linker-webassembly.html
+            //var types = System.Reflection.Assembly.GetAssembly(typeof(TestOrchestrator)).GetTypes()
+            //    .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(JQTest)))
+            //    .ToList();
+            //Console.WriteLine("Types found: " + types.Count);
+
+            //foreach (Type type in types)
+            //{
+            //    Console.WriteLine("Class");
+            //    orch.Tests.Add((JQTest)Activator.CreateInstance(type));
+            //}
+
+            //orch.Run();
+
+            ////var test = new Traversal_TreeTraversal_Children1();
+            ////test.Test1();
 
         }
 

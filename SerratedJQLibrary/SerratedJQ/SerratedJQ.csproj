@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
     <PackageId>SerratedSharp.SerratedJQ</PackageId>
@@ -34,6 +35,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

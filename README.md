@@ -158,6 +158,20 @@ There are gaps in the current JQuery wrapper implementation which include suppor
 
 ## Release Notes
 
+### Upcoming 0.1.0
+Migration of underlying JS interop API from Uno WebAssemblyRuntime to .NET 7's `System.Runtime.InteropServices.JavaScript`
+
+This includes some breaking changes to the API, but going forward the underlying implementation is greatly simplified.
+
+I have made the decision to eliminate superfluous method chaining:
+- I'm referring to method chaining where the return from the method is always the same object reference, which is not necessary expect to faciliate chaining.
+- It's not really a common pattern in C# except for builder/fluent or unit of work APIs.
+- It creates ambiguouty between methods where the return type is the result of the method operation, versus where the same object is being returned only to facilitate method chaining and doesn't need to be captured.  In these cases sometimes it's not clear if the operation mutated the original object reference, or if the original object is left as is and the return value is a new result of the operation.
+- Now it's clear if a modifying operation returns void, then you know the original object was mutated.  If the operation returns a different object, then you know the original object was not mutated and you must capture the return value for the result.
+- Eliminates unnecesary object allocations.
+
+Chaining is still possible with methods such as .Find() and .Children() since each call returns a different JQuery object/collection, and allows iterative navigation/filtering of the DOM.
+
 ### 0.0.4
 Nuget package metadata updates.
 
