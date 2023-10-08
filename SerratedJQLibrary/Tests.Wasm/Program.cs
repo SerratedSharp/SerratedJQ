@@ -69,8 +69,10 @@ namespace Wasm
                 
             }, null, 5000, 15000);
 
+          //  WebAssemblyRuntime.InvokeAsync("globalThis.SerratedExports = await Module.getAssemblyExports(\"SerratedSharp.SerratedJQ\")");
 
             JSDeclarations.LoadScripts();
+
 
             Console.WriteLine("After sleep test...");
             //JQueryBox.Select("html").Styles["position"] = "static";
@@ -87,12 +89,49 @@ namespace Wasm
             Console.WriteLine("***** Testing Properties ******");
             //var body = JQueryProxy.Select("body");
             //var items = JQueryProxy.FuncByNameToObject(body, "find", new string[] { "*" });
-            Console.WriteLine(children.Html);
-            children.Html = "<div>Test</div>";
-            Console.WriteLine(children.Html);
+           // Console.WriteLine(children.Html);
+            children.Html = "<div id='x'>Test</div>";
+           // Console.WriteLine(children.Html);
 
-            jqObject.After("<div>After</div>");
-            jqObject.After("<div>After1</div>", "<div>After2</div>", "<div>After3</div>");
+            //jqObject.After("<div>After</div>");
+            //jqObject.After("<div>After1</div>", "<div>After2</div>", "<div>After3</div>");
+
+            //jqObject.Find("div").InnerOn("click");
+            var divs = jqObject.Find("#x");
+            JQueryObject.JQueryEventHandler<JQueryObject, dynamic> clickListener = (sender, e) =>
+            {
+                Console.WriteLine("Clicked");
+                Console.WriteLine(e.target);
+                Console.WriteLine(e.currentTarget);
+                Console.WriteLine(e);
+            };
+            
+            
+            JQueryObject.JQueryEventHandler<JQueryObject, dynamic> click2 = (sender, e) => Console.WriteLine("Clicked 2");
+            JQueryObject.JQueryEventHandler<JQueryObject, dynamic> click3 = (sender, e) => Console.WriteLine("Clicked 3");
+
+
+            divs.OnClick += clickListener;
+            divs.OnClick += click2;
+            divs.OnClick -= click2;
+            //divs.OnClick += click3;
+            //divs.OnClick -= clickListener;
+//            divs.OnClick -= click3;
+            //divs.On("click", clickListener);
+            //divs.On("click", click2);
+            //divs.Off("click", click2);
+            //divs.On("click", click3);
+
+            // basic bind/unbind example
+            //var divs = jqObject.Find("div");
+            //divs.OnClick += (sender, e) => Console.WriteLine("Clicked" + e);
+            //var handler = (string eventEncoded, string eventType) =>
+            //{
+            //    Console.WriteLine(eventEncoded);
+            //    //eventCollection?.Invoke(this, eventData);
+            //};
+            //var handler2 = JQueryProxy.BindListener(divs.JSObject, "click", handler);
+            //JQueryProxy.UnbindListener(divs.JSObject, "click", handler2);
 
             ////AsyncContext.Run(() => MainAsync(args));
 

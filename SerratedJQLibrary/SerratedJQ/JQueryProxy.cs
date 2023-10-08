@@ -2,7 +2,7 @@
 using Uno.Foundation;
 //using Uno.Foundation.Interop;
 using System.Runtime.InteropServices.JavaScript;
-//using Uno.Foundation.Interop;
+using System;
 
 namespace SerratedSharp.SerratedJQ
 {
@@ -10,32 +10,10 @@ namespace SerratedSharp.SerratedJQ
     // Proxy for javascript declaration in JQueryProxy.js
     public static partial class JQueryProxy //: IJSObject
     {
-        private const string JSClassName = "InternalSerratedJQBox";
-        private static int keep = 2;
-        static JQueryProxy()
-        {
 
-            // Add javascript declaration that is used by WebAssembly but was declared in incorrect Uno Platform project.
-            WebAssemblyRuntime.InvokeJS(_1.ManagedObjectJavascriptDispatcherDeclaration);
-
-            WebAssemblyRuntime.InvokeJS(@$"     
-                    window.{JSClassName} = window.{JSClassName} || {{}};
-                    window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');                         
-                ");
-
-            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.ObserveRemovedJs);
-           // WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.JQueryProxy);
-
-            if (keep == 1)// Prevent these methods from being removed by ILLinker at compile time. The condition being false prevents these from actually being called at runtime, but indeterministic so that linker doesn't remove them. 
-            {
-                var keeper = new JQueryBox();
-                keeper.InternalClickCallback("", "");
-                keeper.InternalEventCallback("", "");
-                keeper.InternalInputCallback("", "");
-            }
+        static JQueryProxy() {            
 
         }
-
 
         #region Static/Factory Methods
 
@@ -51,7 +29,6 @@ namespace SerratedSharp.SerratedJQ
 
         #region Instance Proxies
 
-
         //[JSImport(baseJSNamespace + ".FuncByNameToObject")]
         //public static partial 
         //    JSObject FuncByNameAsJSObject(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
@@ -60,17 +37,36 @@ namespace SerratedSharp.SerratedJQ
         //public static partial
         //    string FuncByNameAsString(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
-        // Proxy for any instance methods taking any number of parameters
+        // Proxy for any instance methods taking any number of parameters and returning any type
         [JSImport(baseJSNamespace + ".FuncByNameToObject")]
         [return: JSMarshalAs<JSType.Any>]
         public static partial
-             object FuncByNameAsObject(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
+            object FuncByNameAsObject(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
         #endregion
 
+        #region Listeners
+
+        [JSImport(baseJSNamespace + ".BindListener")]       
+        public static partial JSObject BindListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,
+            [JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler);
+
+        [JSImport(baseJSNamespace + ".UnbindListener")]
+        public static partial void UnbindListener(JSObject jqObject, string events, JSObject handler);
+
+        #endregion
+        
     }
 
+    public partial class HelpersProxy
+    {
+        private const string baseJSNamespace = "globalThis.Serrated.HelpersProxy";
 
+        // Used for unpacking an ArrayObject into a JSObject[] array
+        [JSImport(baseJSNamespace + ".GetArrayObjectItems")]
+        [return: JSMarshalAs<JSType.Array<JSType.Object>>]
+        public static partial JSObject[] GetArrayObjectItems(JSObject jqObject);
+    }
 
 }
 

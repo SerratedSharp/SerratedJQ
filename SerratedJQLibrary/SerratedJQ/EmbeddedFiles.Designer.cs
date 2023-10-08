@@ -61,29 +61,6 @@ namespace SerratedSharp.SerratedJQ {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///(function (Uno) {
-        ///    var Http;
-        ///    (function (Http) {
-        ///        class HttpClient {
-        ///            static async send(config) {
-        ///                const params = {
-        ///                    method: config.method,
-        ///                    cache: config.cacheMode || &apos;default&apos;,
-        ///                    headers: new Headers(config.headers)
-        ///                };
-        ///                if (config.payload) {
-        ///                    params.body = await this.blobFromBase6(config.payload, config.payloadType);
-        ///                }
-        ///              [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string DeprecatedHttpClient {
-            get {
-                return ResourceManager.GetString("DeprecatedHttpClient", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
         ///console.log(&quot;Declaring JQuery Proxy&quot;);
         ///

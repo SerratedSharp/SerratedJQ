@@ -1,21 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-//using Uno.Extensions;
-//using Uno.Foundation.Interop;
 using static System.Console;
 using System.Linq;
-using System.Text;
 using System.Dynamic;
-using System.Runtime.InteropServices;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
-using System.Diagnostics.Contracts;
-using System.Net;
-using System.Xml.Linq;
-//using Uno.Foundation.Interop;
 
 namespace SerratedSharp.SerratedJQ
 {
@@ -35,10 +24,6 @@ namespace SerratedSharp.SerratedJQ
             return new JQueryObject(jsObject); 
         }
 
-        // CONSIDER: Implementing a selector builder fluent API for https://api.jquery.com/category/selectors/
-
-
-
         #region Traversal - Filtering - https://api.jquery.com/category/traversing/filtering/
 
         public JQueryObject First()                     => this.CallJSOfSameNameAsWrapped();
@@ -54,14 +39,12 @@ namespace SerratedSharp.SerratedJQ
         //Map only takes a predicate: https://api.jquery.com/map/#map-callback
         //public JQueryObject Map(
 
-
         // We should be able to implement variations of methods that take a parameter of:
         //      A collection of Elements: https://api.jquery.com/filter/#filter-elements
         //      A collection of JQuery object collection: https://api.jquery.com/filter/#filter-selection
         //      Unsure if we can implement a predicate parameter: https://api.jquery.com/filter/#filter-function
         //public JQueryObject Filter(Func<int, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
         //public JQueryObject Filter(Func<int, JQueryObject, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
-
 
         #endregion
         #region Traversal - Tree Traversal - https://api.jquery.com/category/traversing/tree-traversal/
@@ -100,7 +83,6 @@ namespace SerratedSharp.SerratedJQ
         }
 
 
-
         #endregion
 
         #region Style Properties - https://api.jquery.com/category/manipulation/style-properties/
@@ -119,7 +101,6 @@ namespace SerratedSharp.SerratedJQ
             get => this.CallJSOfSameName<decimal>();
             set => this.CallJSOfSameName<object>(value);
         }
-
 
         public decimal InnerHeight
         {
@@ -196,18 +177,18 @@ namespace SerratedSharp.SerratedJQ
         #region DOM Insertion, Inside - https://api.jquery.com/category/manipulation/dom-insertion-inside/
 
         public JQueryObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject Append(JQueryObject jqObject, params JQueryBox[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        public JQueryObject Append(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
         public JQueryObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject AppendTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
         public JQueryObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject Prepend(JQueryObject jqObject, params JQueryBox[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        public JQueryObject Prepend(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
         public JQueryObject PrependTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject PrependTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
 
-        public string Html
+        public string Html // rename InnerHtml
         {
-            get => this.CallJSOfSameName<string>();
-            set => this.CallJSOfSameName<object>(value);
+            get => this.CallJSOfSameName<string>(funcName:"html");
+            set => this.CallJSOfSameName<object>(value, funcName: "html");
         }
 
         public string Text
@@ -216,14 +197,13 @@ namespace SerratedSharp.SerratedJQ
             set => this.CallJSOfSameName<object>(value);
         }
 
-
         #endregion
         #region DOM Insertion, Outside - https://api.jquery.com/category/manipulation/dom-insertion-outside/
 
         public JQueryObject After(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject After(JQueryObject jqObject, params JQueryBox[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        public JQueryObject After(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
         public JQueryObject Before(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject Before(JQueryObject jqObject, params JQueryBox[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        public JQueryObject Before(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
         public JQueryObject InsertAfter(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject InsertAfter(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
         public JQueryObject InsertBefore(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
@@ -246,11 +226,181 @@ namespace SerratedSharp.SerratedJQ
 
         #endregion
 
-
-        // TODO: Determine/test handling of parameters defined in jQueryb docs as there:
+        // TODO: Determine/test handling of parameters defined in jQueryb docs as:
         //       "content": Type: htmlString or Element or Text or Array or jQuery
         // versus "target": Type: Selector or htmlString or Element or Array or jQuery
         // versus "wrappingElement": Type: Selector or htmlString or Element or jQuery
+
+        #region Events - https://api.jquery.com/click/
+
+        //private JQueryEventHandler<JQueryObject, object> onClick;
+        // https://api.jquery.com/click/
+        public event JQueryEventHandler<JQueryObject, dynamic> OnClick {
+            //add { onClick = InnerOnGeneric("click", value, onClick); }
+            //remove { onClick = InnerOffGeneric("click", value, onClick); }
+            add { On("click", value); }
+            remove { Off("click", value); }
+        }
+        
+        public event JQueryEventHandler<JQueryObject, dynamic> OnInput {
+            add { On("input", value); }
+            remove { Off("input", value); }
+        }
+
+        public event JQueryEventHandler<JQueryObject, dynamic> OnChange {
+            add { On("change", value); }
+            remove { Off("change", value); }
+        }
+
+        // TODO: Implement remaining events
+
+        #endregion
+
+        #region Events - https://api.jquery.com/category/events/
+
+        // Event subscription for any event name
+        private Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>>();
+        public void On(string eventName, JQueryEventHandler<JQueryObject, dynamic> newSubscriber)
+        {
+            if (!onEvent.ContainsKey(eventName))// if first event subscriber
+            {
+                onEvent[eventName] = null;// initialize key entry
+            }
+            onEvent[eventName] = InnerOnGeneric(eventName, newSubscriber, onEvent[eventName]);
+        }
+        public void Off(string eventName, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove)
+        {
+            if (!onEvent.ContainsKey(eventName) || onEvent[eventName] == null)
+                return;
+
+            onEvent[eventName] = InnerOffGeneric(eventName, subscriberToRemove, onEvent[eventName]);
+        }
+
+        public delegate void JQueryEventHandler<in TSender, in TEventArgs>(TSender sender, TEventArgs e)
+            where TSender : JQueryObject;
+
+        //public void InternalEventCallback(string eventEncoded, string eventType)
+        //{
+        //    dynamic eventData = EncodedEventToDynamic(eventEncoded);
+        //    onEvent[eventType]?.Invoke(this, eventData);
+        //}
+
+        // Handler funcs generated from JS when binding our event. Kept to pass to JQuery .off(..., handler) when unbinding/unsubscribing handler
+        private readonly Dictionary<string, JSObject> jsHandlersByEvent = new Dictionary<string, JSObject>();
+
+        private JQueryEventHandler<JQueryObject, dynamic> InnerOnGeneric(string eventName, JQueryEventHandler<JQueryObject, dynamic> newSubscriber, JQueryEventHandler<JQueryObject, dynamic> eventCollection)
+        {
+            if (eventCollection == null)// if first event subscriber on this instance/event
+            {
+                if (jsHandlersByEvent.ContainsKey(eventName))
+                    throw new Exception($"Unexpected: jsHandlersByEvent already contains key {eventName}");
+
+                // generate handler specific to this instance+event, called by JS when event occurs
+                Action<string, string, JSObject> interopListener = 
+                    (eventEncoded, eventType, arrayObject) => {
+                        //Console.WriteLine("Event Encoded: " + eventEncoded);
+                        // unpack the single ArrayObject into it's individual elements, wrapping them as JQueryObjects
+                        var replacements = HelpersProxy.GetArrayObjectItems(arrayObject).Select(j=>new JQueryObject(j)).ToList();
+                        // Deserialize the eventEncoded JSON string, and restore the native JS objects
+                        dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
+
+                        onEvent[eventName]?.Invoke(this, eventData);
+                    };
+
+                JSObject jsHandler = this.InnerOn(eventName,interopListener);
+                jsHandlersByEvent[eventName] = jsHandler;// store handler for later unbinding
+            }
+            
+            eventCollection += newSubscriber;            
+            return eventCollection;
+        }
+
+        private JQueryEventHandler<JQueryObject, dynamic> InnerOffGeneric(string eventName, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove, JQueryEventHandler<JQueryObject, dynamic> eventCollection)
+        {
+            Console.WriteLine(eventCollection == null ? "eventCollection is null " : "not null");
+
+            if (eventCollection == null)// if no subscribers on this instance/event
+                return eventCollection;
+
+            eventCollection -= subscriberToRemove;
+            if (eventCollection == null) // if last subscriber removed, then remove JQuery listener
+            {
+                //Console.WriteLine("jsHandlersByEvent[eventName]: " + jsHandlersByEvent[eventName]);
+                this.InnerOff(eventName, jsHandlersByEvent[eventName]);
+                jsHandlersByEvent.Remove(eventName);
+            }
+
+            return eventCollection;
+
+        }
+
+        private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener)
+        {
+            // TODO: Make shouldConvertHtmlElement configurable when we support HtmlElement
+            return JQueryProxy.BindListener(this.jsObject, events, shouldConvertHtmlElement:true, interopListener);
+        }
+
+        private void InnerOff(string events, JSObject handlerToRemove)
+        {
+            JQueryProxy.UnbindListener(this.jsObject, events, handlerToRemove);
+        }
+
+
+        // Event data is serialized to JSON when the event is fired from JS and passed to C#
+        // To preserve some objects as native JS references, they are extracted into a seperate array
+        // and JSON properties are replaced with `{ serratedPlaceholder: 1 }` where 1 is the index of the object in the array
+        // Then here when listening to an event we desrialize the JSON into a dynamic and restore the native JS references
+        private dynamic EncodedEventToDynamic(string encodedEvent, List<JQueryObject> replacements)
+        {
+            ExpandoObject eventData = JsonConvert.DeserializeObject<ExpandoObject>(encodedEvent);
+            ApplyReplacements(eventData, replacements, null, out bool hasPlaceholder);
+            return eventData;
+        }
+
+        private object ApplyReplacements(ExpandoObject currentExpando, List<JQueryObject> replacements, ExpandoObject parent, out bool hasPlaceholder)
+        {
+            // Go through properties of currentExpando,
+            // find a child expando property containing a value property named serratedPlaceholder, e.g. `target: { serratedPlaceholder : 1 }` 
+            hasPlaceholder = false;// flagged true for parent when currentExpando has a single property named serratedPlaceholder
+            if (replacements == null || replacements.Count == 0) // nothing to replace
+                return null;
+
+            Dictionary<string, object?> placeholdersFound = new Dictionary<string, object?>();
+            // recursively search all properties of the ExpandoObject and find expando with property name of serratedPlaceholder
+            foreach (var property in currentExpando)
+            {
+                //Console.WriteLine("Property: " + property.Key + " + " + property.Value);
+
+                if (property.Key is string && property.Key == "serratedPlaceholder")
+                {
+                    // Found. The entire currentExpando is the placeholder and needs to be replaced in the property of parent call.
+                    // Flag out param hasPlaceholder and return the appropriate replacement so the parent call can reassign.
+                    hasPlaceholder = true;
+                    int index = Convert.ToInt32(property.Value);
+                    //Console.WriteLine("Replacing: " + property.Key + " + " + property.Value + " with " + index);
+                    return replacements[index];                    
+                }
+                else if (property.Value is ExpandoObject currentValue)
+                {   
+                    // If is expando, then recurse into it and scan its properties as well.                    
+                    var replacement = ApplyReplacements(currentValue, replacements, currentExpando, out bool hasPlaceholderInner);
+                    if(hasPlaceholderInner) // If child property turns out to be a placeholder, then replace it
+                    {
+                        placeholdersFound[property.Key] = replacement;                        
+                    }                    
+                }
+            }
+
+            // we can't modify expondo while iterating through it above, so stage replacement in placeholdersGound 
+            foreach (var placeHolder in placeholdersFound)// then apply them to the expando here
+            {
+                ((IDictionary<String, Object?>)currentExpando)[placeHolder.Key] = placeHolder.Value;
+            }
+            
+            return null;
+        }
+
+        #endregion
 
 
         #region Static Helpers
