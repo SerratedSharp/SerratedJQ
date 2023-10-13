@@ -59,47 +59,5 @@ namespace SerratedSharp.SerratedJQ {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
-        ///console.log(&quot;Declaring JQuery Proxy&quot;);
-        ///
-        ///var Serrated = globalThis.Serrated || {};
-        ///(function (Serrated) {
-        ///    //var Callbacks = Serrated.Callbacks || {};
-        ///    //Callbacks.UnpinEventListener = function () {
-        ///    //    InternalSJQ.Listener(&apos;UnpinEventListener&apos;);
-        ///    //};
-        ///    //Serrated.Callbacks = Callbacks;
-        ///
-        ///    var JQueryProxy = Serrated.JQueryProxy || {};// create child namespace
-        ///    J [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string JQueryProxy {
-            get {
-                return ResourceManager.GetString("JQueryProxy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
-        ///console.log(&quot;Observe declared&quot;);
-        /////var targetNodes = $(document.documentElement); // $(&apos;.myclass&apos;);
-        ///var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-        ///var observer = new MutationObserver(mutationHandler);
-        ///var obsConfig = {
-        ///    childList: true,
-        ///    characterData: true,
-        ///    attributes: true,
-        ///    subtree: true
-        ///};
-        ///
-        /////--- Add a target node to the observer. Ca [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ObserveRemovedJs {
-            get {
-                return ResourceManager.GetString("ObserveRemovedJs", resourceCulture);
-            }
-        }
     }
 }

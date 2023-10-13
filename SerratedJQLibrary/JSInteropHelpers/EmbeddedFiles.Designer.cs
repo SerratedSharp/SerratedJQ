@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SerratedSharp.SerratedJQ {
+namespace SerratedSharp.JSInteropHelpers {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace SerratedSharp.SerratedJQ {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class _1 {
+    public class EmbeddedFiles {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal _1() {
+        internal EmbeddedFiles() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerratedSharp.SerratedJQ.1", typeof(_1).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerratedSharp.JSInteropHelpers.EmbeddedFiles", typeof(EmbeddedFiles).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace SerratedSharp.SerratedJQ {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,59 +61,41 @@ namespace SerratedSharp.SerratedJQ {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to click.
+        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
+        ///console.log(&quot;Declaring JQueryProxy&quot;);
+        ///
+        ///// makes JSExport from JQueryProxy available on globalThis.SerratedExports.SerratedSharp.SerratedJQ.JQueryProxy
+        /////Module.getAssemblyExports(&quot;SerratedSharp.SerratedJQ&quot;)
+        /////    .then(module =&gt; globalThis.SerratedExports = module);
+        ///
+        ///// TODO: Consider object literal notation instead of IIFE and export as module
+        ///var Serrated = globalThis.Serrated || {};
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string click {
+        public static string JQueryProxy {
             get {
-                return ResourceManager.GetString("click", resourceCulture);
+                return ResourceManager.GetString("JQueryProxy", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to input.
+        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
+        ///console.log(&quot;Observe declared&quot;);
+        /////var targetNodes = $(document.documentElement); // $(&apos;.myclass&apos;);
+        ///var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+        ///var observer = new MutationObserver(mutationHandler);
+        ///var obsConfig = {
+        ///    childList: true,
+        ///    characterData: true,
+        ///    attributes: true,
+        ///    subtree: true
+        ///};
+        ///
+        /////--- Add a target node to the observer. Ca [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string input {
+        public static string ObserveRemoved {
             get {
-                return ResourceManager.GetString("input", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to jqObj.
-        /// </summary>
-        internal static string jqbj {
-            get {
-                return ResourceManager.GetString("jqbj", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to jQuery.
-        /// </summary>
-        internal static string jQueryRef {
-            get {
-                return ResourceManager.GetString("jQueryRef", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///                    console.log(&apos;Init JQueryBox&apos;);
-        ///                    
-        ///                    window.Uno = &apos;&apos;;
-        ///                    (function (Uno) {
-        ///                        var Foundation;
-        ///                        (function (Foundation) {
-        ///                            var Interop;
-        ///                            (function (Interop) {
-        ///                                var ManagedObject = (function () {
-        ///                                    function ManagedObject() {
-        ///                                    }
-        ///     [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string ManagedObjectJavascriptDispatcherDeclaration {
-            get {
-                return ResourceManager.GetString("ManagedObjectJavascriptDispatcherDeclaration", resourceCulture);
+                return ResourceManager.GetString("ObserveRemoved", resourceCulture);
             }
         }
     }

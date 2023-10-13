@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Tests.Wasm {
+namespace SerratedSharp.SerratedJQ.Archive {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Tests.Wasm {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class EmbeddedTestFiles {
+    internal class _1 {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal EmbeddedTestFiles() {
+        internal _1() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Tests.Wasm {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tests.Wasm.EmbeddedTestFiles", typeof(EmbeddedTestFiles).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerratedSharp.SerratedJQ.Archive.1", typeof(_1).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,52 +61,59 @@ namespace Tests.Wasm {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to function loadScript(url) {
-        ///    return new Promise(function (resolve, reject) {
-        ///        var script = document.createElement(&quot;script&quot;);
-        ///        script.onload = resolve;
-        ///        script.onerror = reject;
-        ///        script.src = url;
-        ///        document.getElementsByTagName(&quot;head&quot;)[0].appendChild(script);
-        ///    });
-        ///}
-        ///
-        ///function loadjQuery() {
-        ///    if (window.jQuery) {
-        ///        // already loaded and ready to go
-        ///        return Promise.resolve();
-        ///    } else {
-        ///        return loadScript(&apos;https://ajax.googleapis.c [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to click.
         /// </summary>
-        internal static string TestWasm {
+        internal static string click {
             get {
-                return ResourceManager.GetString("TestWasm", resourceCulture);
+                return ResourceManager.GetString("click", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;-prompt(8)-&quot;
-        ///&apos;-prompt(8)-&apos;
-        ///&quot;;a=prompt,a()//
-        ///&apos;;a=prompt,a()//
-        ///&apos;-eval(&quot;window[&apos;pro&apos;%2B&apos;mpt&apos;](8)&quot;)-&apos;
-        ///&quot;-eval(&quot;window[&apos;pro&apos;%2B&apos;mpt&apos;](8)&quot;)-&quot;
-        ///&quot;onclick=prompt(8)&gt;&quot;@x.y
-        ///&quot;onclick=prompt(8)&gt;&lt;svg/onload=prompt(8)&gt;&quot;@x.y
-        ///&lt;image/src/onerror=prompt(8)&gt;
-        ///&lt;img/src/onerror=prompt(8)&gt;
-        ///&lt;image src/onerror=prompt(8)&gt;
-        ///&lt;img src/onerror=prompt(8)&gt;
-        ///&lt;image src =q onerror=prompt(8)&gt;
-        ///&lt;img src =q onerror=prompt(8)&gt;
-        ///&lt;/scrip&lt;/script&gt;t&gt;&lt;img src =q onerror=prompt(8)&gt;
-        ///&lt;svg onload=alert(1)&gt;
-        ///&quot;&gt;&lt;svg onload=alert(1)//
-        ///&quot;onmouseove [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to input.
         /// </summary>
-        internal static string XssPayloads1 {
+        internal static string input {
             get {
-                return ResourceManager.GetString("XssPayloads1", resourceCulture);
+                return ResourceManager.GetString("input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to jqObj.
+        /// </summary>
+        internal static string jqbj {
+            get {
+                return ResourceManager.GetString("jqbj", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to jQuery.
+        /// </summary>
+        internal static string jQueryRef {
+            get {
+                return ResourceManager.GetString("jQueryRef", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///                    console.log(&apos;Init JQueryBox&apos;);
+        ///                    
+        ///                    window.Uno = &apos;&apos;;
+        ///                    (function (Uno) {
+        ///                        var Foundation;
+        ///                        (function (Foundation) {
+        ///                            var Interop;
+        ///                            (function (Interop) {
+        ///                                var ManagedObject = (function () {
+        ///                                    function ManagedObject() {
+        ///                                    }
+        ///     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ManagedObjectJavascriptDispatcherDeclaration {
+            get {
+                return ResourceManager.GetString("ManagedObjectJavascriptDispatcherDeclaration", resourceCulture);
             }
         }
     }

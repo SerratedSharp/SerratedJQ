@@ -150,27 +150,27 @@ ManagedObjectAttach() is experimental and potentially generates memory leaks due
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
-# Feedback
-
-I'd be happy to hear any passing thoughts or comments on this project, which you may post under Discussions.  Please keep in mind that working within the limitations of current WebAssembly technology/tooling offers unique challenges, and I also operate within the constraints of my free time.  I hope to simplify setup/installation in future versions by leveraging upcoming features in version 8.x of Uno.Wasm.Bootstrap.  I've also considered eliminating the JQuery dependency since I could provide a similar API interface with native JS, but the performance vs. effort trade off isn't worth it for my current use cases.
-
-There are gaps in the current JQuery wrapper implementation which include support for object references passed in events, JS promises support, some variations of event subscription/bubbling, and representing JQuery object collections as a .NET collection rather than a single monolithic object.  Even if you don't have time to make a polished contribution, I'd be happy to see results of any tinkering that achieve any of these basic capabilities.  Note that many capabilities in this library are implemented despite WASM's lack of first class support.  Just being able to pass around JQuery instances as managed objects overcomes WASM's advertised limitation of not supporting complex type handles/parameters, and is achieved using collections/indexes maintained on each side of the interopt layer.  Although objects aren't truly passed across the interopt layer, identifiers crossing the boundary are translated into object references to accomplish the same capability transparently.
-
 ## Release Notes
 
-### Upcoming 0.1.0
-Migration of underlying JS interop API from Uno WebAssemblyRuntime to .NET 7's `System.Runtime.InteropServices.JavaScript`
+### 0.1.0
+Migration of the majority of underlying JS interop API from Uno WebAssemblyRuntime to .NET 7's `System.Runtime.InteropServices.JavaScript`.
 
-This includes some breaking changes to the API, but going forward the underlying implementation is greatly simplified.
+- Going forward the underlying implementation is simplified, should perform better, and simplifies implementation of future capabilities.
+- Event properties which represent HTMLElement's, such as e.target and e.currentTarget, are now preserved as JQueryObject references across the interop layer when handling events.
+- Expands available jQuery API methods and overloads.
+- Includes some breaking changes to the API interface.
+    - Sample projects have not been updated to use the new API, but unit tests within the `SerratedJQLibrary/Tests.Wasm` have been updated and can be used as a usage reference. 
+    - `JQuery` is a static class mirroring the global JQuery object. It now exposes the static methods .Select() and .ParseHtml() which generate instances of jQuery collection objects.
+    - `JQueryObject` is an instance of a jQuery collection object, and exposes the majority of the jQuery API and event subscription capabilities.  Replaces `JQueryBox`.
+- Removes superfluous method chaining:
+    - This refers to method chaining present in jQuery where the return from the method is always the same object reference, which is only used to facilitate chaining.
+    - It's not really a common pattern in C# except for builder/fluent or unit of work APIs.
+    - It creates ambiguity between methods where the return type is the result of the method operation, versus where the same object is being returned only to facilitate method chaining and doesn't need to be captured.  In these cases sometimes it's not clear if the operation mutated the original object reference, or if the original object is left as is and the return value is a new result of the operation.
+    - Now it's clear if a modifying operation returns void, then you know the original object was mutated.  If the operation returns a different object, then you know the original object was not mutated and you must capture the return value for the result.
+    - Eliminates unnecessary object allocations.
+    - Chaining is still possible with methods such as .Find() and .Children() since each call returns a different JQuery object/collection, and allows iterative navigation/filtering of the DOM.
 
-I have made the decision to eliminate superfluous method chaining:
-- I'm referring to method chaining where the return from the method is always the same object reference, which is not necessary expect to faciliate chaining.
-- It's not really a common pattern in C# except for builder/fluent or unit of work APIs.
-- It creates ambiguouty between methods where the return type is the result of the method operation, versus where the same object is being returned only to facilitate method chaining and doesn't need to be captured.  In these cases sometimes it's not clear if the operation mutated the original object reference, or if the original object is left as is and the return value is a new result of the operation.
-- Now it's clear if a modifying operation returns void, then you know the original object was mutated.  If the operation returns a different object, then you know the original object was not mutated and you must capture the return value for the result.
-- Eliminates unnecesary object allocations.
 
-Chaining is still possible with methods such as .Find() and .Children() since each call returns a different JQuery object/collection, and allows iterative navigation/filtering of the DOM.
 
 ### 0.0.4
 Nuget package metadata updates.

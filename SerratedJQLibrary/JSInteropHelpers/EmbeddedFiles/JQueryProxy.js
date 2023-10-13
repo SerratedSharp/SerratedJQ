@@ -12,14 +12,25 @@ var Serrated = globalThis.Serrated || {};
 
     var JQueryProxy = Serrated.JQueryProxy || {};// create child namespace
     JQueryProxy.Select = function (selector) {
-        console.log("Select called");
         return jQuery(document).find(selector);
     };
     JQueryProxy.ParseHtml = function (html, keepScripts) {
-        return jQuery( jQuery.parseHTML( html, undefined, keepScripts) );
+        console.log('ParseHtml proxy: ', html, keepScripts);
+        const tst = jQuery( jQuery.parseHTML( html, undefined, keepScripts) );
+        console.log("Rtn tst: ", tst);
+        return tst;
     };
     JQueryProxy.FuncByNameToObject = function (jsObject, funcName, params) {
-        return jsObject[funcName].apply(jsObject, params);
+        console.log('FuncByNameToObject proxy: ', jsObject, funcName, params);
+        const rtn = jsObject[funcName].apply(jsObject, params);
+        console.log('Return proxy: ', rtn);
+        return rtn;
+    };
+    JQueryProxy.PropertyByNameToObject = function (jsObject, propertyName) {
+        console.log('PropertyByNameToObject proxy: ', jsObject, propertyName);
+        const rtn = jsObject[propertyName];
+        console.log('Return proxy: ', rtn);
+        return rtn; 
     };
 
 

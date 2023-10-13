@@ -1,7 +1,4 @@
-﻿//using Uno.Extensions;
-using Uno.Foundation;
-//using Uno.Foundation.Interop;
-//using Uno.Foundation.Interop;
+﻿using Uno.Foundation;
 
 namespace SerratedSharp.SerratedJQ
 {
@@ -9,7 +6,7 @@ namespace SerratedSharp.SerratedJQ
     {
         public static void LoadScripts()
         {
-            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.JQueryProxy);
+            WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.JQueryProxy);
         }
     }
 

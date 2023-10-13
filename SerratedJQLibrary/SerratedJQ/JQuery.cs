@@ -2,6 +2,9 @@
 //using Uno.Foundation.Interop;
 //using Uno.Foundation.Interop;
 
+using SerratedSharp.JSInteropHelpers;
+using System;
+
 namespace SerratedSharp.SerratedJQ
 {
     // MEthods exposed by global jQuery object, typically methods that generate JQuery object isntances
@@ -26,15 +29,24 @@ namespace SerratedSharp.SerratedJQ
         /// <param name="html"></param>
         /// <param name="keepScripts"></param>
         /// <returns></returns>     
-        public static JQueryObject ParseHTML(string html, bool keepScript = false)
+        public static JQueryObject ParseHtml(string html, bool keepScripts = false)
         {
-            var managedObj = new JQueryObject();
-            managedObj.jsObject = JQueryProxy.ParseHTML(html, keepScript);
+            
+            var jsObject = JQueryProxy.ParseHtml(html, keepScripts);
+            var managedObj = new JQueryObject(jsObject);
+            //Console.WriteLine($"ParseHtml result: {managedObj.Length} as {managedObj.Html}");
             return managedObj;
         }
 
         #region Static Properties - https://api.jquery.com/category/properties/global-jquery-object-properties/
         // TODO: Global JQUery object properties as static properties
+        
+        // static getter property for version that create a JQueryObject and calls version
+        public static string JQueryVersion
+        {
+            get => JQuery.Select(":root").JQueryVersion;                
+        }
+
         #endregion
 
     }

@@ -11,16 +11,38 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
   </PropertyGroup>
+	
+  <!-- WASM Configuration -->
+  <PropertyGroup>
+	  <WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+	  <WasmShellEnableThreads>true</WasmShellEnableThreads>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+  	<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+  	<DebugType>portable</DebugType>
+  	<DebugSymbols>true</DebugSymbols>
+  	<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="jquery-3.7.1.js" UnoDeploy="Root" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
+    <!--<None Remove="jquery-3.7.1.js" />-->
     <None Remove="XssPayloads1.txt" />
   </ItemGroup>
+
+  <!--<ItemGroup>
+    <Content Include="jquery-3.7.1.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>-->
 
   <ItemGroup>
     <EmbeddedResource Include="XssPayloads1.txt">
@@ -29,10 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="4.9.45" />
-    <PackageReference Include="Uno.UI.WebAssembly" Version="3.11.16" />
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="7.0.27" />
-    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="3.2.0" />
+    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="4.10.13" />
+    <PackageReference Include="Uno.UI.WebAssembly" Version="4.10.13" />
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="7.0.29" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="7.0.29" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +74,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>EmbeddedTestFiles.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

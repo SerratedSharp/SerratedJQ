@@ -12,11 +12,12 @@ using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-
+using SerratedSharp.SerratedJQ.Archive;
 
 namespace SerratedSharp.SerratedJQ
 {
 
+    [Obsolete("Use JQuery and JQueryObject instead",UrlFormat = "https://github.com/SerratedSharp/SerratedJQ#010")]
     public class JQueryBox : IJSObject
     {
         private const string JSClassName = "InternalSerratedJQBox";
@@ -32,7 +33,7 @@ namespace SerratedSharp.SerratedJQ
                     window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');                         
                 ");
 
-            WebAssemblyRuntime.InvokeJS(SerratedJQ.EmbeddedFiles.ObserveRemovedJs);
+            //WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.ObserveRemovedJs);
 
 
             // Alternative export approaches

@@ -5,9 +5,12 @@ using System.Linq;
 using System.Dynamic;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
+using SerratedSharp.JSInteropHelpers;
+using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
 
-namespace SerratedSharp.SerratedJQ
-{
+
+namespace SerratedSharp.SerratedJQ;
+
 
     // Wrapper that references a JQuery instance object, i.e. the collection returned from selectors/queries
     public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParameter
@@ -69,12 +72,26 @@ namespace SerratedSharp.SerratedJQ
 
         #endregion
         #region Traversal - Miscellaneous - https://api.jquery.com/category/traversing/miscellaneous-traversal/
-        // TODO: Misc. Traversal 
+        
+        public JQueryObject Add(string selector) => this.CallJSOfSameNameAsWrapped(selector);
+        public JQueryObject Add(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+        public JQueryObject Add(string selector, JQueryObject context) => this.CallJSOfSameNameAsWrapped(selector, context);
+        public JQueryObject AddBack(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+        public JQueryObject Contents() => this.CallJSOfSameNameAsWrapped();
+        public JQueryObject End() => this.CallJSOfSameNameAsWrapped();
+        
         #endregion
 
         #region General Attributes - https://api.jquery.com/category/attributes/general-attributes/
 
-        // TODO: Implement other accessors
+        public string Attr(string attributeName) => this.CallJSOfSameName<string>(attributeName);
+        public void Attr(string attributeName, string? value) => this.CallJSOfSameName<object>(attributeName, value);
+        //public void Attr(string attributeName, bool value) => this.CallJSOfSameName<object>(attributeName, value);        
+        public void Attr(string attributeName, int? value) => this.CallJSOfSameName<object>(attributeName, value);
+        public void Attr(string attributeName, decimal? value) => this.CallJSOfSameName<object>(attributeName, value);
+        //public void Attr(string attributeName, object value) => this.CallJSOfSameName<object>(attributeName, value);
+        public void RemoveAttr(string attributeName) => this.CallJSOfSameName<object>(attributeName);
+            
         
         public string Val
         {
@@ -145,10 +162,16 @@ namespace SerratedSharp.SerratedJQ
 
         #region Instance Properties - https://api.jquery.com/category/properties/jquery-object-instance-properties/
         // TODO: Length and JQueryVersion
+
+        // Length
+        public double Length => this.GetPropertyOfSameName<double>();
+        // jQuery
+        public string JQueryVersion => this.GetPropertyOfSameName<string>(propertyName: "jquery");
+
         #endregion
 
         #region Class Attributes - https://api.jquery.com/category/manipulation/class-attribute/
-
+        // CONSIDER: Validating that className parameters don't start with "." since this is a pitfall
         public bool HasClass(string className) => this.CallJSOfSameName<bool>(className);
         public void AddClass(string className) => this.CallJSOfSameName<object>(className);
         public void AddClass(string[] classNames) => this.CallJSOfSameName<object>(classNames);
@@ -176,8 +199,13 @@ namespace SerratedSharp.SerratedJQ
         #endregion
         #region DOM Insertion, Inside - https://api.jquery.com/category/manipulation/dom-insertion-inside/
 
-        public JQueryObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject Append(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        //public JQueryObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
+        public void Append(string html) => this.CallJSOfSameNameAsWrapped(html);
+        //public JQueryObject Append(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+
+        public void Append(JQueryObject jqObject, params JQueryObject[] jqObjects)
+            => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
+        
         public JQueryObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject AppendTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
         public JQueryObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
@@ -337,12 +365,12 @@ namespace SerratedSharp.SerratedJQ
         private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener)
         {
             // TODO: Make shouldConvertHtmlElement configurable when we support HtmlElement
-            return JQueryProxy.BindListener(this.jsObject, events, shouldConvertHtmlElement:true, interopListener);
+            return JSInstanceProxy.BindListener(this.jsObject, events, shouldConvertHtmlElement:true, interopListener);
         }
 
         private void InnerOff(string events, JSObject handlerToRemove)
         {
-            JQueryProxy.UnbindListener(this.jsObject, events, handlerToRemove);
+            JSInstanceProxy.UnbindListener(this.jsObject, events, handlerToRemove);
         }
 
 
@@ -405,8 +433,8 @@ namespace SerratedSharp.SerratedJQ
 
         #region Static Helpers
 
-        // Shorthand for new object[]{,,,}
-        public static T[] ToParams<T>(params T[] args)
+        
+        private static T[] ToParams<T>(params T[] args)
         {
             return args;
         }
@@ -426,5 +454,5 @@ namespace SerratedSharp.SerratedJQ
 
 
 
-}
+
 
