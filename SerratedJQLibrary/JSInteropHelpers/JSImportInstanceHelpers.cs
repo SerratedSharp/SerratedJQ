@@ -21,7 +21,7 @@ public static class JSImportInstanceHelpers
     public static J GetProperty<J>(JSObject jsObject, string propertyName)
     {
         object genericObject = JSInstanceProxy.PropertyByNameToObject(jsObject, ToJSCasing(propertyName));
-        Console.WriteLine($"GetProperty: {propertyName}, {genericObject}, {genericObject?.GetType()?.Name}");
+        // Console.WriteLine($"GetProperty: {propertyName}, {genericObject}, {genericObject?.GetType()?.Name}");
         return (J)genericObject;
     }
 
@@ -49,14 +49,22 @@ public static class JSImportInstanceHelpers
     // J should be a JSObject or other prmitiive JS type
     public static J CallJSFunc<J>(JSObject jsObject, string funcName, params object[] parameters)
     {
-        object[] objs = null; 
-        for(int i = 0; i < parameters.Length; i++)
+        object[] objs = UnwrapJSObjectParams(parameters);
+
+        object genericObject = JSInstanceProxy.FuncByNameAsObject(jsObject, ToJSCasing(funcName), objs);
+        return (J)genericObject;
+    }
+
+    public static object[] UnwrapJSObjectParams(object[] parameters)
+    {
+        object[] objs = null;
+        for (int i = 0; i < parameters.Length; i++)
         {
             object param = parameters[i];
-            if(funcName == "Append")
-                Console.WriteLine($"CallJSFunc: {param}");
+            //if(funcName == "Append")
+            //    Console.WriteLine($"CallJSFunc: {param}");
             // if the param is a JSObject wrapper, then unwrap Wrappers to it's JSObject handle
-            if(param is IJSObjectWrapper wrapper)
+            if (param is IJSObjectWrapper wrapper)
             {
                 if (objs == null) // if first time we converting a type, 
                     objs = TypedArrayToObjectArray(parameters, i);// then need to create an untyped object array to allow reassignment of this element
@@ -66,14 +74,12 @@ public static class JSImportInstanceHelpers
 
             //parameters[i] = (param as IJSObjectWrapper)?.JSObject ?? param;
 
-            if (funcName == "Append")
-                Console.WriteLine($"CallJSFunc 2: {param}");
+            //if (funcName == "Append")
+            //    Console.WriteLine($"CallJSFunc 2: {param}");
         }
-        if(objs == null) // if no wrappers were found, then use original parameters array
+        if (objs == null) // if no wrappers were found, then use original parameters array
             objs = parameters;
-        
-        object genericObject = JSInstanceProxy.FuncByNameAsObject(jsObject, ToJSCasing(funcName), objs);
-        return (J)genericObject;
+        return objs;
     }
 
     private static object[] TypedArrayToObjectArray(object[] objs, int index)

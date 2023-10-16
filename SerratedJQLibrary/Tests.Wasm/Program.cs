@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
+using SerratedSharp.JSInteropHelpers;
 using SerratedSharp.SerratedJQ;
 using Uno.Foundation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -270,6 +271,7 @@ public abstract class JQTest : IJQTest
     public bool IsModelTest { get; set; } = false;
     Exception exc = null; JQueryObject status = null;
     protected JQueryObject tc;// test container
+    protected JQueryObject result;
     //protected JQueryBoxV2<TestModel> tcm;// test container with model
 
 
@@ -299,25 +301,29 @@ public abstract class JQTest : IJQTest
         tc = JQuery.Select($"#t{TestNum} .tc");
 
 
+
     }
 
     public void EndTest(JQueryObject status, Exception exc)
     {
+        string testName = this.GetType().Name;
         if (exc == null)
         {
             //status.Append(JQuery.ParseHtml($"<span style='color:green'>Valid - {this.GetType().Name}</span>"));
-            status.Append($"<span style='color:green'>Valid - {this.GetType().Name}</span>");
+            status.Append($"<span style='color:green'>Valid - {testName}</span>");
         }
         else
         {
             Console.WriteLine(exc);
             //status.Append(JQuery.ParseHtml($"<span style='color:red'>Failed - {this.GetType().Name}: {exc.ToString()}</span>"));
-            status.Append($"<span style='color:red'>Failed - <b>{this.GetType().Name}</b>: {exc.ToString()}</span>");
+            status.Append($"<span style='color:red'>Failed - <b>{testName}</b>: {exc.ToString()}</span>");
 
             status.Append("<div class='excontext'></div>");
-            status.Find(".excontext").Text = tc.Html;
-
-
+            // TODO: Implement OuterHtml and change to use that
+            status.Find(".excontext").Text = "Test Container: " + tc.Html;
+            status.Append("<div class='resultcontext'></div>");
+            status.Find(".resultcontext").Text = "Result: " + result.Html;
+            GlobalJS.Console.Log(testName, tc, result);
             // if exc contains data key "html" then Append it to the test container
             //if (exc.Data.Contains("html"))
             //{

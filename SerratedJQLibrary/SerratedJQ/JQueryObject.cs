@@ -194,7 +194,9 @@ namespace SerratedSharp.SerratedJQ;
         public JQueryObject WrapAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject WrapAll(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
         public JQueryObject WrapInner(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-        public JQueryObject WrapInner(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+        
+        // Only works correctly if passed HTMLElement. When passed JQ object created form our ParseHtml, it inserts only into one parent
+        //public JQueryObject WrapInner(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
 
         #endregion
         #region DOM Insertion, Inside - https://api.jquery.com/category/manipulation/dom-insertion-inside/
@@ -209,9 +211,9 @@ namespace SerratedSharp.SerratedJQ;
         public JQueryObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
         public JQueryObject AppendTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
         public JQueryObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-        public JQueryObject Prepend(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
-        public JQueryObject PrependTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-        public JQueryObject PrependTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+        //public JQueryObject Prepend(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(jqObject, jqObjects);
+        //public JQueryObject PrependTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
+        //public JQueryObject PrependTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
 
         public string Html // rename InnerHtml
         {

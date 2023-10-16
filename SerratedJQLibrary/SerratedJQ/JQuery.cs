@@ -38,6 +38,7 @@ namespace SerratedSharp.SerratedJQ
             return managedObj;
         }
 
+
         #region Static Properties - https://api.jquery.com/category/properties/global-jquery-object-properties/
         // TODO: Global JQUery object properties as static properties
         
@@ -50,10 +51,6 @@ namespace SerratedSharp.SerratedJQ
         #endregion
 
     }
-
-    // CONSIDER: Implementing a selector builder fluent API for https://api.jquery.com/category/selectors/
-
-
 
 
 
