@@ -34,7 +34,7 @@ public class InsertionAround_Wrap_Object : JQTest
     public override void Run()
     {
         JQueryObject stubs = StubHtmlIntoTestContainer(1);
-        stubs.Wrap( JQuery.ParseHtml("<div class='x'></div>") );
+        stubs.Wrap( JQuery.ParseHtmlAsJQuery("<div class='x'></div>") );
         result = tc.Children();
         Assert(result.HasClass("x"));
         Assert(result.Length == 1);
@@ -58,7 +58,7 @@ public class InsertionAround_WrapAll_Object : JQTest
     public override void Run()
     {
         JQueryObject stubs = StubHtmlIntoTestContainer(5);// a,b,c,d,e
-        stubs.WrapAll( JQuery.ParseHtml("<div class='x'></div>") );
+        stubs.WrapAll( JQuery.ParseHtmlAsJQuery("<div class='x'></div>") );
         result = tc.Children();
         Assert(result.HasClass("x"));
         Assert(result.Length == 1);

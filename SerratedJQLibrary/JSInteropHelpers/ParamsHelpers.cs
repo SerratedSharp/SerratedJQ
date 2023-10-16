@@ -10,13 +10,17 @@ public static class ParamsHelpers
         return args;
     }
 
-    [Obsolete("Untested")]
     public static object[] MergeParams(object[] args1, object[] args2)
     {
         object[] args = new object[args1.Length + args2.Length];
         Array.Copy(args1, args, args1.Length);
         Array.Copy(args2, 0, args, args1.Length, args2.Length);
         return args;
+    }
+
+    public static object[] Merge(object args1, object[] args2)
+    {
+        return MergeParams(new object[1] { args1 }, args2);
     }
 
     // Used when an overload takes a single param followed by a params [] array, and needs to prepend the single param to the param array

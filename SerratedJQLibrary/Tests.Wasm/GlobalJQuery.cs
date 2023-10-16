@@ -20,7 +20,7 @@ namespace Tests.Wasm
     {
         public override void Run()
         {
-            JQueryObject jq = JQuery.ParseHtml("<div class='w'></div>");
+            JQueryObject jq = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
             tc.Append(jq);
             Assert(tc.Find(".w").Length == 1);
         }

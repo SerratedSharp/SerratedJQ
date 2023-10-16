@@ -16,7 +16,7 @@ namespace Tests.Wasm
         {
             Console.WriteLine("Before...");
             //tc.Append("<div class='w'></div><div class='x'></div><div class='y'></div><div class='z'></div>");
-            var blh = JQuery.ParseHtml("<div class='w'></div>");
+            var blh = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
 
             //Console.WriteLine("blh.HTML: " + blh.Length + "dfgd " + blh.Html) ;
             //tc.Append(JQuery.ParseHtml("<div class='w'>"));
@@ -40,8 +40,8 @@ namespace Tests.Wasm
     {
         public override void Run()
         {
-            JQueryObject jq = JQuery.ParseHtml("<div class='w'></div>");
-            JQueryObject jq2 = JQuery.ParseHtml("<div class='w'></div>");
+            JQueryObject jq = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
+            JQueryObject jq2 = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
             tc.Append(jq, jq2);
             Assert(tc.Find(".w").Length == 2);
         }
@@ -51,9 +51,9 @@ namespace Tests.Wasm
     {
         public override void Run()
         {
-            JQueryObject jq = JQuery.ParseHtml("<div class='w'></div>");
-            JQueryObject jq2 = JQuery.ParseHtml("<div class='w'></div>");
-            JQueryObject jq3 = JQuery.ParseHtml("<div class='w'></div>");
+            JQueryObject jq = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
+            JQueryObject jq2 = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
+            JQueryObject jq3 = JQuery.ParseHtmlAsJQuery("<div class='w'></div>");
             tc.Append(jq, jq2, jq3);
             Assert(tc.Find(".w").Length == 3);
         }
