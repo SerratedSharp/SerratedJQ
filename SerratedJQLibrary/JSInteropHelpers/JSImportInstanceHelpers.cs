@@ -34,7 +34,7 @@ public static class JSImportInstanceHelpers
     // This call automatically wraps a JSObject using type W's WrapInstance interface
     public static W CallJSOfSameNameAsWrapped<W>(JSObject jsObject, object[] parameters, Breaker _ = default(Breaker), [CallerMemberName] string funcName = null)
         where W : IJSObjectWrapper<W>
-    {
+    {        
         JSObject jsObjectRtn = CallJSOfSameName<JSObject>(jsObject, parameters, _, funcName);
         return W.WrapInstance(jsObjectRtn); // wrap JSObject with W's factory create method
     }
@@ -50,7 +50,7 @@ public static class JSImportInstanceHelpers
     public static J CallJSFunc<J>(JSObject jsObject, string funcName, params object[] parameters)
     {
         object[] objs = UnwrapJSObjectParams(parameters);
-
+        
         object genericObject = JSInstanceProxy.FuncByNameAsObject(jsObject, ToJSCasing(funcName), objs);
         return (J)genericObject;
     }

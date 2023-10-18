@@ -6,7 +6,8 @@ using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 using SerratedSharp.JSInteropHelpers;
-using SerratedSharp.SerratedJQ;
+
+using SerratedSharp.SerratedJQ.Plain;
 using Uno.Foundation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -121,14 +122,14 @@ public static class Program
         //{
         //    await MainAsync();
         //    Console.WriteLine("Tick");
-            
+
         //}, null, 5000, 15000);
 
         //  WebAssemblyRuntime.InvokeAsync("globalThis.SerratedExports = await Module.getAssemblyExports(\"SerratedSharp.SerratedJQ\")");
 
 
-        
-        JSDeclarations.LoadScripts();
+
+        SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
 
 
 
@@ -142,16 +143,16 @@ public static class Program
         //WebAssemblyRuntime.InvokeJS("Serrated.JQueryProxy.Select('div')");
 
 
-        JQueryObject jqObject = JQuery.Select("body");
-        Console.WriteLine("HTML Test: " + jqObject.Html);
-        JQueryObject children = jqObject.Find("*");
+        JQueryPlainObject jqObject = JQueryPlain.Select("body");
+        Console.WriteLine("HTML Test: " + jqObject.Html());
+        JQueryPlainObject children = jqObject.Find("*");
 
 
         Console.WriteLine("***** Testing Properties ******");
         //var body = JQueryProxy.Select("body");
         //var items = JQueryProxy.FuncByNameToObject(body, "find", new string[] { "*" });
        // Console.WriteLine(children.Html);
-        children.Html = "<div id='x'>Test</div>";
+        children.Html("<div id='x'>Test</div>");
        // Console.WriteLine(children.Html);
 
         //jqObject.After("<div>After</div>");
@@ -159,7 +160,7 @@ public static class Program
 
         //jqObject.Find("div").InnerOn("click");
         var divs = jqObject.Find("#x");
-        JQueryObject.JQueryEventHandler<JQueryObject, dynamic> clickListener = (sender, e) =>
+        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> clickListener = (sender, e) =>
         {
             Console.WriteLine("Clicked");
             Console.WriteLine(e.target);
@@ -168,8 +169,8 @@ public static class Program
         };
         
         
-        JQueryObject.JQueryEventHandler<JQueryObject, dynamic> click2 = (sender, e) => Console.WriteLine("Clicked 2");
-        JQueryObject.JQueryEventHandler<JQueryObject, dynamic> click3 = (sender, e) => Console.WriteLine("Clicked 3");
+        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click2 = (sender, e) => Console.WriteLine("Clicked 2");
+        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click3 = (sender, e) => Console.WriteLine("Clicked 3");
 
 
         divs.OnClick += clickListener;
@@ -229,7 +230,7 @@ public class TestOrchestrator
         int i = 1;
         foreach(IJQTest test in Tests)
         {
-            Exception exc = null; JQueryObject status = null;
+            Exception exc = null; JQueryPlainObject status = null;
             try
             {
                 test.TestNum = i;
@@ -258,20 +259,20 @@ public interface IJQTest
 
     bool IsModelTest { get; set; }
 
-    void BeginTest(out JQueryObject status);
-    void EndTest(JQueryObject status, Exception exc);
+    void BeginTest(out JQueryPlainObject status);
+    void EndTest(JQueryPlainObject status, Exception exc);
     void Run();
 }
 
 
 public abstract class JQTest : IJQTest
 {
-    JQueryObject body = JQuery.Select("body");
+    JQueryPlainObject body = JQueryPlain.Select("body");
     public int TestNum { get; set; }
     public bool IsModelTest { get; set; } = false;
-    Exception exc = null; JQueryObject status = null;
-    protected JQueryObject tc;// test container
-    protected JQueryObject result;
+    Exception exc = null; JQueryPlainObject status = null;
+    protected JQueryPlainObject tc;// test container
+    protected JQueryPlainObject result;
     //protected JQueryBoxV2<TestModel> tcm;// test container with model
 
 
@@ -280,7 +281,7 @@ public abstract class JQTest : IJQTest
     {
     }
 
-    public void BeginTest(out JQueryObject status)
+    public void BeginTest(out JQueryPlainObject status)
     {
         string htmlTemplate = $"<div id='t{TestNum}'><div class='status'>T{TestNum}:</div><div class='tc'></div></div>";
         //var div = JQuery.ParseHtml(htmlTemplate);
@@ -289,7 +290,7 @@ public abstract class JQTest : IJQTest
 
 
         body.Append(htmlTemplate);
-        status = JQuery.Select($"#t{TestNum} .status");
+        status = JQueryPlain.Select($"#t{TestNum} .status");
         //div.Find(".status");
 
         // tc or tcm will hold reference to test container HTML that the test implementation should use as a sandbox for the text
@@ -298,13 +299,13 @@ public abstract class JQTest : IJQTest
         //    tcm = div.Find<TestModel>(".tc");
         //else
         //    tc = div.Find(".tc");
-        tc = JQuery.Select($"#t{TestNum} .tc");
+        tc = JQueryPlain.Select($"#t{TestNum} .tc");
 
 
 
     }
 
-    public void EndTest(JQueryObject status, Exception exc)
+    public void EndTest(JQueryPlainObject status, Exception exc)
     {
         string testName = this.GetType().Name;
         if (exc == null)
@@ -320,9 +321,9 @@ public abstract class JQTest : IJQTest
 
             status.Append("<div class='excontext'></div>");
             // TODO: Implement OuterHtml and change to use that
-            status.Find(".excontext").Text = "Test Container: " + tc.Html;
+            status.Find(".excontext").Text("Test Container: " + tc.Html());
             status.Append("<div class='resultcontext'></div>");
-            status.Find(".resultcontext").Text = "Result: " + result.Html;
+            status.Find(".resultcontext").Text("Result: " + result.Html());
             GlobalJS.Console.Log(testName, tc, result);
             // if exc contains data key "html" then Append it to the test container
             //if (exc.Data.Contains("html"))
@@ -338,7 +339,7 @@ public abstract class JQTest : IJQTest
             throw new Exception(message);
     }
 
-    public virtual JQueryObject StubHtmlIntoTestContainer(int numberOfElements = 1)
+    public virtual JQueryPlainObject StubHtmlIntoTestContainer(int numberOfElements = 1)
     {
         // for each element to insert, increment the class name by one letter, starting at a
         string html = "";

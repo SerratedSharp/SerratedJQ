@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
 using SerratedSharp.JSInteropHelpers;
 using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
-
+using SerratedSharp.SerratedJQ.Plain;
 
 namespace SerratedSharp.SerratedJQ;
 
 
-    // Wrapper that references a HTML Element instance object, i.e. an item returned fropm vailla JS DOM access or a JQuery  the collection returned from selectors/queries
-    public class HtmlElement : IJSObjectWrapper<HtmlElement>, IJQueryContentParameter
+// Wrapper that references a HTML Element instance object, i.e. an item returned fropm vailla JS DOM access or a JQuery  the collection returned from selectors/queries
+public class HtmlElement : IJSObjectWrapper<HtmlElement>, IJQueryContentParameter
     {
         internal JSObject jsObject;// reference to the jQuery javascript interop object
         public JSObject JSObject { get { return jsObject; } }
