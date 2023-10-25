@@ -13,15 +13,15 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
     <PackageId>SerratedSharp.SerratedJQ</PackageId>
-    <Version>0.0.4</Version>
+    <Version>0.1.0</Version>
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
     <Description>A JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.</Description>
     <Copyright>Copyright (c) SerratedSharpSolutions 2023</Copyright>
     <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 7.0.27 and Uno.Foundation.Runtime.WebAssembly 4.9.45 under .NET Core 7.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
-    <AssemblyVersion>0.0.4.0</AssemblyVersion>
-    <FileVersion>0.0.4.0</FileVersion>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>

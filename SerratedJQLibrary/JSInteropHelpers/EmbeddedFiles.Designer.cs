@@ -80,6 +80,23 @@ namespace SerratedSharp.JSInteropHelpers {
         
         /// <summary>
         ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
+        ///console.log(&quot;Declaring JSInteropProxies&quot;);
+        ///
+        ///// makes JSExport from JQueryProxy available on globalThis.SerratedExports.SerratedSharp.SerratedJQ.JQueryProxy
+        /////Module.getAssemblyExports(&quot;SerratedSharp.SerratedJQ&quot;)
+        /////    .then(module =&gt; globalThis.SerratedExports = module);
+        ///
+        ///// TODO: Consider object literal notation instead of IIFE and export as module
+        ///var Serrated = globalThis.Serrated ||  [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string JSInteropProxies {
+            get {
+                return ResourceManager.GetString("JSInteropProxies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
         ///console.log(&quot;Observe declared&quot;);
         /////var targetNodes = $(document.documentElement); // $(&apos;.myclass&apos;);
         ///var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;

@@ -50,8 +50,32 @@ public static class JSImportInstanceHelpers
     public static J CallJSFunc<J>(JSObject jsObject, string funcName, params object[] parameters)
     {
         object[] objs = UnwrapJSObjectParams(parameters);
-        
-        object genericObject = JSInstanceProxy.FuncByNameAsObject(jsObject, ToJSCasing(funcName), objs);
+        object genericObject;
+        Type type = typeof(J);
+        if (type.IsArray)
+        {
+            //genericObject = JSInstanceProxy.FuncByNameAsArray(jsObject, ToJSCasing(funcName), objs);
+            //object[] objectArray = (object[])genericObject;
+            //object typedArray = objectArray.Select( a => Convert.ChangeType(a, type.GetElementType() ) ).ToArray< type.GetElementType() > ();
+            //return (J)typedArray;
+
+            switch(type.GetElementType())
+            {
+                case Type t when t == typeof(string): 
+                    genericObject = JSInstanceProxy.FuncByNameAsStringArray(jsObject, ToJSCasing(funcName), objs);
+                    return (J)genericObject;
+                case Type t when t == typeof(double): 
+                    genericObject = JSInstanceProxy.FuncByNameAsDoubleArray(jsObject, ToJSCasing(funcName), objs);
+                    return (J)genericObject;
+                // TODO: Implement other primitive types supported as marshalled arrays
+                default:
+                    throw new NotImplementedException($"CallJSFunc: Returning array of {type.GetElementType()} not implemented");
+            }
+
+        }
+        else
+            genericObject = JSInstanceProxy.FuncByNameAsObject(jsObject, ToJSCasing(funcName), objs);
+                
         return (J)genericObject;
     }
 

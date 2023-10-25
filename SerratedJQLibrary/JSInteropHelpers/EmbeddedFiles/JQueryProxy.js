@@ -80,13 +80,6 @@ var Serrated = globalThis.Serrated || {};
         }
     }
 
-    var HelpersProxy = Serrated.HelpersProxy || {};// create child namespace
-
-    HelpersProxy.GetArrayObjectItems = function (arrayObject) {
-        return arrayObject.items;
-    }
-
-    Serrated.HelpersProxy = HelpersProxy; // add to parent namespace
     Serrated.JQueryProxy = JQueryProxy; // add to parent namespace
 
 })(Serrated = globalThis.Serrated || (globalThis.Serrated = {}));

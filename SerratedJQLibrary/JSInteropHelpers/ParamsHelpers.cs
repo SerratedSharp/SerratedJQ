@@ -12,24 +12,9 @@ public static class ParamsHelpers
 
     public static object[] MergeParams(object[] args1, object[] args2)
     {
-        //bool logThis = false;
-        //if(args1[0] is string blh && blh == "j" )
-        //{
-        //    logThis = true;
-        //    GlobalJS.Console.Log("args1", args1);
-        //    GlobalJS.Console.Log("args2", args2);
-        //}
         object[] args = new object[args1.Length + args2.Length];
         Array.Copy(args1, args, args1.Length);
-        //if (logThis)
-        //{
-        //    GlobalJS.Console.Log("args copy 1", args);
-        //}
         Array.Copy(args2, 0, args, args1.Length, args2.Length);
-        //if (logThis)
-        //{
-        //    GlobalJS.Console.Log("args copy 2", args);
-        //}
         return args;
     }
 

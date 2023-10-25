@@ -7,20 +7,26 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
 using SerratedSharp.JSInteropHelpers;
 using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
-
+using System.ComponentModel.Design.Serialization;
 
 namespace SerratedSharp.SerratedJQ;
 
-
 // Wrapper that references a JQuery instance object, i.e. the collection returned from selectors/queries
-public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParameter
+[Obsolete("Work in progress: The API for this interface may change. Use JQueryPlain and JQueryPlainObject instead if you want to minimize impact of future changes.")]
+public class JQueryObject : IJSObjectWrapper<JQueryObject>//, IJQueryContentParameter
 {
     internal JSObject jsObject;// reference to the jQuery javascript interop object
     public JSObject JSObject { get { return jsObject; } }
 
     // instances can only be created thru factory methods like Select()/ParseHtml()
-    internal JQueryObject() { }
-    public JQueryObject(JSObject jsObject) { this.jsObject = jsObject; }
+    internal JQueryObject() { 
+        Attributes = new JQIndexer<JQueryObject, string, string>(this, "attr");
+        Styles = new JQIndexer<JQueryObject, string, string>(this, "css");
+    }
+    
+    // Used where we need to create a wrapper around a JSObject reference
+    public JQueryObject(JSObject jsObject):this() { this.jsObject = jsObject; }
+    
     // This static factory method defined by the IJSObjectWrapper enables generic code such as CallJSOfSameNameAsWrapped to automatically wrap JSObjectsWrap
     static JQueryObject IJSObjectWrapper<JQueryObject>.WrapInstance(JSObject jsObject)
     {
@@ -28,11 +34,11 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     }
 
     /// <summary>
-    /// Copy JQueryPlainObject reference to new JQueryObject to allow access to alternative API semantics.
+    /// Copy JQueryPlainObject reference to new JQueryObject to allow access to alternativge API semantics.
     /// </summary>
-    public JQueryObject(SerratedJQ.Plain.JQueryPlainObject jQueryPlainObject)
+    public JQueryObject(Plain.JQueryPlainObject jQueryObject)
     {
-        jsObject = jQueryPlainObject.JSObject;
+        jsObject = jQueryObject.JSObject;
     }
 
     #region Traversal - Filtering - https://api.jquery.com/category/traversing/filtering/
@@ -49,13 +55,6 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     public JQueryObject Even() => this.CallJSOfSameNameAsWrapped();
     //Map only takes a predicate: https://api.jquery.com/map/#map-callback
     //public JQueryObject Map(
-
-    // We should be able to implement variations of methods that take a parameter of:
-    //      A collection of Elements: https://api.jquery.com/filter/#filter-elements
-    //      A collection of JQuery object collection: https://api.jquery.com/filter/#filter-selection
-    //      Unsure if we can implement a predicate parameter: https://api.jquery.com/filter/#filter-function
-    //public JQueryObject Filter(Func<int, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
-    //public JQueryObject Filter(Func<int, JQueryObject, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
 
     #endregion
     #region Traversal - Tree Traversal - https://api.jquery.com/category/traversing/tree-traversal/
@@ -92,74 +91,82 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
 
     #region General Attributes - https://api.jquery.com/category/attributes/general-attributes/
 
+    public JQIndexer<JQueryObject, string, string> Attributes { get; }
+    //public JQIndexer<JQueryObject,string,double> AttributesAsDouble { get; }
+    //public JQIndexer<JQueryObject, string, int> AttributesAsInt { get; }
+    //public JQIndexer<JQueryObject, string, bool> AttributesAsBool { get; }
+    
     public string Attr(string attributeName) => this.CallJSOfSameName<string>(attributeName);
     public void Attr(string attributeName, string value) => this.CallJSOfSameName<object>(attributeName, value);
     //public void Attr(string attributeName, bool value) => this.CallJSOfSameName<object>(attributeName, value);        
     public void Attr(string attributeName, int? value) => this.CallJSOfSameName<object>(attributeName, value);
-    public void Attr(string attributeName, decimal? value) => this.CallJSOfSameName<object>(attributeName, value);
+    public void Attr(string attributeName, double? value) => this.CallJSOfSameName<object>(attributeName, value);
     //public void Attr(string attributeName, object value) => this.CallJSOfSameName<object>(attributeName, value);
     public void RemoveAttr(string attributeName) => this.CallJSOfSameName<object>(attributeName);
+    // TODO: Implementat validation and throw NotImplemented for return types <R> which are not supported by JQuery, perhaps using method attributes to declare valid types
+    public R Prop<R>(string propertyName) => this.CallJSOfSameName<R>(propertyName);
+    public void Prop(string propertyName, string value) => this.CallJSOfSameName<object>(propertyName, value);
+    //public void Prop(string propertyName, bool value) => this.CallJSOfSameName<object>(propertyName, value);        
+    //public void Prop(string propertyName, int? value) => this.CallJSOfSameName<object>(propertyName, value);
+    public void Prop(string propertyName, double? value) => this.CallJSOfSameName<object>(propertyName, value);
+    //public void Prop(string propertyName, object value) => this.CallJSOfSameName<object>(propertyName, value);
+    public void RemoveProp(string propertyName) => this.CallJSOfSameName<object>(propertyName);
 
 
-    public string Val
-    {
-        get => this.CallJSOfSameName<string>();
-        set => this.CallJSOfSameName<object>(value);
-    }
-
+    public string Val() => this.CallJSOfSameName<string>();
+    public T Val<T>() => this.CallJSOfSameName<T>();
+    //his.CallJSOfSameName< (string[])JSInstanceProxy.FuncByNameAsArray(this.JSObject, "val", null); //this.CallJSOfSameName<T>();
+    public JQueryObject Val(string value) => this.CallJSOfSameNameAsWrapped(value);
+    public JQueryObject Val(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public JQueryObject Val(string[] value) => this.CallJSOfSameNameAsWrapped(new object[] { value });
 
     #endregion
 
     #region Style Properties - https://api.jquery.com/category/manipulation/style-properties/
+    // Alsop include the couple of items from CSS that aren't in any other category: https://api.jquery.com/category/css/    
 
-    // TODO: css https://api.jquery.com/category/manipulation/style-properties/
+    /// <summary> Access jQuery.css(key,value) </summary>
+    public JQIndexer<JQueryObject, string, string> Styles { get; }
+
     // TODO: cssNumber https://api.jquery.com/jQuery.cssNumber/ 
-
-    public decimal Height
-    {
-        get => this.CallJSOfSameName<decimal>();
+ 
+    public double Height {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal Width
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double Width {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal InnerHeight
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double InnerHeight {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal InnerWidth
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double InnerWidth {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal OuterHeight
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double OuterHeight {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal OuterWidth
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double OuterWidth {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal ScrollLeft
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double ScrollLeft {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
-    public decimal ScrollTop
-    {
-        get => this.CallJSOfSameName<decimal>();
+    public double ScrollTop {
+        get => this.CallJSOfSameName<double>();
         set => this.CallJSOfSameName<object>(value);
     }
 
@@ -169,11 +176,8 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     #endregion
 
     #region Instance Properties - https://api.jquery.com/category/properties/jquery-object-instance-properties/
-    // TODO: Length and JQueryVersion
 
-    // Length
     public double Length => this.GetPropertyOfSameName<double>();
-    // jQuery
     public string JQueryVersion => this.GetPropertyOfSameName<string>(propertyName: "jquery");
 
     #endregion
@@ -181,17 +185,20 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     #region Class Attributes - https://api.jquery.com/category/manipulation/class-attribute/
     // CONSIDER: Validating that className parameters don't start with "." since this is a pitfall
     public bool HasClass(string className) => this.CallJSOfSameName<bool>(className);
-    public void AddClass(string className) => this.CallJSOfSameName<object>(className);
-    public void AddClass(string[] classNames) => this.CallJSOfSameName<object>(classNames);
-    public void RemoveClass(string className) => this.CallJSOfSameName<object>(className);
-    public void RemoveClass(string[] classNames) => this.CallJSOfSameName<object>(classNames);
-    public void ToggleClass(string className, bool? state = null) => this.CallJSOfSameName<object>(className, state);
-    public void ToggleClass(string[] classNames, bool? state = null) => this.CallJSOfSameName<object>(classNames, state);
+    // NOTE: The native method only takes a single item or a seperate overload that takes an array, which is why we need to pass as `new object []`.  This is different from other methods that take one to many seperate params.
+    // WORKS but doesn't match interface exactly: public JQueryObject AddClass(string className, params string[] classNames) => this.CallJSOfSameNameAsWrapped( new object[] { Params.PrependToArray(className, ref classNames) } ); // new object[] { Params.Merge(className, classNames) });
+    public JQueryObject AddClass(string className) => this.CallJSOfSameNameAsWrapped(className);
+    public JQueryObject AddClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames }); // Have to wrap in an extra array because javacsript .apply() will split the array into seperate params
+    public JQueryObject RemoveClass(string className) => this.CallJSOfSameNameAsWrapped(className);
+    public JQueryObject RemoveClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames });
+    public JQueryObject ToggleClass(string className, bool? state = null) => this.CallJSOfSameNameAsWrapped(className, state);
+    public JQueryObject ToggleClass(string[] classNames, bool? state = null) => this.CallJSOfSameNameAsWrapped(classNames, state);
 
     #endregion
     #region Copying - https://api.jquery.com/category/manipulation/copying/
 
     public JQueryObject Clone() => this.CallJSOfSameNameAsWrapped();
+    // TODO: Impkement other overloads
 
     #endregion
     #region DOM Insertion, Around, and Removal - https://api.jquery.com/category/manipulation/dom-insertion-around/
@@ -209,13 +216,9 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     #endregion
     #region DOM Insertion, Inside - https://api.jquery.com/category/manipulation/dom-insertion-inside/
 
-    //public JQueryObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(html, htmls);
-    public void Append(string html) => this.CallJSOfSameNameAsWrapped(html);
-    //public JQueryObject Append(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-
-    public void Append(JQueryObject jqObject, params JQueryObject[] jqObjects)
-        => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
-
+    public JQueryObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
+    public JQueryObject Append(string html) => this.CallJSOfSameNameAsWrapped(html);
+    public JQueryObject Append(JQueryObject jqObject, params JQueryObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
     public JQueryObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
     public JQueryObject AppendTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
     public JQueryObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
@@ -224,14 +227,12 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     public JQueryObject PrependTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
     public JQueryObject PrependTo(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
 
-    public string Html // rename InnerHtml
-    {
-        get => this.CallJSOfSameName<string>(funcName: "html");
-        set => this.CallJSOfSameName<object>(value, funcName: "html");
+    public string Html {
+        get => this.CallJSOfSameName<string>(); 
+        set => this.CallJSOfSameName<object>(value);
     }
 
-    public string Text
-    {
+    public string Text {
         get => this.CallJSOfSameName<string>();
         set => this.CallJSOfSameName<object>(value);
     }
@@ -257,23 +258,25 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
 
     #endregion
     #region DOM Replacement - https://api.jquery.com/category/manipulation/dom-replacement/
-
-    public JQueryObject ReplaceAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryObject ReplaceAll(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryObject ReplaceWith(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryObject ReplaceWith(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    // TODO: Write unit tests
+    //public JQueryObject ReplaceAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
+    //public JQueryObject ReplaceAll(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    //public JQueryObject ReplaceWith(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
+    //public JQueryObject ReplaceWith(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
 
     #endregion
 
-    // TODO: Determine/test handling of parameters defined in jQueryb docs as:
+    // TODO: Determine/test handling of parameters defined in jQuery docs as:
     //       "content": Type: htmlString or Element or Text or Array or jQuery
     // versus "target": Type: Selector or htmlString or Element or Array or jQuery
     // versus "wrappingElement": Type: Selector or htmlString or Element or jQuery
 
-    #region Events - https://api.jquery.com/click/
+    #region Specific Events - https://api.jquery.com/click/
+
+    // TODO: Write unit tests
 
     //private JQueryEventHandler<JQueryObject, object> onClick;
-    // https://api.jquery.com/click/
+    // https://api.jquery.com/click/    
     public event JQueryEventHandler<JQueryObject, dynamic> OnClick
     {
         //add { onClick = InnerOnGeneric("click", value, onClick); }
@@ -298,7 +301,9 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
 
     #endregion
 
-    #region Events - https://api.jquery.com/category/events/
+    #region Generic Events - https://api.jquery.com/category/events/
+
+    // TODO: Write unit tests
 
     // Event subscription for any event name
     private Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>>();
@@ -341,7 +346,7 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
                 {
                     //Console.WriteLine("Event Encoded: " + eventEncoded);
                     // unpack the single ArrayObject into it's individual elements, wrapping them as JQueryObjects
-                    var replacements = HelpersProxy.GetArrayObjectItems(arrayObject).Select(j => new JQueryObject(j)).ToList();
+                    var replacements = HelpersJS.GetArrayObjectItems(arrayObject).Select(j => new JQueryObject(j)).ToList();
                     // Deserialize the eventEncoded JSON string, and restore the native JS objects
                     dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
 
@@ -442,28 +447,9 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>, IJQueryContentParame
     #endregion
 
 
-    #region Static Helpers
-
-
-    private static T[] ToParams<T>(params T[] args)
-    {
-        return args;
-    }
-
-    #endregion
-
-    // CONSIDER: Can we implement a set of wrappers sharing interfaces to represent overloads like "content" of https://api.jquery.com/append/ "Type: htmlString or Element or Text or Array or jQuery"
 
 
 }
-
-
-public interface IJQueryContentParameter
-{
-
-}
-
-
 
 
 

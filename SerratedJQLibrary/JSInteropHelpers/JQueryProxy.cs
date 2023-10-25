@@ -42,6 +42,22 @@ public static partial class JSInstanceProxy
     public static partial
         object FuncByNameAsObject(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
+    // The difficulty with using this proxy is a new array must be created for each call,
+    // for example to cast a object[] to string[] requires iterating the array
+    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    [return: JSMarshalAs<JSType.Array<JSType.Any>>]
+    public static partial
+        object[] FuncByNameAsArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
+
+    [JSImport(baseJSNamespace + ".FuncByNameToObject")]    
+    public static partial
+        string[] FuncByNameAsStringArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
+
+    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    public static partial
+        double[] FuncByNameAsDoubleArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
+
+
     #endregion
 
     #region Listeners
@@ -55,15 +71,5 @@ public static partial class JSInstanceProxy
 
     #endregion
     
-}
-
-public partial class HelpersProxy
-{
-    private const string baseJSNamespace = "globalThis.Serrated.HelpersProxy";
-
-    // Used for unpacking an ArrayObject into a JSObject[] array
-    [JSImport(baseJSNamespace + ".GetArrayObjectItems")]
-    [return: JSMarshalAs<JSType.Array<JSType.Object>>]
-    public static partial JSObject[] GetArrayObjectItems(JSObject jqObject);
 }
 

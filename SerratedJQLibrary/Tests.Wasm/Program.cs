@@ -6,24 +6,12 @@ using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 using SerratedSharp.JSInteropHelpers;
-
+using SerratedSharp.SerratedJQ;
 using SerratedSharp.SerratedJQ.Plain;
 using Uno.Foundation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Wasm;
-
-public static class Logger
-{
-    public static void Log(object obj)
-    {    
-
-        foreach (var property in obj.GetType().GetProperties())
-            Console.WriteLine(property.Name + ": " + property.GetValue(obj, null).ToString());
-    }
-}
-
-
 
 public static class Program
 {
@@ -35,29 +23,8 @@ public static class Program
         Console.WriteLine("DEBUG DEFINED");
 #endif
 
-
-        
-        //CallbacksHelper.Export("blah", () => Console.WriteLine("asdas"));
-        //CallbacksHelper.Export("blah", () => Console.WriteLine("override"), true);
-        //CallbacksHelper.Export("blah2", () => Console.WriteLine("second"));
-        //CallbacksHelper.Export("Blah", () => Console.WriteLine("Upper"));
-
         Trace.Listeners.Add(new ThrowingTraceListener());
-        //WebAssemblyRuntime.InvokeJS(@"
-        //    var isReady = false;
-        //    var script = document.createElement('script');
-        //    script.onload = function () {                    
-        //        var beginTests = Module.mono_bind_static_method('[Tests.Wasm] Wasm.Program:Begin');
-        //        beginTests();
-        //    };
-        //    script.src = 'https://code.jquery.com/jquery-3.6.0.js';
-        //    document.head.appendChild(script);
-        //");
 
-        // Loads JQuery 
-        WebAssemblyRuntime.InvokeJS(Tests.Wasm.EmbeddedTestFiles.TestWasm);
-
-        await RequireAndAwaitDependencyLoadingMultiline();
         await Begin();
 
 
@@ -66,97 +33,23 @@ public static class Program
         }
     }
 
-    //public static async System.Threading.Tasks.Task MainAsync()
-    //{
-
-        
-    //    //var innerHandler = new Uno.UI.Wasm.WasmHttpHandler();
-    //    //var client = new HttpClient(innerHandler);
-    //    //var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri("https://localhost:5001/")));
-    //    //var content = await response.Content.ReadAsStringAsync();
-        
-    //    //Console.WriteLine(content);
-    //}
-
-    public static async Task<string> RequireAndAwaitDependencyLoadingMultiline()
-    {
-        // Calling InvokeAsync with mult-line statements requires enclosing braces { } and a `return` statement.            
-        //await WebAssemblyRuntime.InvokeAsync("""  
-        //    {
-        //        requirejs.config({
-        //        paths: {
-        //            jquery: 'jquery-3.6.0'
-        //            }
-        //        });
-        //        return new Promise((resolve, reject) => {
-
-        //            //require(["jquery"], (jquery) => {
-        //            //    console.log("loading jquery");
-        //            //    globalThis.jQuery = jquery
-        //            //    resolve();// allow caller to await resolution of dependency
-        //            //});
-        //            define(["jquery"], function(jquery) {
-
-        //                console.log("loading jquery");
-        //                //console.log( jquery.browser );
-
-        //                globalThis.jQuery = jquery
-        //                resolve();// allow caller to await resolution of dependency
-        //            });
-        //        });
-        //    }
-        //""");
-
-
-
-        return await WebAssemblyRuntime.InvokeAsync("""
-                globalThis.loadjQuery();
-            """);
-    }
-
-
     public static async Task Begin()
     {
-
-        //var timer = new System.Threading.Timer(async (e) =>
-        //{
-        //    await MainAsync();
-        //    Console.WriteLine("Tick");
-
-        //}, null, 5000, 15000);
-
         //  WebAssemblyRuntime.InvokeAsync("globalThis.SerratedExports = await Module.getAssemblyExports(\"SerratedSharp.SerratedJQ\")");
 
-
-
+        // Run javascript files that add proxy declarations
         SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
-
-
-
-
-        Console.WriteLine("After sleep test...");
-        //JQuery.Select("html").Styles["position"] = "static";
-        //JQuery.Select("html").Styles["overflow"] = "auto";
-        //JQuery.Select("body").Styles["position"] = "static";
-        //JQuery.Select("body").Styles["overflow"] = "auto";
-
-        //WebAssemblyRuntime.InvokeJS("Serrated.JQueryProxy.Select('div')");
-
+        await HelpersJS.LoadScript("jquery-3.7.1.js");
+        
+        // Fixes scrolling for unit test output
+        JQueryPlain.Select("body").Css("position", "static");
+        JQueryPlain.Select("body").Css("overflow", "auto");
 
         JQueryPlainObject jqObject = JQueryPlain.Select("body");
         Console.WriteLine("HTML Test: " + jqObject.Html());
         JQueryPlainObject children = jqObject.Find("*");
 
-
-        Console.WriteLine("***** Testing Properties ******");
-        //var body = JQueryProxy.Select("body");
-        //var items = JQueryProxy.FuncByNameToObject(body, "find", new string[] { "*" });
-       // Console.WriteLine(children.Html);
         children.Html("<div id='x'>Test</div>");
-       // Console.WriteLine(children.Html);
-
-        //jqObject.After("<div>After</div>");
-        //jqObject.After("<div>After1</div>", "<div>After2</div>", "<div>After3</div>");
 
         //jqObject.Find("div").InnerOn("click");
         var divs = jqObject.Find("#x");
@@ -167,22 +60,14 @@ public static class Program
             Console.WriteLine(e.currentTarget);
             Console.WriteLine(e);
         };
-        
-        
+                
         JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click2 = (sender, e) => Console.WriteLine("Clicked 2");
         JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click3 = (sender, e) => Console.WriteLine("Clicked 3");
-
 
         divs.OnClick += clickListener;
         divs.OnClick += click2;
         divs.OnClick -= click2;
-        //divs.OnClick += click3;
-        //divs.OnClick -= clickListener;
-        //            divs.OnClick -= click3;
-        //divs.On("click", clickListener);
-        //divs.On("click", click2);
-        //divs.Off("click", click2);
-        //divs.On("click", click3);
+       
 
         // basic bind/unbind example
         //var divs = jqObject.Find("div");
@@ -195,12 +80,13 @@ public static class Program
         //var handler2 = JQueryProxy.BindListener(divs.JSObject, "click", handler);
         //JQueryProxy.UnbindListener(divs.JSObject, "click", handler2);
 
-        ////AsyncContext.Run(() => MainAsync(args));
-
+        ////AsyncContext.Run(() => MainAsync(args))
         //// }, null, 5000, 5000);
 
         var orch = new TestOrchestrator();
         // TODO: I disabled the linker. Isntead disable a namespace just for tests: https://platform.uno/docs/articles/features/using-il-linker-webassembly.html
+        
+        // Iterate through all JQTest classes and add them to the Test Orchestrator
         var types = System.Reflection.Assembly.GetAssembly(typeof(TestOrchestrator)).GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(JQTest)))
             .ToList();
@@ -211,11 +97,9 @@ public static class Program
             Console.WriteLine("Class" + type.Name);
             orch.Tests.Add((JQTest)Activator.CreateInstance(type));
         }
-
+        // Run the Orchestrator, which will in turn run all tests
         orch.Run();
 
-        ////var test = new Traversal_TreeTraversal_Children1();
-        ////test.Test1();
 
     }
 
@@ -235,8 +119,8 @@ public class TestOrchestrator
             {
                 test.TestNum = i;
                 Console.WriteLine("Running test " + i + $" for type {test.GetType().Name}");
-                //var tc = 
-                    test.BeginTest(out status);
+
+                test.BeginTest(out status);
                 test.Run();
             }
             catch (Exception ex) {
@@ -251,8 +135,6 @@ public class TestOrchestrator
 }
 
 
-
-
 public interface IJQTest
 {
     int TestNum { get; set; }
@@ -264,7 +146,6 @@ public interface IJQTest
     void Run();
 }
 
-
 public abstract class JQTest : IJQTest
 {
     JQueryPlainObject body = JQueryPlain.Select("body");
@@ -275,34 +156,23 @@ public abstract class JQTest : IJQTest
     protected JQueryPlainObject result;
     //protected JQueryBoxV2<TestModel> tcm;// test container with model
 
-
-
-    public virtual void Run()
-    {
-    }
+    public virtual void Run() { }
 
     public void BeginTest(out JQueryPlainObject status)
     {
         string htmlTemplate = $"<div id='t{TestNum}'><div class='status'>T{TestNum}:</div><div class='tc'></div></div>";
-        //var div = JQuery.ParseHtml(htmlTemplate);
-        //body.Append(div);
-
-
-
+        
         body.Append(htmlTemplate);
         status = JQueryPlain.Select($"#t{TestNum} .status");
-        //div.Find(".status");
-
+        
         // tc or tcm will hold reference to test container HTML that the test implementation should use as a sandbox for the text
-        // **Nevermind: Seems like it's better for the test case to add it's on JqueryBox<SomeModel> inside the test container.
+        // **Nevermind: Seems like it's better for the test case to add it's own JqueryBox<SomeModel> inside the test container.
         //if (IsModelTest)
         //    tcm = div.Find<TestModel>(".tc");
         //else
         //    tc = div.Find(".tc");
+
         tc = JQueryPlain.Select($"#t{TestNum} .tc");
-
-
-
     }
 
     public void EndTest(JQueryPlainObject status, Exception exc)
@@ -350,24 +220,6 @@ public abstract class JQTest : IJQTest
         tc.Append(html);
         return tc.Children();
     }
-
-
-    //public void Test2()
-    //{
-    //    var div = JQuery.ParseHtml("<div id='t2'>T2</div>");
-    //    body.PrependTo(div);
-
-    //    // Verify
-    //    var v = body.Find("#t1");
-    //    Debug.Assert(v.Length() == 1);
-    //    Debug.Assert(v.Text() == "T1");
-
-    //    v.Append(":Valid");
-
-    //}
-
-
-
 }
 
 

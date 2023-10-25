@@ -14,58 +14,58 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using SerratedSharp.SerratedJQ.Archive;
 
-namespace SerratedSharp.SerratedJQ
+namespace SerratedSharp.SerratedJQ.Archive
 {
 
     [Obsolete("Use JQuery and JQueryObject instead",UrlFormat = "https://github.com/SerratedSharp/SerratedJQ#010")]
-    public class JQueryBox : IJSObject
+    public partial class JQueryBox : IJSObject
     {
         private const string JSClassName = "InternalSerratedJQBox";
         private static int keep = 2;
-        static JQueryBox()
-        {
+        //static JQueryBox()
+        //{
 
-            // Add javascript declaration that is used by WebAssembly but was declared in incorrect Uno Platform project.
-            WebAssemblyRuntime.InvokeJS(_1.ManagedObjectJavascriptDispatcherDeclaration);
+        //    // Add javascript declaration that is used by WebAssembly but was declared in incorrect Uno Platform project.
+        //    WebAssemblyRuntime.InvokeJS(_1.ManagedObjectJavascriptDispatcherDeclaration);
 
-            WebAssemblyRuntime.InvokeJS(@$"     
-                    window.{JSClassName} = window.{JSClassName} || {{}};
-                    window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');                         
-                ");
+        //    WebAssemblyRuntime.InvokeJS(@$"     
+        //            window.{JSClassName} = window.{JSClassName} || {{}};
+        //            window.{JSClassName}.UnpinEventListener = Module.mono_bind_static_method('[SerratedSharp.SerratedJQ] SerratedSharp.SerratedJQ.JQueryBox:UnpinEventListener');                         
+        //        ");
 
-            //WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.ObserveRemovedJs);
+        //    //WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.ObserveRemovedJs);
 
 
-            // Alternative export approaches
+        //    // Alternative export approaches
 
-            //CallbacksHelper.Export(jsMethodName: "UnpinEventListener", () => JQueryBox.UnpinEventListener());
+        //    //CallbacksHelper.Export(jsMethodName: "UnpinEventListener", () => JQueryBox.UnpinEventListener());
 
-            //string exportScript = 
-            //    @"var Serrated = window.Serrated || {};
-            //        (function (Serrated) {var Callbacks = Serrated.Callbacks || {};
-            //            Callbacks.UnpinEventListener = function(){
-            //                InternalSJQ.Listener('UnpinEventListener');
-            //             };
-            //             Serrated.Callbacks = Callbacks;
-            //        })(Serrated = window.Serrated || (window.Serrated = {}));";
+        //    //string exportScript = 
+        //    //    @"var Serrated = window.Serrated || {};
+        //    //        (function (Serrated) {var Callbacks = Serrated.Callbacks || {};
+        //    //            Callbacks.UnpinEventListener = function(){
+        //    //                InternalSJQ.Listener('UnpinEventListener');
+        //    //             };
+        //    //             Serrated.Callbacks = Callbacks;
+        //    //        })(Serrated = window.Serrated || (window.Serrated = {}));";
 
-            //  WebAssemblyRuntime.InvokeJS(@"
-            //      SerratedSharp.SerratedJQ.JQueryBox.prototype.ClickCallback = function(eEncoded, eventType) {
-            //          var parameters = {'eEncoded': eEncoded, 'eventType': eventType};
-            //          var serializedParameters = JSON.stringify(parameters);
-            //          //method name passed to .dispatch must be a public instance method (cannot be an explicit interface)
-            //          Uno.Foundation.Interop.ManagedObject.dispatch(this.__managedHandle, 'ClickCallback', serializedParameters);
-            //      };");
+        //    //  WebAssemblyRuntime.InvokeJS(@"
+        //    //      SerratedSharp.SerratedJQ.JQueryBox.prototype.ClickCallback = function(eEncoded, eventType) {
+        //    //          var parameters = {'eEncoded': eEncoded, 'eventType': eventType};
+        //    //          var serializedParameters = JSON.stringify(parameters);
+        //    //          //method name passed to .dispatch must be a public instance method (cannot be an explicit interface)
+        //    //          Uno.Foundation.Interop.ManagedObject.dispatch(this.__managedHandle, 'ClickCallback', serializedParameters);
+        //    //      };");
 
-            if (keep == 1)// Prevent these methods from being removed by ILLinker at compile time. The condition being false prevents these from actually being called at runtime, but indeterministic so that linker doesn't remove them. 
-            {
-                var keeper = new JQueryBox();
-                keeper.InternalClickCallback("", "");
-                keeper.InternalEventCallback("", "");
-                keeper.InternalInputCallback("", "");
-            }
+        //    if (keep == 1)// Prevent these methods from being removed by ILLinker at compile time. The condition being false prevents these from actually being called at runtime, but indeterministic so that linker doesn't remove them. 
+        //    {
+        //        var keeper = new JQueryBox();
+        //        keeper.InternalClickCallback("", "");
+        //        keeper.InternalEventCallback("", "");
+        //        keeper.InternalInputCallback("", "");
+        //    }
 
-        }
+        //}
 
         // This constructor is internal because callers need to use factory methods such as .Select or FromHtml so that we can properly initialize handles.
         internal JQueryBox()
@@ -1069,7 +1069,6 @@ namespace SerratedSharp.SerratedJQ
             return ChainedFunc(Char.ToLowerInvariant(funcName[0]) + funcName.Substring(1), parameter, parameter2);
         }
 
-
         public class JQIndexer
         {
             private readonly JQueryBox jQueryBox;
@@ -1087,7 +1086,6 @@ namespace SerratedSharp.SerratedJQ
                 set => jQueryBox.FuncString(funcName, name, value);
             }
         }
-
         // Debugging: C# methods that are exposed to JS must meet this criteria
         private static void EchoValidMethods()
         {
