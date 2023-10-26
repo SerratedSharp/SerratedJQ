@@ -39,7 +39,7 @@ public static class Program
 
         // Run javascript files that add proxy declarations
         SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
-        await HelpersJS.LoadScript("jquery-3.7.1.js");
+        await HelpersJS.LoadJQuery("jquery-3.7.1.js");
         
         // Fixes scrolling for unit test output
         JQueryPlain.Select("body").Css("position", "static");
@@ -206,7 +206,7 @@ public abstract class JQTest : IJQTest
     public void Assert(bool condition, string message = null)
     {
         if (!condition)
-            throw new Exception(message);
+            throw new Exception(message ?? "Assert Failure");
     }
 
     public virtual JQueryPlainObject StubHtmlIntoTestContainer(int numberOfElements = 1)

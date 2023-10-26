@@ -425,7 +425,13 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     }
 
     #endregion
+    #region Event Handler Attachement - https://api.jquery.com/category/events/event-handler-attachment/
+    // Incomplete - Not all memers implemented
 
+    // .trigger( eventType [, extraParameters ] )
+    public JQueryPlainObject Trigger(string eventType, params object[] extraParameters) => this.CallJSOfSameNameAsWrapped(Params.Merge(eventType, new object[] { extraParameters }));
+
+    #endregion 
 
 
 

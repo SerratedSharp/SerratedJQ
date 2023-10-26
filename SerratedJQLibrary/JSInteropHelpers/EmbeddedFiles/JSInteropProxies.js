@@ -9,13 +9,9 @@ console.log("Declaring JSInteropProxies");
 var Serrated = globalThis.Serrated || {};
 (function (Serrated) {
 
-
-
     //JQueryProxy.Init = function () {
     //    globalThis.SerratedExports = await Module.getAssemblyExports("SerratedSharp.SerratedJQ");
     //}
-
-    
 
     var HelpersProxy = Serrated.HelpersProxy || {};// create child namespace
 
@@ -38,7 +34,7 @@ var Serrated = globalThis.Serrated || {};
             // already loaded and ready to go
             return Promise.resolve();
         } else {
-            return loadScript(relativeUrl);//'jquery-3.7.1.js');
+            return HelpersProxy.LoadScript(relativeUrl);//'jquery-3.7.1.js');
         }
     };
 

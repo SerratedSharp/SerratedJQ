@@ -20,7 +20,8 @@
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-  	<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+	  <!-- Set to true to enable debugging. Also enabled line numbers in exceptions. Currently decreases performance significantly! -->
+  	<MonoRuntimeDebuggerEnabled>false</MonoRuntimeDebuggerEnabled>
   	<DebugType>portable</DebugType>
   	<DebugSymbols>true</DebugSymbols>
   	<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
