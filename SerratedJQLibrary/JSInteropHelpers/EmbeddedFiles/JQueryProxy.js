@@ -35,7 +35,7 @@ var Serrated = globalThis.Serrated || {};
 
 
 
-    JQueryProxy.BindListener = function (jsObject, events, shouldConvertHtmlElement, action)
+    JQueryProxy.BindListener = function (jsObject, events, shouldConvertHtmlElement, action, selector)
     {
         let handler = function (e) {
             //console.log('On Fired');
@@ -61,13 +61,13 @@ var Serrated = globalThis.Serrated || {};
 
         // TODO: Implment variation that takes selector for live/late binding
         //jsObject.on(events, selector, handler);)
-        jsObject.on(events, handler);
+        jsObject.on(events, selector, handler);
         return handler; // return reference to the handler so it can be passed later for .off
     }
 
-    JQueryProxy.UnbindListener = function (jsObject, events, handler) {
+    JQueryProxy.UnbindListener = function (jsObject, events, handler, selector) {
         // TODO: If we implement the selector overload of .on, we need to pass the selector here too (must match exactly, see JQ docs)
-        jsObject.off(events, handler);// https://api.jquery.com/off/
+        jsObject.off(events, selector, handler);// https://api.jquery.com/off/
     }
     
     //JQueryProxy.Init = function () {

@@ -10,7 +10,7 @@
 
   <PropertyGroup>
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
     <PackageId>SerratedSharp.SerratedJQ</PackageId>
     <Version>0.1.0</Version>
@@ -50,8 +50,8 @@
 
   <ItemGroup>
 	<None Include="readme.md" Pack="true" PackagePath="\" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="4.10.13" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,6 +95,11 @@
     <Folder Include="EmbeddedFiles\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="LinkerConfig.xml">
+			<LogicalName>SerratedSharp.SerratedJQ.xml</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
 
   <!-- Post build - Making backup of original, obfuscating, then nuget packaging. -->
   <Target Name="CopyWasmAfterBuild" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

@@ -62,12 +62,16 @@ public static partial class JSInstanceProxy
 
     #region Listeners
 
-    [JSImport(baseJSNamespace + ".BindListener")]       
+    [JSImport(baseJSNamespace + ".BindListener")]
     public static partial JSObject BindListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,
-        [JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler);
+        [JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler, string selector);//, object data);
+
+    //[JSImport(baseJSNamespace + ".BindDelegatedListener")]
+    //public static partial JSObject BindDelegatedListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,
+    //[JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler, string selector);//, object data);
 
     [JSImport(baseJSNamespace + ".UnbindListener")]
-    public static partial void UnbindListener(JSObject jqObject, string events, JSObject handler);
+    public static partial void UnbindListener(JSObject jqObject, string events, JSObject handler, string selector);
 
     #endregion
     

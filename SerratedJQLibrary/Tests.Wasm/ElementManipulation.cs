@@ -7,8 +7,13 @@ using Wasm;
 
 
 
-namespace Tests.Wasm
+namespace Tests.Wasm;
+
+
+public partial class TestsContainer
 {
+
+
 
     public class ElementManipulation_AddClass_HasClass : JQTest
     {
@@ -141,4 +146,3 @@ namespace Tests.Wasm
     //    }
 
 }
-

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<linker>
+	
+	<!--<assembly fullname="Uno.UI" />-->
+
+	<assembly fullname="System.Core">
+		<!-- This is required by JSon.NET and any expression.Compile caller -->
+		<type fullname="System.Linq.Expressions*" />
+	</assembly>
+	<assembly fullname="Newtonsoft.Json" />
+
+	<assembly fullname="Wasm8Test.Wasm" />
+</linker>

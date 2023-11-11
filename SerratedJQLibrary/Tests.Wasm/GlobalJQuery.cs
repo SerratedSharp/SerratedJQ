@@ -3,7 +3,9 @@ using Wasm;
 
 
 
-namespace Tests.Wasm
+namespace Tests.Wasm;
+
+public partial class TestsContainer
 {
     // Tests for statis JQuery methods mapped from the global JQuery object
     public class GlobalJQuery_Select : JQTest
@@ -16,7 +18,7 @@ namespace Tests.Wasm
         }
     }
 
-    public class GlobalJQuery_ParseHtml: JQTest
+    public class GlobalJQuery_ParseHtml : JQTest
     {
         public override void Run()
         {
@@ -25,8 +27,5 @@ namespace Tests.Wasm
             Assert(tc.Find(".w").Length == 1);
         }
     }
-
-
-
 }
 

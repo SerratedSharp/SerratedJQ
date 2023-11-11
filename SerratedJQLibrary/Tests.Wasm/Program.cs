@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 using SerratedSharp.JSInteropHelpers;
-using SerratedSharp.SerratedJQ;
 using SerratedSharp.SerratedJQ.Plain;
-using Uno.Foundation;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Tests.Wasm;
 
 namespace Wasm;
 
 public static class Program
 {
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Program))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(SerratedSharp.SerratedJQ.Plain.JQueryPlainObject))]
     static async Task Main(string[] args)
     {
         Console.WriteLine("Beginning test...");
@@ -26,13 +26,9 @@ public static class Program
         Trace.Listeners.Add(new ThrowingTraceListener());
 
         await Begin();
-
-
-        if (new Random().Next(2) > 3 ) { // force compile not to optimize away this method
-            Begin(); // Never called here, will be called from JS above
-        }
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TestsContainer))]    
     public static async Task Begin()
     {
         //  WebAssemblyRuntime.InvokeAsync("globalThis.SerratedExports = await Module.getAssemblyExports(\"SerratedSharp.SerratedJQ\")");
@@ -47,41 +43,11 @@ public static class Program
 
         JQueryPlainObject jqObject = JQueryPlain.Select("body");
         Console.WriteLine("HTML Test: " + jqObject.Html());
-        JQueryPlainObject children = jqObject.Find("*");
+        JQueryPlainObject unoBody = jqObject.Find("#uno-body");
 
-        children.Html("<div id='x'>Test</div>");
+        unoBody.Html("<div></div>");// triggers uno observer that hides the loading bar/splash screen
 
-        //jqObject.Find("div").InnerOn("click");
-        var divs = jqObject.Find("#x");
-        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> clickListener = (sender, e) =>
-        {
-            Console.WriteLine("Clicked");
-            Console.WriteLine(e.target);
-            Console.WriteLine(e.currentTarget);
-            Console.WriteLine(e);
-        };
-                
-        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click2 = (sender, e) => Console.WriteLine("Clicked 2");
-        JQueryPlainObject.JQueryEventHandler<JQueryPlainObject, dynamic> click3 = (sender, e) => Console.WriteLine("Clicked 3");
-
-        divs.OnClick += clickListener;
-        divs.OnClick += click2;
-        divs.OnClick -= click2;
-       
-
-        // basic bind/unbind example
-        //var divs = jqObject.Find("div");
-        //divs.OnClick += (sender, e) => Console.WriteLine("Clicked" + e);
-        //var handler = (string eventEncoded, string eventType) =>
-        //{
-        //    Console.WriteLine(eventEncoded);
-        //    //eventCollection?.Invoke(this, eventData);
-        //};
-        //var handler2 = JQueryProxy.BindListener(divs.JSObject, "click", handler);
-        //JQueryProxy.UnbindListener(divs.JSObject, "click", handler2);
-
-        ////AsyncContext.Run(() => MainAsync(args))
-        //// }, null, 5000, 5000);
+        //AsyncContext.Run(() => MainAsync(args)) }, null, 5000, 5000);
 
         var orch = new TestOrchestrator();
         // TODO: I disabled the linker. Isntead disable a namespace just for tests: https://platform.uno/docs/articles/features/using-il-linker-webassembly.html
@@ -94,12 +60,11 @@ public static class Program
 
         foreach (Type type in types)
         {
-            Console.WriteLine("Class" + type.Name);
+            Console.WriteLine("Class " + type.Name);
             orch.Tests.Add((JQTest)Activator.CreateInstance(type));
         }
         // Run the Orchestrator, which will in turn run all tests
         orch.Run();
-
 
     }
 
@@ -109,6 +74,7 @@ public class TestOrchestrator
 {
     public List<IJQTest> Tests = new List<IJQTest>();
 
+   
     public void Run()
     {
         int i = 1;
@@ -130,10 +96,7 @@ public class TestOrchestrator
             ++i;
         }
     }
-
-
 }
-
 
 public interface IJQTest
 {
@@ -156,7 +119,10 @@ public abstract class JQTest : IJQTest
     protected JQueryPlainObject result;
     //protected JQueryBoxV2<TestModel> tcm;// test container with model
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(JQTest))]
+
     public virtual void Run() { }
+
 
     public void BeginTest(out JQueryPlainObject status)
     {
@@ -166,7 +132,7 @@ public abstract class JQTest : IJQTest
         status = JQueryPlain.Select($"#t{TestNum} .status");
         
         // tc or tcm will hold reference to test container HTML that the test implementation should use as a sandbox for the text
-        // **Nevermind: Seems like it's better for the test case to add it's own JqueryBox<SomeModel> inside the test container.
+        // For now let test case add it's own JqueryBox inside the test container.
         //if (IsModelTest)
         //    tcm = div.Find<TestModel>(".tc");
         //else
@@ -180,17 +146,16 @@ public abstract class JQTest : IJQTest
         string testName = this.GetType().Name;
         if (exc == null)
         {
-            //status.Append(JQuery.ParseHtml($"<span style='color:green'>Valid - {this.GetType().Name}</span>"));
             status.Append($"<span style='color:green'>Valid - {testName}</span>");
         }
         else
         {
             Console.WriteLine(exc);
-            //status.Append(JQuery.ParseHtml($"<span style='color:red'>Failed - {this.GetType().Name}: {exc.ToString()}</span>"));
+            
             status.Append($"<span style='color:red'>Failed - <b>{testName}</b>: {exc.ToString()}</span>");
 
             status.Append("<div class='excontext'></div>");
-            // TODO: Implement OuterHtml and change to use that
+            
             status.Find(".excontext").Text("Test Container: " + tc.Html());
             status.Append("<div class='resultcontext'></div>");
             status.Find(".resultcontext").Text("Result: " + result.Html());

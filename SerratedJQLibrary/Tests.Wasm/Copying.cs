@@ -6,14 +6,20 @@ using Wasm;
 namespace Tests.Wasm;
 //  Copying - https://api.jquery.com/category/manipulation/copying/
 
-public class Copying_Clone : JQTest
+
+public partial class TestsContainer
 {
-    public override void Run()
+
+    public class Copying_Clone : JQTest
     {
-        JQueryPlainObject stubs = StubHtmlIntoTestContainer(2);
-        result = tc.Children().Clone();
-        Assert(result.HasClass("a"));
-        Assert(result.HasClass("b"));
-        Assert(result.Length == 2);
+        public override void Run()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(2);
+            result = tc.Children().Clone();
+            Assert(result.HasClass("a"));
+            Assert(result.HasClass("b"));
+            Assert(result.Length == 2);
+        }
     }
+
 }

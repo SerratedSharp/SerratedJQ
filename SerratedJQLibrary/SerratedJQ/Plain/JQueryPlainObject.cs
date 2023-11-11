@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
 using SerratedSharp.JSInteropHelpers;
 using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
+using System.Net;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SerratedSharp.SerratedJQ.Plain;
 
@@ -28,10 +30,10 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     /// <summary>
     /// Copy JQueryObject reference to new JQueryPlainObject to allow access to alternativge API semantics.
     /// </summary>
-    public JQueryPlainObject(JQueryObject jQueryObject)
-    {
-        jsObject = jQueryObject.JSObject;
-    }
+    //public JQueryPlainObject(JQueryObject jQueryObject)
+    //{
+    //    jsObject = jQueryObject.JSObject;
+    //}
 
     #region Traversal - Filtering - https://api.jquery.com/category/traversing/filtering/
 
@@ -112,7 +114,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     //his.CallJSOfSameName< (string[])JSInstanceProxy.FuncByNameAsArray(this.JSObject, "val", null); //this.CallJSOfSameName<T>();
     public JQueryPlainObject Val(string value) => this.CallJSOfSameNameAsWrapped(value);
     public JQueryPlainObject Val(double value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject Val(string[] value) => this.CallJSOfSameNameAsWrapped(new object[] {value});
+    public JQueryPlainObject Val(string[] value) => this.CallJSOfSameNameAsWrapped(new object[] { value });
 
     #endregion
 
@@ -121,7 +123,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public string Css(string propertyName) => this.CallJSOfSameName<string>(propertyName);
     public JQueryPlainObject Css(string propertyName, string value) => this.CallJSOfSameNameAsWrapped(propertyName, value);
-        
+
     // TODO: cssNumber https://api.jquery.com/jQuery.cssNumber/ 
 
     public double Height() => this.CallJSOfSameName<double>();
@@ -160,7 +162,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     #endregion
 
     #region Instance Properties - https://api.jquery.com/category/properties/jquery-object-instance-properties/
-    
+
     public double Length => this.GetPropertyOfSameName<double>();
     public string JQueryVersion => this.GetPropertyOfSameName<string>(propertyName: "jquery");
 
@@ -172,7 +174,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     // NOTE: The native method only takes a single item or a seperate overload that takes an array, which is why we need to pass as `new object []`.  This is different from other methods that take one to many seperate params.
     // WORKS but doesn't match interface exactly: public JQueryPlainObject AddClass(string className, params string[] classNames) => this.CallJSOfSameNameAsWrapped( new object[] { Params.PrependToArray(className, ref classNames) } ); // new object[] { Params.Merge(className, classNames) });
     public JQueryPlainObject AddClass(string className) => this.CallJSOfSameNameAsWrapped(className);
-    public JQueryPlainObject AddClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[]{ classNames}); // Have to wrap in an extra array because javacsript .apply() will split the array into seperate params
+    public JQueryPlainObject AddClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames }); // Have to wrap in an extra array because javacsript .apply() will split the array into seperate params
     public JQueryPlainObject RemoveClass(string className) => this.CallJSOfSameNameAsWrapped(className);
     public JQueryPlainObject RemoveClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames });
     public JQueryPlainObject ToggleClass(string className, bool? state = null) => this.CallJSOfSameNameAsWrapped(className, state);
@@ -202,6 +204,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public JQueryPlainObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
     public JQueryPlainObject Append(string html) => this.CallJSOfSameNameAsWrapped(html);
+    public JQueryPlainObject Append(HtmlElement html) => this.CallJSOfSameNameAsWrapped(html);
     public JQueryPlainObject Append(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
     public JQueryPlainObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
     public JQueryPlainObject AppendTo(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
@@ -283,65 +286,80 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     #region Generic Events - https://api.jquery.com/category/events/
 
-    // TODO: Write unit tests
+    private record UniqueEvent
+    {
+        public string EventName { get; init; }
+        public string Selector { get; init; }
+    }
 
     // Event subscription for any event name
-    private Dictionary<string, JQueryEventHandler<JQueryPlainObject, dynamic>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryPlainObject, dynamic>>();
+    private Dictionary<UniqueEvent, JQueryEventHandler<JQueryPlainObject, dynamic>> onEvent = new();
+    // Used by strongly typed events such as OnClick/OnInput/OnChange
     public void On(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> newSubscriber)
+        => On(eventName, newSubscriber, null);
+    public void On(string eventName, string selector, JQueryEventHandler<JQueryPlainObject, dynamic> newSubscriber)
+        => On(eventName, newSubscriber, selector);
+
+    private void On(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> newSubscriber, string selector)
     {
-        if (!onEvent.ContainsKey(eventName))// if first event subscriber
-            onEvent[eventName] = null;// initialize key entry
-        onEvent[eventName] = InnerOnGeneric(eventName, newSubscriber, onEvent[eventName]);
+        UniqueEvent eventKey = new() { EventName = eventName, Selector = selector };
+
+        if (!onEvent.ContainsKey(eventKey))// if first event subscriber
+            onEvent[eventKey] = null;// initialize key entry
+        onEvent[eventKey] = InnerOnGeneric(eventKey, newSubscriber, onEvent[eventKey]);
     }
+
+    // TODO: Support "To remove all delegated events from an element without removing non-delegated events, use the special value "**"."
+    public void Off(string eventName, string selector, JQueryEventHandler<JQueryPlainObject, dynamic> subscriberToRemove)
+        => Off(eventName, subscriberToRemove, selector);
     public void Off(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> subscriberToRemove)
+        => Off(eventName, subscriberToRemove, null);
+
+    private void Off(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> subscriberToRemove, string selector)
     {
-        if (!onEvent.ContainsKey(eventName) || onEvent[eventName] == null)
+        UniqueEvent eventKey = new() { EventName = eventName, Selector = selector };
+
+        if (!onEvent.ContainsKey(eventKey) || onEvent[eventKey] == null)
             return;
 
-        onEvent[eventName] = InnerOffGeneric(eventName, subscriberToRemove, onEvent[eventName]);
+        onEvent[eventKey] = InnerOffGeneric(eventKey, subscriberToRemove, onEvent[eventKey]);
     }
 
     public delegate void JQueryEventHandler<in TSender, in TEventArgs>(TSender sender, TEventArgs e)
         where TSender : JQueryPlainObject;
 
-    //public void InternalEventCallback(string eventEncoded, string eventType)
-    //{
-    //    dynamic eventData = EncodedEventToDynamic(eventEncoded);
-    //    onEvent[eventType]?.Invoke(this, eventData);
-    //}
-
     // Handler funcs generated from JS when binding our event. Kept to pass to JQuery .off(..., handler) when unbinding/unsubscribing handler
-    private readonly Dictionary<string, JSObject> jsHandlersByEvent = new Dictionary<string, JSObject>();
+    private readonly Dictionary<UniqueEvent, JSObject> jsHandlersByEvent = new();
 
-    private JQueryEventHandler<JQueryPlainObject, dynamic> InnerOnGeneric(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> newSubscriber, JQueryEventHandler<JQueryPlainObject, dynamic> eventCollection)
+    private JQueryEventHandler<JQueryPlainObject, dynamic> InnerOnGeneric(UniqueEvent eventKey, JQueryEventHandler<JQueryPlainObject, dynamic> newSubscriber, JQueryEventHandler<JQueryPlainObject, dynamic> eventCollection)
     {
         if (eventCollection == null)// if first event subscriber on this instance/event
         {
-            if (jsHandlersByEvent.ContainsKey(eventName))
-                throw new Exception($"Unexpected: jsHandlersByEvent already contains key {eventName}");
+            if (jsHandlersByEvent.ContainsKey(eventKey))
+                throw new Exception($"Unexpected: jsHandlersByEvent already contains key {eventKey}");
 
             // generate handler specific to this instance+event, called by JS when event occurs
             Action<string, string, JSObject> interopListener =
                 (eventEncoded, eventType, arrayObject) =>
-                {
-                    //Console.WriteLine("Event Encoded: " + eventEncoded);
-                    // unpack the single ArrayObject into it's individual elements, wrapping them as JQueryObjects
-                    var replacements = HelpersJS.GetArrayObjectItems(arrayObject).Select(j => new JQueryPlainObject(j)).ToList();
-                    // Deserialize the eventEncoded JSON string, and restore the native JS objects
-                    dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
+               {
+                   //Console.WriteLine("Event Encoded: " + eventEncoded);
+                   // unpack the single ArrayObject into it's individual elements, wrapping them as JQueryObjects
+                   var replacements = HelpersJS.GetArrayObjectItems(arrayObject).Select(j => new JQueryPlainObject(j)).ToList();
+                   // Deserialize the eventEncoded JSON string, and restore the native JS objects
+                   dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
 
-                    onEvent[eventName]?.Invoke(this, eventData);
-                };
+                   onEvent[eventKey]?.Invoke(this, eventData);
+               };
 
-            JSObject jsHandler = InnerOn(eventName, interopListener);
-            jsHandlersByEvent[eventName] = jsHandler;// store handler for later unbinding
+            JSObject jsHandler = InnerOn(eventKey.EventName, interopListener, eventKey.Selector);
+            jsHandlersByEvent[eventKey] = jsHandler;// store handler for later unbinding
         }
 
         eventCollection += newSubscriber;
         return eventCollection;
     }
 
-    private JQueryEventHandler<JQueryPlainObject, dynamic> InnerOffGeneric(string eventName, JQueryEventHandler<JQueryPlainObject, dynamic> subscriberToRemove, JQueryEventHandler<JQueryPlainObject, dynamic> eventCollection)
+    private JQueryEventHandler<JQueryPlainObject, dynamic> InnerOffGeneric(UniqueEvent eventKey, JQueryEventHandler<JQueryPlainObject, dynamic> subscriberToRemove, JQueryEventHandler<JQueryPlainObject, dynamic> eventCollection, string selector = null)
     {
         WriteLine(eventCollection == null ? "eventCollection is null " : "not null");
 
@@ -352,36 +370,47 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
         if (eventCollection == null) // if last subscriber removed, then remove JQuery listener
         {
             //Console.WriteLine("jsHandlersByEvent[eventName]: " + jsHandlersByEvent[eventName]);
-            InnerOff(eventName, jsHandlersByEvent[eventName]);
-            jsHandlersByEvent.Remove(eventName);
+            InnerOff(eventKey.EventName, jsHandlersByEvent[eventKey], eventKey.Selector);
+            jsHandlersByEvent.Remove(eventKey);
         }
 
         return eventCollection;
-
     }
 
-    private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener)
+    private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener, string selector)
     {
         // TODO: Make shouldConvertHtmlElement configurable when we support HtmlElement
-        return JSInstanceProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener);
+        return JSInstanceProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener, selector);
     }
 
-    private void InnerOff(string events, JSObject handlerToRemove)
+    private void InnerOff(string events, JSObject handlerToRemove, string selector)
     {
-        JSInstanceProxy.UnbindListener(jsObject, events, handlerToRemove);
+        JSInstanceProxy.UnbindListener(jsObject, events, handlerToRemove, selector);
     }
 
 
     // Event data is serialized to JSON when the event is fired from JS and passed to C#
     // To preserve some objects as native JS references, they are extracted into a seperate array
     // and JSON properties are replaced with `{ serratedPlaceholder: 1 }` where 1 is the index of the object in the array
-    // Then here when listening to an event we desrialize the JSON into a dynamic and restore the native JS references
+    // Then here when listening to an event we desrialize the JSON into a dynamic and restore the native JS references    
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(JQueryPlainObject))]
     private dynamic EncodedEventToDynamic(string encodedEvent, List<JQueryPlainObject> replacements)
     {
+         
         ExpandoObject eventData = JsonConvert.DeserializeObject<ExpandoObject>(encodedEvent);
         ApplyReplacements(eventData, replacements, null, out bool hasPlaceholder);
         return eventData;
+    
+
+        //ExpandoObject eventData = null;
+        ////ExpandoObject eventData 
+        //dynamic asdf = JsonConvert.DeserializeObject(encodedEvent);
+        ////ApplyReplacements(eventData, replacements, null, out bool hasPlaceholder);
+        //return eventData;
+        ////return null;
     }
+    
+
 
     private object ApplyReplacements(ExpandoObject currentExpando, List<JQueryPlainObject> replacements, ExpandoObject parent, out bool hasPlaceholder)
     {

@@ -8,6 +8,8 @@ using System.Runtime.InteropServices.JavaScript;
 using SerratedSharp.JSInteropHelpers;
 using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
 using System.ComponentModel.Design.Serialization;
+using System.Net;
+using SerratedSharp.SerratedJQ.Plain;
 
 namespace SerratedSharp.SerratedJQ;
 
@@ -303,42 +305,59 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>//, IJQueryContentPara
 
     #region Generic Events - https://api.jquery.com/category/events/
 
-    // TODO: Write unit tests
+    // TODO: Factor out event code in JQueryObject and JQueryPlain
+
+    private record UniqueEvent
+    {
+        public string EventName { get; init; }
+        public string Selector { get; init; }
+    }
 
     // Event subscription for any event name
-    private Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>> onEvent = new Dictionary<string, JQueryEventHandler<JQueryObject, dynamic>>();
+    private Dictionary<UniqueEvent, JQueryEventHandler<JQueryObject, dynamic>> onEvent = new();
+    // Used by strongly typed events such as OnClick/OnInput/OnChange
     public void On(string eventName, JQueryEventHandler<JQueryObject, dynamic> newSubscriber)
+        => On(eventName, newSubscriber, null);
+    public void On(string eventName, string selector, JQueryEventHandler<JQueryObject, dynamic> newSubscriber)
+        => On(eventName, newSubscriber, selector);
+
+    private void On(string eventName, JQueryEventHandler<JQueryObject, dynamic> newSubscriber, string selector)
     {
-        if (!onEvent.ContainsKey(eventName))// if first event subscriber
-            onEvent[eventName] = null;// initialize key entry
-        onEvent[eventName] = InnerOnGeneric(eventName, newSubscriber, onEvent[eventName]);
+        UniqueEvent eventKey = new() { EventName = eventName, Selector = selector };
+
+        if (!onEvent.ContainsKey(eventKey))// if first event subscriber
+            onEvent[eventKey] = null;// initialize key entry
+        onEvent[eventKey] = InnerOnGeneric(eventKey, newSubscriber, onEvent[eventKey]);
     }
+
+    // TODO: Support "To remove all delegated events from an element without removing non-delegated events, use the special value "**"."
+    public void Off(string eventName, string selector, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove)
+        => Off(eventName, subscriberToRemove, selector);
     public void Off(string eventName, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove)
+        => Off(eventName, subscriberToRemove, null);
+
+    private void Off(string eventName, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove, string selector)
     {
-        if (!onEvent.ContainsKey(eventName) || onEvent[eventName] == null)
+        UniqueEvent eventKey = new() { EventName = eventName, Selector = selector };
+
+        if (!onEvent.ContainsKey(eventKey) || onEvent[eventKey] == null)
             return;
 
-        onEvent[eventName] = InnerOffGeneric(eventName, subscriberToRemove, onEvent[eventName]);
+        onEvent[eventKey] = InnerOffGeneric(eventKey, subscriberToRemove, onEvent[eventKey]);
     }
 
     public delegate void JQueryEventHandler<in TSender, in TEventArgs>(TSender sender, TEventArgs e)
         where TSender : JQueryObject;
 
-    //public void InternalEventCallback(string eventEncoded, string eventType)
-    //{
-    //    dynamic eventData = EncodedEventToDynamic(eventEncoded);
-    //    onEvent[eventType]?.Invoke(this, eventData);
-    //}
-
     // Handler funcs generated from JS when binding our event. Kept to pass to JQuery .off(..., handler) when unbinding/unsubscribing handler
-    private readonly Dictionary<string, JSObject> jsHandlersByEvent = new Dictionary<string, JSObject>();
+    private readonly Dictionary<UniqueEvent, JSObject> jsHandlersByEvent = new();
 
-    private JQueryEventHandler<JQueryObject, dynamic> InnerOnGeneric(string eventName, JQueryEventHandler<JQueryObject, dynamic> newSubscriber, JQueryEventHandler<JQueryObject, dynamic> eventCollection)
+    private JQueryEventHandler<JQueryObject, dynamic> InnerOnGeneric(UniqueEvent eventKey, JQueryEventHandler<JQueryObject, dynamic> newSubscriber, JQueryEventHandler<JQueryObject, dynamic> eventCollection)
     {
         if (eventCollection == null)// if first event subscriber on this instance/event
         {
-            if (jsHandlersByEvent.ContainsKey(eventName))
-                throw new Exception($"Unexpected: jsHandlersByEvent already contains key {eventName}");
+            if (jsHandlersByEvent.ContainsKey(eventKey))
+                throw new Exception($"Unexpected: jsHandlersByEvent already contains key {eventKey}");
 
             // generate handler specific to this instance+event, called by JS when event occurs
             Action<string, string, JSObject> interopListener =
@@ -350,18 +369,18 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>//, IJQueryContentPara
                     // Deserialize the eventEncoded JSON string, and restore the native JS objects
                     dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
 
-                    onEvent[eventName]?.Invoke(this, eventData);
+                    onEvent[eventKey]?.Invoke(this, eventData);
                 };
 
-            JSObject jsHandler = InnerOn(eventName, interopListener);
-            jsHandlersByEvent[eventName] = jsHandler;// store handler for later unbinding
+            JSObject jsHandler = InnerOn(eventKey.EventName, interopListener, eventKey.Selector);
+            jsHandlersByEvent[eventKey] = jsHandler;// store handler for later unbinding
         }
-
+        
         eventCollection += newSubscriber;
         return eventCollection;
     }
 
-    private JQueryEventHandler<JQueryObject, dynamic> InnerOffGeneric(string eventName, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove, JQueryEventHandler<JQueryObject, dynamic> eventCollection)
+    private JQueryEventHandler<JQueryObject, dynamic> InnerOffGeneric(UniqueEvent eventKey, JQueryEventHandler<JQueryObject, dynamic> subscriberToRemove, JQueryEventHandler<JQueryObject, dynamic> eventCollection, string selector = null)
     {
         WriteLine(eventCollection == null ? "eventCollection is null " : "not null");
 
@@ -372,23 +391,22 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>//, IJQueryContentPara
         if (eventCollection == null) // if last subscriber removed, then remove JQuery listener
         {
             //Console.WriteLine("jsHandlersByEvent[eventName]: " + jsHandlersByEvent[eventName]);
-            InnerOff(eventName, jsHandlersByEvent[eventName]);
-            jsHandlersByEvent.Remove(eventName);
+            InnerOff(eventKey.EventName, jsHandlersByEvent[eventKey], eventKey.Selector);
+            jsHandlersByEvent.Remove(eventKey);
         }
 
         return eventCollection;
-
     }
 
-    private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener)
+    private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener, string selector)
     {
         // TODO: Make shouldConvertHtmlElement configurable when we support HtmlElement
-        return JSInstanceProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener);
+        return JSInstanceProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener, selector);
     }
 
-    private void InnerOff(string events, JSObject handlerToRemove)
+    private void InnerOff(string events, JSObject handlerToRemove, string selector)
     {
-        JSInstanceProxy.UnbindListener(jsObject, events, handlerToRemove);
+        JSInstanceProxy.UnbindListener(jsObject, events, handlerToRemove, selector);
     }
 
 
@@ -445,11 +463,62 @@ public class JQueryObject : IJSObjectWrapper<JQueryObject>//, IJQueryContentPara
     }
 
     #endregion
+    #region Event Handler Attachement - https://api.jquery.com/category/events/event-handler-attachment/
+    // Incomplete - Not all memers implemented
 
+    // .trigger( eventType [, extraParameters ] )
+    public JQueryObject Trigger(string eventType, params object[] extraParameters) => this.CallJSOfSameNameAsWrapped(Params.Merge(eventType, new object[] { extraParameters }));
 
-
+    #endregion
 
 }
+
+
+
+    //public void InternalEventCallback(string eventEncoded, string eventType)
+    //{
+    //    dynamic eventData = EncodedEventToDynamic(eventEncoded);
+    //    onEvent[eventType]?.Invoke(this, eventData);
+    //}
+
+
+
+    //public class EventData
+    //{
+    //    public string Type { get; set; }
+    //    public string TimeStamp { get; set; }
+    //    public string[] CurrentTarget { get; set; }
+    //    public string[] Target { get; set; }
+    //    public string[] RelatedTarget { get; set; }
+    //    public string[] DelegateTarget { get; set; }
+    //    public string[] HandleObj { get; set; }
+    //    public string[] Data { get; set; }
+    //    public string Result { get; set; }
+    //    public string[] OriginalEvent { get; set; }
+    //    public string[] IsTrigger { get; set; }
+    //    public string[] Namespace { get; set; }
+    //    public string[] Namespace_re { get; set; }
+    //    public string[] Result_re { get; set; }
+    //    public string[] Target_re { get; set; }
+    //    public string[] DelegatedEvent { get; set; }
+    //    public string[] CurrentTarget_re { get; set; }
+    //    public string[] HandleObj_re { get; set; }
+    //    public string[] RelatedTarget_re { get; set; }
+    //    public string[] Data_re { get; set; }
+    //    public string[] IsTrigger_re { get; set; }
+    //    public string[] OriginalEvent_re { get; set; }
+    //    public string[] Type_re { get; set; }
+    //    public string[] DelegateTarget_re { get; set; }
+    //    public string[] TimeStamp_re { get; set; }
+    //}
+
+
+
+
+
+
+
+
 
 
 
