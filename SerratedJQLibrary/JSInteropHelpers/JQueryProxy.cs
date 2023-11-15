@@ -64,7 +64,8 @@ public static partial class JSInstanceProxy
 
     [JSImport(baseJSNamespace + ".BindListener")]
     public static partial JSObject BindListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,
-        [JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler, string selector);//, object data);
+    [JSMarshalAs<JSType.Function<JSType.String, JSType.String, JSType.Object>>] Action<string, string, JSObject> handler, string selector);//, object data);
+
 
     //[JSImport(baseJSNamespace + ".BindDelegatedListener")]
     //public static partial JSObject BindDelegatedListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,

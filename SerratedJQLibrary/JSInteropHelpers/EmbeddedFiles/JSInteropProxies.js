@@ -1,3 +1,5 @@
+// TODO: Rename file to HelpersProxy
+
 // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
 console.log("Declaring JSInteropProxies");
 
@@ -5,7 +7,7 @@ console.log("Declaring JSInteropProxies");
 //Module.getAssemblyExports("SerratedSharp.SerratedJQ")
 //    .then(module => globalThis.SerratedExports = module);
 
-// TODO: Consider object literal notation instead of IIFE and export as module
+// TODO: Consider object literal notation instead of IIFE, and export as module
 var Serrated = globalThis.Serrated || {};
 (function (Serrated) {
 

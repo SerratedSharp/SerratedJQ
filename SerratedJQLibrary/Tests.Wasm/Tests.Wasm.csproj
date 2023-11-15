@@ -55,21 +55,21 @@
 	<!-- Nuget packages -->
 	<ItemGroup>
 		<!-- Legacy JS interop APIs still used for easily loading embedded JS files with WebAssemblyRuntime.InvokeJS.  Should be phased out for other recommended JS embedding options. -->
-		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+		 <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" /> 
 		<!-- Supports compilation and packaging to WebAssembly format -->
-		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.0" />
+		 <PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" /> 
 		<!-- Self hosted dev server -->
-		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.0" />
+		 <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.3" /> 
 
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		 <PackageReference Include="Newtonsoft.Json" Version="13.0.3" /> 
 		<!--All these are needed when IL Linker is enabled and Newtonsoft.Json is referenced, as they are indirect dependencies of Newtonsoft. -->
-		<PackageReference Include="System.CodeDom" Version="8.0.0-rc.2.23479.6" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0-rc.2.23479.6" />
-		<PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0-rc.2.23479.6" />
-		<PackageReference Include="System.Drawing.Common" Version="8.0.0-rc.2.23479.14" />
-		<PackageReference Include="System.IO.Ports" Version="8.0.0-rc.2.23479.6" />
-		<PackageReference Include="System.Security.Permissions" Version="8.0.0-rc.2.23479.6" />
-		<PackageReference Include="System.Threading.AccessControl" Version="8.0.0-rc.2.23479.6" />
+		 <PackageReference Include="System.CodeDom" Version="8.0.0" /> 
+		 <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" /> 
+		 <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" /> 
+		 <PackageReference Include="System.Drawing.Common" Version="8.0.0" /> 
+		 <PackageReference Include="System.IO.Ports" Version="8.0.0" /> 
+		 <PackageReference Include="System.Security.Permissions" Version="8.0.0" /> 
+		 <PackageReference Include="System.Threading.AccessControl" Version="8.0.0" /> 
 
 	</ItemGroup>
 

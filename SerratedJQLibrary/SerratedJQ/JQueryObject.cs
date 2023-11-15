@@ -7,9 +7,6 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
 using SerratedSharp.JSInteropHelpers;
 using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
-using System.ComponentModel.Design.Serialization;
-using System.Net;
-using SerratedSharp.SerratedJQ.Plain;
 
 namespace SerratedSharp.SerratedJQ;
 

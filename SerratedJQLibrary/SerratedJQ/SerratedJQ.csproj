@@ -50,16 +50,11 @@
 
   <ItemGroup>
 	<None Include="readme.md" Pack="true" PackagePath="\" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+	 <PackageReference Include="Newtonsoft.Json" Version="13.0.3" /> 
+	 <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" /> 
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Archive\1.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>1.resx</DependentUpon>
-    </Compile>
     <Compile Update="EmbeddedFiles.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -73,10 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Archive\1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Update="EmbeddedFiles.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>EmbeddedFiles.Designer.cs</LastGenOutput>

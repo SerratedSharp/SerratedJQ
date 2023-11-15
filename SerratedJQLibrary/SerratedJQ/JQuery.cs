@@ -8,6 +8,7 @@ using System;
 namespace SerratedSharp.SerratedJQ
 {
     // MEthods exposed by global jQuery object, typically methods that generate JQuery object isntances
+    [Obsolete("Work in progress: The API for this interface may change. Use JQueryPlain and JQueryPlainObject instead if you want to minimize impact of future changes.")]
     public static class JQuery
     {
         /// <summary>
