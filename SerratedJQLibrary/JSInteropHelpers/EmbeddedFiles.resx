@@ -117,53 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="click" xml:space="preserve">
-    <value>click</value>
-    <comment>Click event</comment>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="JQueryProxy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>EmbeddedFiles\JQueryProxy.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="input" xml:space="preserve">
-    <value>input</value>
-    <comment>Input event</comment>
+  <data name="JSInteropProxies" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>EmbeddedFiles\JSInteropProxies.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="jqbj" xml:space="preserve">
-    <value>jqObj</value>
-  </data>
-  <data name="jQueryRef" xml:space="preserve">
-    <value>jQuery</value>
-    <comment>The string we use in javascript to access jQuery, whether it be $ or jQuery</comment>
-  </data>
-  <data name="ManagedObjectJavascriptDispatcherDeclaration" xml:space="preserve">
-    <value>
-                    console.log('Init JQueryBox');
-                    
-                    window.Uno = '';
-                    (function (Uno) {
-                        var Foundation;
-                        (function (Foundation) {
-                            var Interop;
-                            (function (Interop) {
-                                var ManagedObject = (function () {
-                                    function ManagedObject() {
-                                    }
-                                    ManagedObject.init = function () {
-                                        ManagedObject.dispatchMethod = Module.mono_bind_static_method('[Uno.Foundation.Runtime.WebAssembly] Uno.Foundation.Interop.JSObject:Dispatch');
-                                    };
-                    ManagedObject.dispatch = function(handle, method, parameters)
-                    {
-                        if (!ManagedObject.dispatchMethod)
-                        {
-                            ManagedObject.init();
-                        }
-                        ManagedObject.dispatchMethod(handle, method, parameters || '');
-                    };
-                                    return ManagedObject;
-                                }
-                ());
-                                Interop.ManagedObject = ManagedObject;
-                            })(Interop = Foundation.Interop || (Foundation.Interop = { }));
-                        })(Foundation = Uno.Foundation || (Uno.Foundation = { }));
-                    })(Uno || (Uno = { }));
-</value>
-    <comment>This javascript is typically declared in Uno platform UI apps but is needed by some methods used in the WebAssembly package. This code is owned by Uno, so this project must use a compatible license.</comment>
+  <data name="ObserveRemoved" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>EmbeddedFiles\ObserveRemoved.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

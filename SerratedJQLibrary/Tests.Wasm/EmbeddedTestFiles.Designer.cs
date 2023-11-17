@@ -61,6 +61,30 @@ namespace Tests.Wasm {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to function loadScript(url) {
+        ///    return new Promise(function (resolve, reject) {
+        ///        var script = document.createElement(&quot;script&quot;);
+        ///        script.onload = resolve;
+        ///        script.onerror = reject;
+        ///        script.src = url;
+        ///        document.getElementsByTagName(&quot;head&quot;)[0].appendChild(script);
+        ///    });
+        ///}
+        ///
+        ///function loadjQuery() {
+        ///    if (window.jQuery) {
+        ///        // already loaded and ready to go
+        ///        return Promise.resolve();
+        ///    } else {
+        ///        return loadScript(&apos;https://ajax.googleapis.c [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string TestWasm {
+            get {
+                return ResourceManager.GetString("TestWasm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;-prompt(8)-&quot;
         ///&apos;-prompt(8)-&apos;
         ///&quot;;a=prompt,a()//
