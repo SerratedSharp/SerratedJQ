@@ -6,7 +6,6 @@ namespace SerratedSharp.SerratedJQ
     {
         public static void LoadScripts()
         {
-
             WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.JSInteropProxies);
 
             WebAssemblyRuntime.InvokeJS(SerratedSharp.JSInteropHelpers.EmbeddedFiles.JQueryProxy);

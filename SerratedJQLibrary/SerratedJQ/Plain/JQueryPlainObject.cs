@@ -16,6 +16,10 @@ namespace SerratedSharp.SerratedJQ.Plain;
 public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryContentParameter
 {
     internal JSObject jsObject;// reference to the jQuery javascript interop object
+    
+    /// <summary>
+    /// Handle to the underlying javascript jQuery object
+    /// </summary>
     public JSObject JSObject { get { return jsObject; } }
 
     // instances can only be created thru factory methods like Select()/ParseHtml()
@@ -28,7 +32,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     }
 
     /// <summary>
-    /// Copy JQueryObject reference to new JQueryPlainObject to allow access to alternativge API semantics.
+    /// Copy JQueryObject reference to new JQueryPlainObject to allow access to alternative API semantics.
     /// </summary>
     //public JQueryPlainObject(JQueryObject jQueryObject)
     //{
@@ -111,7 +115,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public string Val() => this.CallJSOfSameName<string>();
     public T Val<T>() => this.CallJSOfSameName<T>();
-    //his.CallJSOfSameName< (string[])JSInstanceProxy.FuncByNameAsArray(this.JSObject, "val", null); //this.CallJSOfSameName<T>();
+    
     public JQueryPlainObject Val(string value) => this.CallJSOfSameNameAsWrapped(value);
     public JQueryPlainObject Val(double value) => this.CallJSOfSameNameAsWrapped(value);
     public JQueryPlainObject Val(string[] value) => this.CallJSOfSameNameAsWrapped(new object[] { value });
@@ -119,7 +123,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     #endregion
 
     #region Style Properties - https://api.jquery.com/category/manipulation/style-properties/
-    // Alsop include the couple of items from CSS that aren't in any other category: https://api.jquery.com/category/css/    
+    // Also include the couple of items from CSS that aren't in any other category: https://api.jquery.com/category/css/    
 
     public string Css(string propertyName) => this.CallJSOfSameName<string>(propertyName);
     public JQueryPlainObject Css(string propertyName, string value) => this.CallJSOfSameNameAsWrapped(propertyName, value);
@@ -204,8 +208,10 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public JQueryPlainObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
     public JQueryPlainObject Append(string html) => this.CallJSOfSameNameAsWrapped(html);
-    public JQueryPlainObject Append(HtmlElement html) => this.CallJSOfSameNameAsWrapped(html);
-    public JQueryPlainObject Append(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
+    // TODO: Follow this pattern for implementing other methods that take JQuery's "content" params that support both JQuery objects and HtmlElement objects
+    public JQueryPlainObject Append(IJQueryContentParameter contentObject, params IJQueryContentParameter[] contentObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(contentObject, ref contentObjects));
+    //public JQueryPlainObject Append(HtmlElement html) => this.CallJSOfSameNameAsWrapped(html);
+    //public JQueryPlainObject Append(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
     public JQueryPlainObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
     public JQueryPlainObject AppendTo(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
     public JQueryPlainObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
@@ -256,14 +262,10 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     #region Specific Events - https://api.jquery.com/click/
 
-    // TODO: Write unit tests
-
     //private JQueryEventHandler<JQueryObject, object> onClick;
     // https://api.jquery.com/click/    
     public event JQueryEventHandler<JQueryPlainObject, dynamic> OnClick
     {
-        //add { onClick = InnerOnGeneric("click", value, onClick); }
-        //remove { onClick = InnerOffGeneric("click", value, onClick); }
         add { On("click", value); }
         remove { Off("click", value); }
     }
@@ -395,22 +397,11 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     // Then here when listening to an event we desrialize the JSON into a dynamic and restore the native JS references    
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(JQueryPlainObject))]
     private dynamic EncodedEventToDynamic(string encodedEvent, List<JQueryPlainObject> replacements)
-    {
-         
+    {         
         ExpandoObject eventData = JsonConvert.DeserializeObject<ExpandoObject>(encodedEvent);
         ApplyReplacements(eventData, replacements, null, out bool hasPlaceholder);
-        return eventData;
-    
-
-        //ExpandoObject eventData = null;
-        ////ExpandoObject eventData 
-        //dynamic asdf = JsonConvert.DeserializeObject(encodedEvent);
-        ////ApplyReplacements(eventData, replacements, null, out bool hasPlaceholder);
-        //return eventData;
-        ////return null;
+        return eventData;    
     }
-    
-
 
     private object ApplyReplacements(ExpandoObject currentExpando, List<JQueryPlainObject> replacements, ExpandoObject parent, out bool hasPlaceholder)
     {
@@ -455,20 +446,20 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     #endregion
     #region Event Handler Attachement - https://api.jquery.com/category/events/event-handler-attachment/
-    // Incomplete - Not all memers implemented
+    // Incomplete - Not all members implemented
 
     // .trigger( eventType [, extraParameters ] )
     public JQueryPlainObject Trigger(string eventType, params object[] extraParameters) => this.CallJSOfSameNameAsWrapped(Params.Merge(eventType, new object[] { extraParameters }));
 
-    #endregion 
+    #endregion
+    #region Data - https://api.jquery.com/category/data/
 
+    public T Data<T>(string key) => this.CallJSOfSameName<T>(key);
+    public JQueryPlainObject Data(string key, object value) => this.CallJSOfSameNameAsWrapped(key, value);
+    public dynamic Data() => this.CallJSOfSameName<dynamic>();
 
+    #endregion
 
-}
-
-// TODO: A way to flag all types that are valid for JQuery "Content" parameter?
-public interface IJQueryContentParameter
-{
 
 }
 

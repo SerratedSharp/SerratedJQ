@@ -1,12 +1,12 @@
 
 # SerratedJQ
 
-A C# WebAssembly wrapper for JQuery which provides the capability to read and manipulate the HTML DOM, create .NET event handlers for HTML DOM events, hold references to DOM elements from C# WASM, attach data or managed references to HTML DOM element datasets, and expose static .NET methods as javascript methods.  Leverages Uno.Wasm.Bootstrap for WebAssembly support, but does not require consumers to use full Uno Platform.  The intention is that this wrapper would be used by those building traditional web applications(e.g. ASP.NET MVC) but who wish to use a .NET language such as C# to implement client side UI logic rather than javascript.  Please see Nuget package Release Notes for specific version compatibility information.
+A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Leverages Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.
 
 ## Demo
 A demo is published as a static site at https://serratedsharp.github.io/CSharpWasmJQueryDemo/
 
-Emphasis on "static".  There's no server side code in this demo.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, and run inside a WebAssembly sandbox.  No .NET server side hosting is needed, but this approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic. 
+Emphasis on "static".  There's no server side code in this demo.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, and run inside a WebAssembly sandbox.  No .NET server side hosting is needed, but this approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic.
 
 A more extensive demo including integration with a MVC project and API requests from the WASM client to MVC host, including a walkthrough of the code:
 https://www.youtube.com/watch?v=0BrGf99K6CU
@@ -20,34 +20,35 @@ This example C# WebAssembly code shows how you might select an HTML element, sub
 using SerratedSharp.SerratedJQ;
 static void Main(string[] args)
 {
-  var clickMe = JQueryBox.FromHtml("<span>Click Me</span>");
-  JQueryBox.Select("body").Append(clickMe);
+  JQueryPlainObject clickMe = JQueryPlain.ParseHtmlAsJQuery("<span>Click Me</span>");
+  JQueryPlain.Select("body").Append(clickMe);
   clickMe.OnClick += Test_OnClick;
 }
 
-void Test_OnClick(JQueryBox sender, dynamic e)
+void Test_OnClick(JQueryPlainObject sender, dynamic e)
 {
-  var newElement = JQueryBox.FromHtml("<span>Clicked</span>");
-  JQueryBox.Select("body").Append(newElement);
+  var newElement = JQueryPlain.ParseHtmlAsJQuery("<span>Clicked</span>");
+  sender.Append(newElement);  
 }
 ```
 
 Having handles to DOM elements within client side C# opens the door for model driven DOM manipulation.  In this example from the SerratedJQSample ListDemo, we use C# models to reorder items, then reorder the corresponding HTML DOM elements:
 ```C#
-private void SortByRep_OnClick(JQueryBox sender, object e)
+private void SortByRep_OnClick(JQueryPlainObject sender, object e)
 {
     Rows.OrderBy(r => r.Model.Rep.Name) // Order by backing model data
         .ToList().ForEach(a => Container.Append(a.JQBox)); //Reorder HTML elements in the DOM
 }
 ```
 
-JQuery event objects are converted to dynamic objects, but keep in mind this only supports primitives thus there is no current support for complex objects embedded in the event.  The `sender` will typically be the same JQuery object you used to subscribe to the event from:
+JQuery event objects are converted to dynamic objects.  HtmlElement references at the first layer such as `.target` and `.currentTarget` are wrapped as JQueryPlain object references to support interaction through the JQueryPlain API.  The `sender` will typically be the same jQuery object you used to subscribe to the event from:
 ```C#
-void Test_OnClick(JQueryBox sender, dynamic e)
+void Test_OnClick(JQueryPlainObject sender, dynamic e)
 {
   Console.WriteLine(e); // Outputs full event structure to browser debug console
   string eventName = e.type;// If we know the structure of the event object we can access values through loosely typed dynamic
   Assert.Equal(eventName == "click");
+  GlobalJS.Console.Log("Child_OnClick", sender, e, e.target, e.currentTarget);
 }
 ```
 
@@ -113,13 +114,20 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 - Build both projects, then launch the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
 
-[!NOTE] 
-You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
+> [!NOTE] 
+> You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
 
 ## Usage
+
+Types suffixed with "Plain" seek to implement the jQuery API as-is.  Some liberties for security or consistency have been taken, such as not providing a `$()` equivalent, but rather providing separate `.Select` and `.ParseHtml` methods to ensure parameters are never interpreted as HTML when not intended, as this can be a security pitfall.  Seperate `.ParseHtml` and `.ParseHtmlAsJQuery` methods disambiguate pitfalls where jQuery ParseHtml can sometimes return an HtmlElement instead of a jQuery object.
+
+Opinionated non-Plain API's are planned for future implementation which would more closely align with a typical .NET framework API.
+
+> [!NOTE] 
+> Sample projects are temporarily out of date.  In the interim they still serve as a demonstration of general approaches. For working example code, see the test cases in the `SerratedJQLibrary/Tests.Wasm` project such as https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQLibrary/Tests.Wasm/ElementManipulation.cs  
 
 - The GettingStarted project demonstrates basic DOM manipulation and event subscription: [GettingStarted IndexClient.cs](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs)
 - The SerratedJQSample project includes more advanced examples as well as API requests to the MVC project from the WASM client: [SerratedJQSample](https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample)
@@ -142,10 +150,6 @@ Uno.Foundation.WebAssemblyRuntime.InvokeJS("WasmReady()");// signal WASM as load
 }
 ```
 
-
-# Warning
-ManagedObjectAttach() is experimental and potentially generates memory leaks due to shortcuts taken to pin managed objects referenced from DOM or javascript.
-
 # Security Considerations
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
@@ -156,21 +160,21 @@ The same security considerations when using JQuery apply when using this wrapper
 Migration of the majority of underlying JS interop API from Uno WebAssemblyRuntime to .NET 7's `System.Runtime.InteropServices.JavaScript`.
 
 - Going forward the underlying implementation is simplified, should perform better, and simplifies implementation of future capabilities.
-- Event properties which represent HTMLElement's, such as e.target and e.currentTarget, are now preserved as JQueryObject references across the interop layer when handling events.
+- Moves toward the ability to provide interop helpers as a separate library to assist others creating .NET interop wrappers for javascript.
+- Fixes for compatibility with IL Linker trimming, i.e. `<WasmShellILLinkerEnabled>true</...`.  (AOT has not yet been validated.)
+- Event properties at the first layer of an event object which represent HTMLElement's, such as e.target and e.currentTarget, are now preserved as JQueryObject references across the interop layer when handling events.
+- Support for delegated event handlers where a selector is passed to `.On(`: https://learn.jquery.com/events/event-delegation/#using-the-triggering-element.  See `Events_On_Click_Selector` in Tests.Wasm for a usage example.
 - Expands available jQuery API methods and overloads.
-- Includes some breaking changes to the API interface.
+- Includes breaking changes to the API interface.
+    - With the goal of converging on a stable API sooner, the JQueryPlainObject seeks to implement the jQuery interface as-is to minimize the need to make opinionated choices about how to expose the API in a .NET flavored way. 
     - Sample projects have not been updated to use the new API, but unit tests within the `SerratedJQLibrary/Tests.Wasm` have been updated and can be used as a usage reference. 
-    - `JQuery` is a static class mirroring the global JQuery object. It now exposes the static methods .Select() and .ParseHtml() which generate instances of jQuery collection objects.
-    - `JQueryObject` is an instance of a jQuery collection object, and exposes the majority of the jQuery API and event subscription capabilities.  Replaces `JQueryBox`.
-- Removes superfluous method chaining:
-    - This refers to method chaining present in jQuery where the return from the method is always the same object reference, which is only used to facilitate chaining.
-    - It's not really a common pattern in C# except for builder/fluent or unit of work APIs.
-    - It creates ambiguity between methods where the return type is the result of the method operation, versus where the same object is being returned only to facilitate method chaining and doesn't need to be captured.  In these cases sometimes it's not clear if the operation mutated the original object reference, or if the original object is left as is and the return value is a new result of the operation.
-    - Now it's clear if a modifying operation returns void, then you know the original object was mutated.  If the operation returns a different object, then you know the original object was not mutated and you must capture the return value for the result.
-    - Eliminates unnecessary object allocations.
-    - Chaining is still possible with methods such as .Find() and .Children() since each call returns a different JQuery object/collection, and allows iterative navigation/filtering of the DOM.
+    - `JQueryPlain` is a static class mirroring the global jQuery object. It now exposes the static methods `.Select(string selector)` and `.ParseHtmlAsJQuery(string html)` which generate instances of jQuery collection objects as `JQueryPlainObject` references.
+    - `JQueryPlainObject` is an instance of a jQuery collection object, and exposes the majority of the jQuery API and event subscription capabilities.  Replaces `JQueryBox`.
+    - `.Data` now supports types supported by .NET 7 interop as well as references to managed objects.
+    - Experimental `ManagedObjectAttach()` is superseded by `JQueryPlainObject.Data("key", model)` which can store and retrieve references to .NET objects.  
+- Limited methods such as .ParseHtml and .Append now also support the type HtmlElement, which allows references to native DOM elements which are not wrapped as a jQuery object. This can be necessary in certain usage scenarios where jQuery returns an HtmlElement rather than a jQuery object, or for compatibility with other interop libraries holding HtmlElement references (this can be achieved by using their .NET 7 native JSObject reference to create a SerratedSharp HtmlElement via the constructor taking a JSObject reference).  Overloads supporting this type will be expanded in future versions, but the type will be separated into a distinct library and refined before expanding usage within SerratedJQ.
 
-
+This version has been tested with Uno.Wasm.Bootstrap 8.0.3 and Uno.Foundation.Runtime.WebAssembly 5.0.19 under .NET Core 8.
 
 ### 0.0.4
 Nuget package metadata updates.

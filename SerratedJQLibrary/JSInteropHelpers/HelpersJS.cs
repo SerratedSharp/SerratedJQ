@@ -6,8 +6,7 @@ using System.Runtime.InteropServices.JavaScript;
 
 namespace SerratedSharp.JSInteropHelpers
 {
-    // CONSIDER: Implementing a selector builder fluent API for https://api.jquery.com/category/selectors/
-
+    
     public static class HelpersJS
     {
 

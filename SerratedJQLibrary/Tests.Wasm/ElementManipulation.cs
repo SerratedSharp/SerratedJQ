@@ -5,16 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Wasm;
 
-
-
 namespace Tests.Wasm;
-
 
 public partial class TestsContainer
 {
-
-
-
     public class ElementManipulation_AddClass_HasClass : JQTest
     {
         public override void Run()

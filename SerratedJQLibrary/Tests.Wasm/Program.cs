@@ -102,7 +102,7 @@ public interface IJQTest
 {
     int TestNum { get; set; }
 
-    bool IsModelTest { get; set; }
+    //bool IsModelTest { get; set; }
 
     void BeginTest(out JQueryPlainObject status);
     void EndTest(JQueryPlainObject status, Exception exc);
@@ -113,7 +113,7 @@ public abstract class JQTest : IJQTest
 {
     JQueryPlainObject body = JQueryPlain.Select("body");
     public int TestNum { get; set; }
-    public bool IsModelTest { get; set; } = false;
+    //public bool IsModelTest { get; set; } = false;
     Exception exc = null; JQueryPlainObject status = null;
     protected JQueryPlainObject tc;// test container
     protected JQueryPlainObject result;

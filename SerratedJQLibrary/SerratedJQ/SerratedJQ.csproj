@@ -16,9 +16,9 @@
     <Version>0.1.0</Version>
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
-    <Description>A JQuery wrapper appropriate for use in a WebAssembly using Uno.Wasm.Bootstrap. Provides the capability to read and manipulate the HTML DOM, subscribe to HTML DOM events, and hold references to elements from C# WASM.</Description>
+    <Description>A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Intended for us in assemblies that leverage Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.</Description>
     <Copyright>Copyright (c) SerratedSharpSolutions 2023</Copyright>
-    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 7.0.27 and Uno.Foundation.Runtime.WebAssembly 4.9.45 under .NET Core 7.</PackageReleaseNotes>
+    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 8.0.3 and Uno.Foundation.Runtime.WebAssembly 5.0.19 under .NET Core 8.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>

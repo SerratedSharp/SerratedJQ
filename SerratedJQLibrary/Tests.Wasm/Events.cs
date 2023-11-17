@@ -132,29 +132,30 @@ public partial class TestsContainer
         }
     }
 
-    //public class Events_On_Click_Selector : JQTest
-    //{
-    //    public override void Run()
-    //    {
-    //        tc.Append("""
-    //        <div class='w'><div class='y'>
-    //            <span class='x1'></span>
-    //        </div></div>
-    //        """);
-    //        var child = tc.Find(".w");
+    public class Events_On_Click_Selector : JQTest
+    {
+        public override void Run()
+        {
+            tc.Append("""
+            <div class='w'><div class='y'>
+                <span class='x1'></span>
+            </div></div>
+            """);
+            var child = tc.Find(".w");
 
-    //        var handler = new TestHandler(this);
+            var handler = new TestHandler(this);
+            // Seperate delegated subscribe to each
+            child.On("click", ".x1", handler.EventListener);
+            child.On("click", ".x2", handler.EventListener);
+            tc.Find(".y").Append("""<span class='x2'></span>""");
+            var child2 = tc.Find(".x2");
+            // trigger click on only one of the delegated elements
+            child2.Trigger("click");
+            Assert(child.HasClass("eventhandled"));
+            Assert(child.Attr("data-eventname") == "click");
+            Assert(child2.HasClass("eventtarget"));
+            Assert(child2.Attr("data-targeteventname") == "click");
 
-    //        child.On("click", ".x1", handler.EventListener);
-    //        child.On("click", ".x2", handler.EventListener);
-    //        tc.Find(".y").Append("""<span class='x2'></span>""");
-    //        var child2 = tc.Find(".x2");
-    //        child2.Trigger("click");
-    //        Assert(child.HasClass("eventhandled"));
-    //        Assert(child.Attr("data-eventname") == "click");
-    //        Assert(child2.HasClass("eventtarget"));
-    //        Assert(child2.Attr("data-targeteventname") == "click");
-
-    //    }
-    //}
+        }
+    }
 }

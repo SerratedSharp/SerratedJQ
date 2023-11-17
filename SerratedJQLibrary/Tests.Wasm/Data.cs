@@ -1,190 +1,99 @@
-﻿//using SerratedSharp.SerratedJQ;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Wasm;
-
-//namespace Tests.Wasm
-//{
-
-//    public class Data_DataBag1 : JQTest
-//    {
-//        public Data_DataBag1()
-//        {
-//            IsModelTest = false;
-//        }
-
-//        public class TestModel
-//        {
-//            public int UserId { get; set; }
-//            public string Name { get; set; }
-
-//        }
-
-
-//        public override void Run()
-//        {
-//            var uiModel = JQueryBox.FromHtml("<div class='w'></div>");
-//            tc.Append(uiModel);
-
-//            var child = tc.Find(".w");
-
-//            child.DataBag.One = 1;
-//            child.DataBag.Two = 2;
-//            Console.WriteLine("Databag" + child.DataBag.Two);
-//            Console.WriteLine("Databag" + child.DataBag.One);
-//            Assert(child.DataBag.One + child.DataBag.Two == 3);
-
-
-
-//        }
-
-//    }
-
-
-
-//    public class Data_DataProperty1 : JQTest
-//    {
-//        public Data_DataProperty1()
-//        {
-//            IsModelTest = false;
-//        }
-
-//        public class TestModel
-//        {
-//            public int UserId { get; set; }
-//            public string Name { get; set; }
-
-//        }
-
-
-//        public override void Run()
-//        {
-//            var uiModel = JQueryBox.FromHtml("<div class='w'></div>");
-//            tc.Append(uiModel);
-
-//            uiModel.DataAdd("someModel", new TestModel { UserId = 3, Name = "Blah" });
-
-//            var child = tc.Find(".w");
-
-//            var model2 = child.DataGet<TestModel>("someModel");
-
-//            Assert(model2.Name == "Blah");
-//            Assert(model2.UserId == 3);
-
-//        }
-
-//    }
-
-
-
-//    public class Data_DataProperty2 : JQTest
-//    {
-//        public Data_DataProperty2()
-//        {
-//            IsModelTest = false;
-//        }
-
-//        public class TestModel
-//        {
-//            public int UserId { get; set; }
-//            public string Name { get; set; }
-
-//        }
-
-
-//        public override void Run()
-//        {
-//            var uiModel = JQueryBox.FromHtml("<div class='w'></div>");
-//            tc.Append(uiModel);
-
-//            uiModel.DataAdd("someModel", "simplestring");
-
-//            var child = tc.Find(".w");
-
-//            var model2 = child.DataGet<string>("someModel");
-
-//            Assert(model2 == "simplestring");
-
-//        }
-
-//    }
-
-
-//    public class Data_DataProperty3 : JQTest
-//    {
-//        public Data_DataProperty3()
-//        {
-//            IsModelTest = false;
-//        }
-
-//        public class TestModel
-//        {
-//            public int UserId { get; set; }
-//            public string Name { get; set; }
-
-//        }
-
-
-//        public override void Run()
-//        {
-//            var uiModel = JQueryBox.FromHtml("<div class='w'></div>");
-//            tc.Append(uiModel);
-
-//            uiModel.DataAdd("someModel", 3);
-
-//            var child = tc.Find(".w");
-
-//            var model2 = child.DataGet<int>("someModel");
-
-//            Assert(model2 == 3);
-
-//        }
-
-//    }
-
-
-
-//    public class Data_DataExperimental1 : JQTest
-//    {
-//        public Data_DataExperimental1()
-//        {
-//            IsModelTest = false;
-//        }
-
-//        public class TestModel
-//        {
-//            public int UserId { get; set; }
-//            public string Name { get; set; }
-
-//        }
-
-
-//        public override void Run()
-//        {
-//            var model = new TestModel { UserId = 3, Name = "Blah" };
-
-//            var uiModel = JQueryBox.FromHtml("<div class='w'></div>");
-//            tc.Append(uiModel);
-//            uiModel.ManagedObjectAttach("KeyA", model);
-
-//            var child = tc.Find(".w");
-
-//            var model2 = child.ManagedObjectGet("KeyA") as TestModel;
-
-//            Assert(model2.Name == "Blah");
-//            Assert(model2.UserId == 3);
-
-//            model2 = child.ManagedObjectRemove("KeyA") as TestModel;
-
-//            Assert(model2.Name == "Blah");
-//            Assert(model2.UserId == 3);
-
-
-//        }
-
-//    }
-
-
-//}
+﻿using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJQ;
+using SerratedSharp.SerratedJQ.Plain;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
+using System.Threading.Tasks;
+using Wasm;
+
+namespace Tests.Wasm;
+
+public partial class TestsContainer
+{
+    internal class TestModel
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class Data_Data_String : JQTest
+    {
+        public override void Run()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+            stubs.Data("one", "uno");
+            
+            string val = tc.Find(".a").Data<string>("one");
+
+            Assert(val == "uno");
+        }
+    }
+
+    //public class Data_Data_Json : JQTest
+    //{
+    //    public override void Run()
+    //    {
+    //        JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+    //        //var model = """
+    //        //{ UserId = 1, Name = "uno" }
+    //        //""";
+    //        // TODO: create interop call that takes json string, JSON.parse into js object, returns JSObject that can be passed to data
+
+    //        var model = new JSObject();
+    //        System.Runtime.InteropServices.JavaScript.JSHost.GlobalThis.
+    //        model.UserId = 1;
+    //        model.Name = "uno";
+
+    //        stubs.Data("one", model);
+    //        dynamic val = tc.Find(".a").Data<dynamic>("one");
+
+    //       // Assert(val.Name == "uno");
+    //       // Assert(val.UserId == 1);
+    //    }
+    //}
+
+    public class Data_Data_ManagedObject : JQTest
+    {
+        public override void Run()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+            var model = new TestModel { UserId = 1, Name = "uno" };
+            
+            stubs.Data("one", model);
+            TestModel val = tc.Find(".a").Data<TestModel>("one");
+        
+            Assert(val.Name == "uno");
+            Assert(val.UserId == 1);
+        }
+    }
+
+    public class Data_Data_MemoryLoadTest : JQTest
+    {
+        public override void Run()
+        {
+            StoreData();
+
+            foreach (var i in Enumerable.Range(0, 100000))
+            {
+                List<int> test = new List<int>(Enumerable.Range(0, 10));
+                JQueryPlain.Select(".a");
+            }
+            GC.Collect();
+            TestModel val = tc.Find(".a").Data<TestModel>("one");
+            
+            Assert(val.Name == "uno");
+            Assert(val.UserId == 1);
+        }
+
+        private void StoreData()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+            var model = new TestModel { UserId = 1, Name = "uno" };
+            stubs.Data("one", model);
+        }
+    }
+
+}

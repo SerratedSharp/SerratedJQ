@@ -5,6 +5,7 @@ namespace SerratedSharp.JSInteropHelpers;
 
 // TODO: Change to private
 // TODO: Make generic instead of being JQuery specific, move any Jquery specific proxies back into SerratedJQ, splitting appropriate JS file
+// TODO: should be in SerratedJQ instead of JSInteropHelpers
 // Proxy for javascript declaration in JQueryProxy.js
 public static partial class JQueryProxy //: IJSObject
 {

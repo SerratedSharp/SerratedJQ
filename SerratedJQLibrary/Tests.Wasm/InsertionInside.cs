@@ -1,4 +1,5 @@
 ﻿using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJQ;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
 using Wasm;
@@ -24,6 +25,19 @@ public partial class TestsContainer
         {
             JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
             tc.Append(JQueryPlain.ParseHtmlAsJQuery("<div class='x'></div>"));
+            result = tc.Children();
+            Assert(result.HasClass("a") && result.HasClass("x"));
+            Assert(result.Length == 2);
+        }
+    }
+
+    public class InsertionInside_Append_HtmlElement: JQTest
+    {
+        public override void Run()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+            HtmlElement htmlElement = JQueryPlain.ParseHtml("<div class='x'></div>");
+            tc.Append(htmlElement);
             result = tc.Children();
             Assert(result.HasClass("a") && result.HasClass("x"));
             Assert(result.Length == 2);
