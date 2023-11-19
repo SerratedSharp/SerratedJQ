@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted.WasmClient", "GettingStarted.WasmClient\GettingStarted.WasmClient.csproj", "{70222E89-F1AB-440B-919F-B98C3F16F69A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GettingStarted.WasmClient", "GettingStarted.WasmClient\GettingStarted.WasmClient.csproj", "{70222E89-F1AB-440B-919F-B98C3F16F69A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted.Mvc", "GettingStarted.Mvc\GettingStarted.Mvc.csproj", "{F3EF6EA8-F638-4915-A74F-91F593092BA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GettingStarted.Mvc", "GettingStarted.Mvc\GettingStarted.Mvc.csproj", "{F3EF6EA8-F638-4915-A74F-91F593092BA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted.WasmShared", "GettingStarted.WasmShared\GettingStarted.WasmShared.csproj", "{1D503634-1731-4391-B96E-99F326C82E03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F3EF6EA8-F638-4915-A74F-91F593092BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3EF6EA8-F638-4915-A74F-91F593092BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3EF6EA8-F638-4915-A74F-91F593092BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D503634-1731-4391-B96E-99F326C82E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D503634-1731-4391-B96E-99F326C82E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D503634-1731-4391-B96E-99F326C82E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D503634-1731-4391-B96E-99F326C82E03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

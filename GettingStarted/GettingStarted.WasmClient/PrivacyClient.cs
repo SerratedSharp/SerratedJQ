@@ -1,16 +1,14 @@
 ﻿using SerratedSharp.SerratedJQ;
+using SerratedSharp.SerratedJQ.Plain;
 
 namespace GettingStarted.WasmClient
 {
-
-    // Client side validation demo using Luhn check digit algorithm
     public class PrivacyClient
     {
         public static void Init()
         {
             Console.WriteLine("Privacy Page WASM Executed.");
-
+            JQueryPlain.Select("body").Append("<div>Hello from PrivacyClient</div>");
         }
-
     }
 }

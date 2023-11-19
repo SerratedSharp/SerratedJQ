@@ -1,4 +1,4 @@
-﻿using SerratedSharp.SerratedJQ;
+﻿using SerratedSharp.SerratedJQ.Plain;
 
 namespace GettingStarted.WasmClient
 {
@@ -10,7 +10,7 @@ namespace GettingStarted.WasmClient
         {
             Console.WriteLine("Index Page WASM Executed.");
 
-            JQueryBox.Select(".container main").Append(JQueryBox.ParseHtml(
+            JQueryPlain.Select(".container main").Append(JQueryPlain.ParseHtmlAsJQuery(
                 """
                 <div class="row">
                     <div class="col">
@@ -26,13 +26,16 @@ namespace GettingStarted.WasmClient
                 </div>
                 """));
 
-            var input = JQueryBox.Select("#cardInput");
+            var input = JQueryPlain.Select("#cardInput");
             input.OnInput += Input_OnInput;
         }
 
-        private static void Input_OnInput(JQueryBox sender, object e)
+        private static void Input_OnInput(JQueryPlainObject sender, object e)
         {
-            bool isValid = LuhnIsValid(sender.Value);
+            string cardNumber = sender.Val<string>().Trim();
+            // Check Luhn validation
+            bool isValid = string.IsNullOrWhiteSpace(cardNumber) == false && LuhnIsValid(cardNumber);
+            // Adding validation class
             if (isValid)
             {
                 sender.AddClass("is-valid");

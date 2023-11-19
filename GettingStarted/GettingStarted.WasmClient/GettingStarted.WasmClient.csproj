@@ -1,17 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.0.3" />
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="7.0.3" />
-  </ItemGroup>
-  
-  <Import Project=".\Build.props" />
+	<!-- Setup 1:  -->
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
+		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\GettingStarted.WasmShared\GettingStarted.WasmShared.csproj" />
+	</ItemGroup>
+
+	<!-- Setup: WASM Configuration -->
+	<PropertyGroup>
+		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+	</PropertyGroup>
+
+	<!-- Setup: Reference build script that copies WASM distribution into MVC project. -->
+	<Import Project=".\Build.props" />
 
 </Project>

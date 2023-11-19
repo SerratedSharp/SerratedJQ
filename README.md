@@ -60,51 +60,72 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 - .NET Core 8
 
 ### Quick Start Guide
-- Create a Blank Solution, add new .NET Console App (.NET 7) and ASP.NET Core Web App (Model-View-Controller) projects.
+- Create a Blank Solution. 
+- Add new projects each targetting .NET 8:
+-- .NET Console App
+-- ASP.NET Core Web App (Model-View-Controller)
+-- Class Library (to hold classes shared by the WASM client and MVC host).
 - Build the MVC project
-- Add Nuget references to **Uno.Wasm.Bootstrap**, **Uno.Foundation.Runtime.WebAssembly**, and **SerratedSharp.SerratedJQ** in the Console project.
-![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/9a40be28-b420-47d2-90be-e1035bcc7297)
+- Right click the Console project -> Edit Project File
+- Add the following Nuget referenes:
+```XML
+<ItemGroup>
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
+	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
+</ItemGroup>
+```
 - Add a copy of this Build.props file to the Console app: [Build.props](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Build.props)
-- Update `<DestinationWebProjectName>` to match your MVC app's project folder name, then add `<Import Project=".\Build.props" />` inside the Console app's *.csproj just within the `</Project>` closing tag.
+- Update `<DestinationWebProjectName>` to match your MVC app's project folder name.  You may need to adjust the release value of `<WasmShellWebAppBasePath` at a future time depending on the base path your app is hosted at.  The default debug value should work for the default configuration of a new MVC project.
+- Add `<Import Project=".\Build.props" />` inside the Console app's *.csproj just within the `</Project>` closing tag.
 - Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
 ```Razor
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/IHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-    @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
-    @{
-        var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
-        string wasmPackageName = directories.First().Name;
-        string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";// Get most recently generated WASM package and reference it.
-        // Note you must also set the web project's folder name in the build property <DestinationWebProjectName>. See Sample.Wasm/Build.props
-    }
-    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>    
-    <script type="text/javascript" src="@wasmBaseUrl/uno-bootstrap.js"></script>    
-    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css" />
-    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css" />
+<!-- Setup: WASM Bootstrap -->
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+@{
+    // Get most recently generated WASM package and reference it.      
+    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories"package_*").OrderByDescending(d => d.CreationTimeUtc);
+    string wasmPackageName = directories.First().Name;
+    string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";          
+}
+<script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
+<script type="module" src="@wasmBaseUrl/uno-bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css">
+<link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css">
+<link rel="prefetch" href="@wasmBaseUrl/uno-config.js">
+<link rel="prefetch" href="@wasmBaseUrl/dotnet.js">
+<link rel="prefetch" href="@wasmBaseUrl/mono-config.json">
+<link rel="prefetch" href="@wasmBaseUrl/dotnet.native.wasm">
+<link rel="prefetch" href="@wasmBaseUrl/dotnet.native.js">
+<link rel="prefetch" href="@wasmBaseUrl/dotnet.runtime.js">
 ```
 
-- Place the following just after the ending `</header>`
+- Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project)
 ```HTML
-    <div id="uno-body" class="container-fluid uno-body">
-        <div class="uno-loader"
-             loading-position="bottom"
-             loading-alert="none">
+<div id="uno-body" class="container-fluid uno-body">
+    <div class="uno-loader"
+         loading-position="bottom"
+         loading-alert="none">
 
-            <!-- Logo: change src to customize the logo -->
-            <img class="logo"
-                 src=""
-                 title="Uno is loading your application" />
+        <!-- Logo: change src to customize the logo -->
+        <img class="logo"
+             src=""
+             title="Uno is loading your application" />
 
-            <progress></progress>
-            <span class="alert"></span>
-        </div>
+        <progress></progress>
+        <span class="alert"></span>
     </div>
-    <noscript>
-        <p>This application requires Javascript and WebAssembly to be enabled.</p>
-    </noscript>
+</div>
+<noscript>
+    <p>This application requires Javascript and WebAssembly to be enabled.</p>
+</noscript>
 ```
 
-- In Startup.cs, preceding the existing `app.UseStaticFiles();` add:
+- In Startup.cs, preceding the existing `app.UseStaticFiles();` add to support serving static WASM files:
 ```C#
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".clr"] = "application/octet-stream";
@@ -112,11 +133,79 @@ provider.Mappings[".dat"] = "application/dat";
 app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 ```
 
-- Build both projects, then launch the MVC project.
+- Build both projects, set the MVC Project as the STartup project, then run the MVC project.
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
-
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/77248159-4866-44e9-a320-350ee72547c0)
+ 
 > [!NOTE] 
 > You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
+
+- In the Console project Program.cs:        
+-- Change `static void Main` to `static async Task Main` (supports awaitable methods wrapping JS promises)
+-- Add the following to main:
+```
+SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();// declares javascript proxies needed for JSImport
+await JQueryPlain.Ready(); // Wait for document Ready
+
+JQueryPlainObject unoBody = JQueryPlain.Select("[id='uno-body'");            
+unoBody.Html("<div style='display:none'></div>");// triggers uno observer that hides the loading bar/splash screen
+```
+
+Rebuild the solution then launch the MVC project.  Verify you recieve no errors in browser console.
+
+At this point you have a working setup and can interact with the DOM from Program.cs Main().  For a traditional multi-page web app, you will want a way to execute C# code specific to each page.  There are a variety of ways this could be supported, such as using `[JSExport]` and calling managed C# code from the page's javascript, but requires exporting and importing a module for each page.  
+
+Another option is to use a simple enum declaration.
+- Add project references from both the MVC and Console projects to the shared Class Library project.
+- Add an enum to the Class Library:
+```C#
+public enum WasmPageScriptEnum
+{
+    None = 0,
+    Index = 1,
+    Privacy = 2,
+    // Add additional pages here
+}
+```
+
+- In the MVC project, add the following to the script section of each cshtml view, using a different enum value for the appropriate page.  For example, for Privacy.cshtml:
+```
+@section Scripts {
+    <script type="text/javascript">
+        globalThis.WasmPageScript = '@(WasmPageScriptEnum.Privacy.ToString())';
+    </script>
+}
+```
+
+- In Program.cs Main(), add the below to retrieve the declared globalThis.WasmPageScript enum name that was declared in the CSHTML:
+```C#
+var wasmPageScriptName = JSHost.GlobalThis.GetPropertyAsString("WasmPageScript");
+WasmPageScriptEnum pageScript = Enum.Parse<WasmPageScriptEnum>(wasmPageScriptName);
+
+switch (pageScript)
+{
+    case WasmPageScriptEnum.Index:
+        IndexClient.Init();// start the page specific script
+        break;
+    case WasmPageScriptEnum.Privacy:
+        PrivacyClient.Init();// start the page specific script
+        break;
+    default:
+        break;
+}
+```
+
+Each page specific script can be implemented in a separate class with an Init() entry point:
+```C#
+public class PrivacyClient
+{
+    public static void Init()
+    {
+        Console.WriteLine("Privacy Page WASM Executed.");
+        JQueryPlain.Select("body").Append("<div>Hello from PrivacyClient</div>");
+    }
+}
+```
 
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
@@ -138,7 +227,7 @@ The same security considerations when using JQuery apply when using this wrapper
 
 ### 0.1.2
 - Added awaitable JQueryPlain.Ready().
-- Updated SerratedJQSample.
+- Updated SerratedJQSample, GettingStarted sample, and Quick Start instructions.
 
 This version has been tested with Uno.Wasm.Bootstrap 8.0.3, Uno.Foundation.Runtime.WebAssembly 5.0.19, and SerratedSharp.JSInteropHelpers 0.1.2 under .NET Core 8.
 

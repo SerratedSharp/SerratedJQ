@@ -1,4 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- Setup: Copy this Build.props file into your WASM client project and add <Import Project=".\Build.props" /> to your WasmClient *.csproj.  -->
+<!-- Setup: Change DestinationWebProjectName to match MVC project name, and WasmShellWebAppBasePath to relative URL for the web app base path URL. -->
+<!-- This MSBuild script copies the WASM distrbution into MVC web root. -->
 <Project>	
 	
 	<PropertyGroup>
@@ -8,12 +11,6 @@
 			then you will need to adjust the CopyWasmAfterBuild scripts.
 		-->
 		<DestinationWebProjectName>GettingStarted.Mvc</DestinationWebProjectName>
-		
-		<!-- This setting strips out unused classes and methods to reduce the WASM Package size. 
-			 It may remove code that isn't directly reference but accessed via reflection or dependency injection. 
-			 It is typically true, but can be set to false to troubleshoot, or refer to IL Linker documentation to limit types/namespaces affected.
-		-->
-		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
 
 		<!-- As the WASM bootstrapping scripts are loaded, they make additional URL requests for components 
 				which defaults to a base path of "./" which will fail for pages that aren't at the root of the application since this is a relative URL.
@@ -25,6 +22,13 @@
 			-->
 		<WasmShellWebAppBasePath Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">/</WasmShellWebAppBasePath>
 		<WasmShellWebAppBasePath Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">/GettingStartedMvc/</WasmShellWebAppBasePath>
+
+		<!-- This setting strips out unused classes and methods to reduce the WASM Package size. 
+			 It may remove code that isn't directly reference but accessed via reflection or dependency injection. 
+			 It is typically true, but can be set to false to troubleshoot, or refer to IL Linker documentation to limit types/namespaces affected.
+		-->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+
 	</PropertyGroup>
 
 	<Target Name="CopyWasmAfterBuild" AfterTargets="Build">

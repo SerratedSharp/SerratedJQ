@@ -1,19 +1,13 @@
-﻿@{
+﻿@using GettingStarted.WasmShared
+@{
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
 
-
-
-@section Scripts
-    {
+@section Scripts {
     <script type="text/javascript">
-        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
-            $(function () { // Wait for JQuery to be ready
-                Serrated.Callbacks.PrivacyPageReady(); // Initialize this page's script.
-            });
-        }
+        globalThis.WasmPageScript = '@(WasmPageScriptEnum.Privacy.ToString())';
     </script>
 }
