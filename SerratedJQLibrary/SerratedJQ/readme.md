@@ -62,9 +62,9 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 ### Quick Start Guide
 - Create a Blank Solution. 
 - Add new projects each targetting .NET 8:
--- .NET Console App
--- ASP.NET Core Web App (Model-View-Controller)
--- Class Library (to hold classes shared by the WASM client and MVC host).
+  - .NET Console App
+  - ASP.NET Core Web App (Model-View-Controller)
+  - Class Library (to hold classes shared by the WASM client and MVC host).
 - Build the MVC project
 - Right click the Console project -> Edit Project File
 - Add the following Nuget referenes:
@@ -141,8 +141,8 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 > You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 - In the Console project Program.cs:        
--- Change `static void Main` to `static async Task Main` (supports awaitable methods wrapping JS promises)
--- Add the following to main:
+  - Change `static void Main` to `static async Task Main` (supports awaitable methods wrapping JS promises)
+  - Add the following to main:
 ```
 SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();// declares javascript proxies needed for JSImport
 await JQueryPlain.Ready(); // Wait for document Ready
