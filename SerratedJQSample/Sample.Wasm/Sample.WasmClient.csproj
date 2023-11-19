@@ -1,32 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <Optimize>False</Optimize>
-  </PropertyGroup>
+	<!-- WASM Configuration -->
+	<PropertyGroup>
+		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+		
+	<!-- WASM Environment specific config -->
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
+		<!-- Debugging the WASM package requires it be hosted in a Bootstrap.DevServer <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>-->		
+		<!-- Trimming, set to false to support breakpoints -->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+		<!-- WasmShellEnableThreads must be false to allow breakpoints.  Note: async/promises interopt support still works even if set to false. -->
+		<WasmShellEnableThreads>false</WasmShellEnableThreads>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<MonoRuntimeDebuggerEnabled>false</MonoRuntimeDebuggerEnabled>
+		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.0.3" />
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="4.9.45" />
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="7.0.27" />
-  </ItemGroup>
-
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<!-- <DebugType>full</DebugType> will prevent breakpoints from working.  Using the Project Properties window can add <PropertyGroup> sections to other parts of the *.csproj that may override this property and break debugging -->
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+		<Optimize>False</Optimize>
+	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Sample.ApiModels\Sample.ApiModels.csproj" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
+		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Sample.ApiModels\Sample.ApiModels.csproj" />
+	</ItemGroup>
+
+	<!--<ItemGroup>
+	  <Reference Include="SerratedSharp.JSInteropHelpers">
+	    <HintPath>..\..\SerratedJQLibrary\SerratedJQ\bin\Release\net8.0\SerratedSharp.JSInteropHelpers.dll</HintPath>
+	  </Reference>
+	  <Reference Include="SerratedSharp.SerratedJQ">
+	    <HintPath>..\..\SerratedJQLibrary\SerratedJQ\bin\Release\net8.0\SerratedSharp.SerratedJQ.dll</HintPath>
+	  </Reference>
+	</ItemGroup>-->
+
+	
 	<Import Project=".\Build.props" />
-	
-	
+
 </Project>

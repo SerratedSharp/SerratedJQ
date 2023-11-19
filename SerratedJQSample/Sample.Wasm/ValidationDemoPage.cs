@@ -1,26 +1,25 @@
-﻿using SerratedSharp.SerratedJQ;
+﻿using SerratedSharp.SerratedJQ.Plain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Sample.Wasm
 {
-
 	// Client side validation demo using Luhn check digit algorithm
-	public class ValidationDemoPage
+    public class ValidationDemoPage
     {
         public static void Init()
         {
             Console.WriteLine("Luhn Page WASM Executed.");
 
-			var inputElement = JQueryBox.Select("#cardInput");
+			var inputElement = JQueryPlain.Select("#cardInput");
             inputElement.OnInput += Input_OnInput;// subscribe to HTML DOM input event on the #cardInput textbox, fire on each keystroke
         }
 
 		// Event handler, called by JQuery event handler
-        private static void Input_OnInput(JQueryBox sender, dynamic e)
+        private static void Input_OnInput(JQueryPlainObject sender, dynamic e)
         {
-			bool isValid = LuhnIsValid(sender.Value);// perform validation on textbox Value
+			bool isValid = LuhnIsValid(sender.Val());// perform validation on textbox Value
 			if (isValid)
 			{
 				sender.AddClass("is-valid");

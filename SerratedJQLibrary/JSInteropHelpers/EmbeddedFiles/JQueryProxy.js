@@ -8,9 +8,17 @@ console.log("Declaring JQueryProxy");
 // TODO: Consider object literal notation instead of IIFE and export as module
 var Serrated = globalThis.Serrated || {};
 (function (Serrated) {
-
-
+    
     var JQueryProxy = Serrated.JQueryProxy || {};// create child namespace
+
+    JQueryProxy.Ready = function () {
+        return new Promise( function(resolve, reject) {
+            jQuery(function() {
+                resolve();
+            });
+        });
+    }
+
     JQueryProxy.Select = function (selector) {
         return jQuery(document).find(selector);
     };

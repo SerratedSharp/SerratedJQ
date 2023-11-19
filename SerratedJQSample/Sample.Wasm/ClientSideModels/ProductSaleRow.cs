@@ -1,4 +1,5 @@
-﻿using SerratedSharp.SerratedJQ;
+﻿using SerratedSharp.SerratedJQ.Plain;
+using System;
 
 namespace Sample.Wasm.ClientSideModels
 {
@@ -18,14 +19,14 @@ namespace Sample.Wasm.ClientSideModels
 
         public ProductSalesModel Model { get; set; }
 
-        private JQueryBox jQBox;
-        public JQueryBox JQBox
+        private JQueryPlainObject jQBox;
+        public JQueryPlainObject JQBox
         {
             get
             {
                 if (this.jQBox == null)
                 {
-                    jQBox = JQueryBox.FromHtml(GetHtml(Model));
+                    jQBox = JQueryPlain.ParseHtmlAsJQuery(GetHtml(Model).Trim() );
                     jQBox.OnClick += JQRowOnClick;
 
                 }
@@ -49,9 +50,10 @@ namespace Sample.Wasm.ClientSideModels
         // a dirty cast from `object` to ProductSalesModel.
         // Providing our own event here makes this more like a component and allows
         // the model to be passed to the event strongly typed.
-        private void JQRowOnClick(JQueryBox sender, object e)
+        private void JQRowOnClick(JQueryPlainObject sender, object e)
         {
-            // Pass thru event from JQueryBox to our strongly typed event
+            
+            // Pass thru event from JQueryPlainObject to our strongly typed event
             var ourEvent = OnClick;
             if (ourEvent != null)
             {
@@ -61,10 +63,10 @@ namespace Sample.Wasm.ClientSideModels
 
         public delegate void JQueryTypedEventHandler<in TSender, in TComponent, in TEventArgs>
             (TSender sender, TComponent component, TEventArgs e)
-            where TSender : JQueryBox;
+            where TSender : JQueryPlainObject;
 
         // We use explicit event so that we can only create the JQuery listener when necessary
-        public event JQueryTypedEventHandler<JQueryBox, ProductSaleRow, object> OnClick;
+        public event JQueryTypedEventHandler<JQueryPlainObject, ProductSaleRow, object> OnClick;
 
     }
 }

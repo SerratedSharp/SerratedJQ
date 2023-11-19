@@ -55,8 +55,9 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 ## Installation
 
 ### Prerequisites  
-- SerratedSharp.SerratedJQ, Uno.Wasm.Bootstrap, Uno.Foundation.Runtime.WebAssembly
-- .NET Core 7
+- SerratedSharp.SerratedJQ, Uno.Wasm.Bootstrap, Uno.Foundation.Runtime.WebAssembly, NewtonSoft.Json
+- See Release Notes for specific dependency versions that have been validated.
+- .NET Core 8
 
 ### Quick Start Guide
 - Create a Blank Solution, add new .NET Console App (.NET 7) and ASP.NET Core Web App (Model-View-Controller) projects.
@@ -126,35 +127,20 @@ Types suffixed with "Plain" seek to implement the jQuery API as-is.  Some libert
 
 Opinionated non-Plain API's are planned for future implementation which would more closely align with a typical .NET framework API.
 
-> [!NOTE] 
-> Sample projects are temporarily out of date.  In the interim they still serve as a demonstration of general approaches. For working example code, see the test cases in the `SerratedJQLibrary/Tests.Wasm` project such as https://github.com/SerratedSharp/SerratedJQ/blob/main/SerratedJQLibrary/Tests.Wasm/ElementManipulation.cs  
-
 - The GettingStarted project demonstrates basic DOM manipulation and event subscription: [GettingStarted IndexClient.cs](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs)
 - The SerratedJQSample project includes more advanced examples as well as API requests to the MVC project from the WASM client: [SerratedJQSample](https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample)
-- To have page specific C# WASM code executed, and wait for both WASM and JQuery to be loaded, see Getting Started 
-[Index.cshtml WasmReady()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.Mvc/Views/Home/Index.cshtml#L16) and [WasmClient Program.cs CallbacksHelper.Export()](https://github.com/SerratedSharp/SerratedJQ/blob/d6e39830de2c5255b32921e4115be36445df5c97/GettingStarted/GettingStarted.WasmClient/Program.cs#L12)
-```C#
-CallbacksHelper.Export(jsMethodName: "IndexPageReady", () => IndexClient.Init());// register a JS to C#WASM callback
-Uno.Foundation.WebAssemblyRuntime.InvokeJS("WasmReady()");// signal WASM as loaded/ready
-```
-```Razor
-// In page specific CSHTML, wait for both JQuery and WASM to load
-@section Scripts {
-    <script type="text/javascript">        
-        function WasmReady() { // Wait for WASM to initialize and start Program.Main()
-            $(function () { // Wait for JQuery to be ready
-                Serrated.Callbacks.IndexPageReady(); // Initialize this page's script.
-            });
-        }
-    </script>
-}
-```
 
 # Security Considerations
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
 ## Release Notes
+
+### 0.1.2
+- Added awaitable JQueryPlain.Ready().
+- Updated SerratedJQSample.
+
+This version has been tested with Uno.Wasm.Bootstrap 8.0.3, Uno.Foundation.Runtime.WebAssembly 5.0.19, and SerratedSharp.JSInteropHelpers 0.1.2 under .NET Core 8.
 
 ### 0.1.0
 Migration of the majority of underlying JS interop API from Uno WebAssemblyRuntime to .NET 7's `System.Runtime.InteropServices.JavaScript`.

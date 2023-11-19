@@ -5,6 +5,8 @@ namespace SerratedSharp.JSInteropHelpers;
 
 internal static partial class GlobalProxy
 {
+
+    // TODO: Why did I put this inside GlobalProxy?
     internal static partial class HelpersProxy
     {
 

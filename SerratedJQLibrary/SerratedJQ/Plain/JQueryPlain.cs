@@ -4,12 +4,18 @@
 
 using SerratedSharp.JSInteropHelpers;
 using System;
+using System.Threading.Tasks;
 
 namespace SerratedSharp.SerratedJQ.Plain
 {
     // MEthods exposed by global jQuery object, typically methods that generate JQuery object isntances
     public static class JQueryPlain
     {
+        public static async Task Ready()
+        {
+            await JQueryProxy.Ready();
+        }
+
         /// <summary>
         /// Calls $(document).find('selector'), equivilant of $('selector') but in a way that eliminates accidental passing of HTML for more secure usage.
         /// </summary>

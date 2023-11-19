@@ -11,7 +11,6 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
-
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -20,24 +19,35 @@
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
+
 	<!-- WASM Configuration -->
 	<PropertyGroup>
-		<!-- Trimming, set to false to support breakpoints -->
-		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
-		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes) -->
+		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
-	
+
+	<!-- WASM Environment specific config -->
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
 		<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+		<!-- Trimming, set to false to support breakpoints -->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
 		<!-- WasmShellEnableThreads must be false to allow breakpoints.  Note: async/promises interopt support still works even if set to false. -->
 		<WasmShellEnableThreads>false</WasmShellEnableThreads>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<MonoRuntimeDebuggerEnabled>false</MonoRuntimeDebuggerEnabled>
+		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<!-- <DebugType>full</DebugType> will prevent breakpoints from working.  Using the Project Properties window can add <PropertyGroup> sections to other parts of the *.csproj that may override this property and break debugging -->
 		<DebugType>portable</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
+		
 	<ItemGroup>
 		<Content Include="jquery-3.7.1.js" UnoDeploy="Root" />
 	</ItemGroup>

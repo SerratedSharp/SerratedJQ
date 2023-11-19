@@ -1,5 +1,6 @@
 ﻿using Sample.Wasm.ClientSideModels;
-using SerratedSharp.SerratedJQ;
+using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJQ.Plain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,11 @@ namespace Sample.Wasm
 		private DataModel data = new DataModel();
 
 		// UI references
-		private JQueryBox Container { get; set; } // bootstrap container, I could have multiple "views" on a single view and use a SPA approach to show hide them and use a "*Page" class like this to manage them
+		private JQueryPlainObject Container { get; set; } // bootstrap container, I could have multiple "views" on a single view and use a SPA approach to show hide them and use a "*Page" class like this to manage them
 		private List<ProductSaleRow> Rows { get; set; } = new List<ProductSaleRow>();
-        private JQueryBox quantityInput;
-        private JQueryBox priceInput;
-        private JQueryBox editFormRow = JQueryBox.FromHtml($@"            
+        private JQueryPlainObject quantityInput;
+        private JQueryPlainObject priceInput;
+        private JQueryPlainObject editFormRow = JQueryPlain.ParseHtmlAsJQuery($@"            
                 <div class='col-md-6 col-xl-4'>
                     <label for='quantity'>Quantity:</label>
                     <input type='number' class='form-control' id='quantity'>
@@ -36,9 +37,8 @@ namespace Sample.Wasm
                 </div>
         ");
 
-
-
-        public static void Init() // static initializer exported by Program CallbacksHelper.Export and called from javascript once HTML page and JQuery are loaded/ready. Most page initialization occurs in InitSingleton()
+        // Optionally could us [JSExport] to expose to javascript
+        public static void Init()
         {
 			Get();// creates, assigns, and initializes this.singleton if first creation
 		}
@@ -50,13 +50,6 @@ namespace Sample.Wasm
 			{
 				var page = new ListDemoPage();
 
-                // Optionally establish a global JS var `listDemoWasm` that expooses this singleton instance to javascript, allowing us to interact with the client side C# object from javascript.
-                // Add `:IJSObject` to ListDemoPage class to support this, and uncomment the private constructor and handle.
-                // This generates a javascript wrapper for this object.  InvokeJSWithInteropt detects string interpolation such as {page} for IJSObjects and will insert the JS handle reference.
-                //WebAssemblyRuntime.InvokeJSWithInterop($@"
-                //    listDemoWasm = {page};
-                //");// This pattern is sufficient for a singleton, but would need to be more sophisticated for a non-singleton instances, such as .
-
                 singleton = page;
 				singleton.InitSingleton(); // handoff to instance initilizer
 			}
@@ -67,7 +60,7 @@ namespace Sample.Wasm
         {
 			Console.WriteLine("ListDemo WASM Executed.");
 
-			Container = JQueryBox.Select("#listcontainer");
+			Container = JQueryPlain.Select("#listcontainer");
 
             data.ProductSales = await RepositoryClient.GetRemoteProductSales(); // Make API call to populate data model
 
@@ -96,70 +89,71 @@ namespace Sample.Wasm
             priceInput.OnInput += PriceInput_OnInput;
 
             // Click events for column headers to sort
-            var a = JQueryBox.Select("#sortByRep");
+            var a = JQueryPlain.Select("#sortByRep");
             a.OnClick += SortByRep_OnClick;
 
-            var b = JQueryBox.Select("#sortByProduct");
+            var b = JQueryPlain.Select("#sortByProduct");
             b.OnClick += SortByProduct_OnClick;
 
-            var c = JQueryBox.Select("#sortByRevenue");
+            var c = JQueryPlain.Select("#sortByRevenue");
             c.OnClick += SortByRevenue_OnClick;
 
         }
 
 
-        private void ItemRow_OnClick(JQueryBox sender, ProductSaleRow component, object e)
+        private void ItemRow_OnClick(JQueryPlainObject sender, ProductSaleRow component, object e)
         {
-            if (sender.DataBag.IsEditing == true )// ignore click if current item being edited
-                return;
+            GlobalJS.Console.Log("ItemRow_OnClick", sender.JSObject, e, sender.Data() );
 
-            var priorEditRow = Rows.SingleOrDefault(r => r.JQBox.DataBag.IsEditing == true);
+            if (sender.Data<bool?>("IsEditing") == true)// ignore click if current item being edited
+            {
+                Console.WriteLine("already editing");
+                return;
+            }
+            Console.WriteLine("start editing");
+            var priorEditRow = Rows.SingleOrDefault(r => r.JQBox.Data<bool?>("IsEditing") == true);
             if (priorEditRow != null) // Clear prior edit row styles (more appropriately would use css class instead of inline styles)
             {
-                priorEditRow.JQBox.Styles["font-style"] = "";
-				priorEditRow.JQBox.Styles["color"] = "";
-				priorEditRow.JQBox.DataBag.IsEditing = false;
+                priorEditRow.JQBox.Css("font-style", "");
+				priorEditRow.JQBox.Css("color", "");
+				priorEditRow.JQBox.Data("IsEditing", false);
             }
 
-			sender.Styles["font-style"] = "italic";
-			sender.Styles["color"] = "blue";
-            sender.DataBag.IsEditing = true;
+			sender.Css("font-style", "italic");
+			sender.Css("color", "blue");
+            sender.Data("IsEditing", true);
+
             sender.Append(editFormRow);
             
-            //If we were using the JQueryBox events directly, we'd have to do this hoop jumping to get the model
+            //If we were using the JQueryPlainObject events directly, we'd have to do this hoop jumping to get the model
             //var model = ((ProductSaleRow)sender.DataBag.Control).Model; // ProductSalesModel
             // Instead of doing dirty cast from object to model, we use the strongly typed component to access its model
             var model = component.Model;
 
             // prepopulate form
-            quantityInput.Value = model.Quantity.ToString();
-            quantityInput.DataBag.Model = model;
-            priceInput.Value = model.Price.ToString();
-            priceInput.DataBag.Model = model;
-
-            // Alternatively to creating a strongly typed component, you could use the loosely typed databag if you know event handlers are only wired to JQueryBoxes that have consistent models on the DataBag
-            //var model = ((ProductSaleRow)sender.DataBag.Control).Model; // ProductSalesModel
-            //editFormRow.DataBag.Model = model; // Give form a reference to selected client side model.
-            //editFormRow.DataBag.EditRow = sender;
+            quantityInput.Val( model.Quantity.ToString());
+            quantityInput.Data( "Model", model);
+            priceInput.Val(model.Price.ToString());
+            priceInput.Data("Model", model);
         }
 
-        private void PriceInput_OnInput(JQueryBox sender, object e)
+        private void PriceInput_OnInput(JQueryPlainObject sender, object e)
         {
-            var model = (ProductSalesModel)sender.DataBag.Model;
-            model.Price = Decimal.Parse(sender.Value); // updating the model triggers PropertyChangeNotification
+            var model = sender.Data<ProductSalesModel>("Model");
+            model.Price = Decimal.Parse(sender.Val()); // updating the model triggers PropertyChangeNotification
         }
 
-        private void QuantityInput_OnInput(JQueryBox sender, object e)
+        private void QuantityInput_OnInput(JQueryPlainObject sender, object e)
         {
-            var model = (ProductSalesModel)sender.DataBag.Model;            
-            model.Quantity = Int32.Parse(sender.Value);
+            var model = sender.Data<ProductSalesModel>("Model");            
+            model.Quantity = Int32.Parse(sender.Val());
 
             // If we weren't using model binding/PropertyChangeNotification,
             // we could use older UI pattern of navigating to a common parent then directly modify the UI element:
             // sender.Closest(".row").Find(".br-Quantity").Text = model.Quantity.ToString();
         }
 
-        private void SortByRep_OnClick(JQueryBox sender, object e)
+        private void SortByRep_OnClick(JQueryPlainObject sender, object e)
         {
             Console.WriteLine("By Rep");
             Rows.OrderBy(r => r.Model.Rep.Name)
@@ -167,7 +161,7 @@ namespace Sample.Wasm
             );
         }
 
-        private void SortByProduct_OnClick(JQueryBox sender, object e)
+        private void SortByProduct_OnClick(JQueryPlainObject sender, object e)
         {
             Console.WriteLine("By Prod");
             Rows.OrderBy(r => r.Model.Product.Name)
@@ -175,7 +169,7 @@ namespace Sample.Wasm
             );
         }
 
-        private void SortByRevenue_OnClick(JQueryBox sender, object e)
+        private void SortByRevenue_OnClick(JQueryPlainObject sender, object e)
         {
             Console.WriteLine("By Revenue");
             Rows.OrderByDescending(r => r.Model.Price * r.Model.Quantity)
@@ -196,11 +190,11 @@ namespace Sample.Wasm
                     var value = property.GetValue(sender);
                     var elements = newRow.JQBox.Find($".br-{e.PropertyName}");
                     if (elements.Length == 1)
-                        elements.Text = value?.ToString() ?? "";
+                        elements.Text(value?.ToString() ?? "");
                 }
 
-                var revenueSpan = JQueryBox.Select("#totalRevenue");
-                revenueSpan.Text = data.ProductSales.Sum(s => s.Quantity * s.Price).ToString();
+                var revenueSpan = JQueryPlain.Select("#totalRevenue");
+                revenueSpan.Text( data.ProductSales.Sum(s => s.Quantity * s.Price).ToString());
             };
         }
 
