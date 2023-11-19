@@ -207,6 +207,8 @@ public class PrivacyClient
 }
 ```
 
+See the code for the [GettingStarted](https://github.com/SerratedSharp/SerratedJQ/tree/main/GettingStarted) solution as an example of this setup.
+
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
 
