@@ -88,7 +88,7 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 @{
     // Get most recently generated WASM package and reference it.      
-    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories"package_*").OrderByDescending(d => d.CreationTimeUtc);
+    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
     string wasmPackageName = directories.First().Name;
     string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";          
 }
