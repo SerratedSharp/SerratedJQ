@@ -82,7 +82,8 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 - Add `<Import Project=".\Build.props" />` inside the Console app's *.csproj just within the `</Project>` closing tag.
 - Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
 ```Razor
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/IHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- Move other non-RequireJS scripts here -->
 
 <!-- Setup: WASM Bootstrap -->
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
@@ -102,6 +103,16 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 <link rel="prefetch" href="@wasmBaseUrl/dotnet.native.wasm">
 <link rel="prefetch" href="@wasmBaseUrl/dotnet.native.js">
 <link rel="prefetch" href="@wasmBaseUrl/dotnet.runtime.js">
+```
+
+The default MVC template places jquery, bootstrap, amd site.js script references at the bottom of `_Layout.cshtml`, but these will now fail due to use of RequireJS.  These can be converted to use require, but we will move them above RequireJS for now.  Move the following from the bottom and insert it just above `<!-- Setup: WASM Bootstrap -->` and commenting out one of the jquery references of your choice.  
+```
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+@* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+<!-- Setup: WASM Bootstrap -->
 ```
 
 - Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project)
@@ -125,24 +136,18 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 </noscript>
 ```
 
-- In Startup.cs, preceding the existing `app.UseStaticFiles();` add to support serving static WASM files:
+- In Startup.cs or in Program.cs for more current MVC project templates, add this code preceding the existing `app.UseStaticFiles();` to support serving static WASM files:
 ```C#
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".clr"] = "application/octet-stream";
 provider.Mappings[".dat"] = "application/dat";
 app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
+app.UseStaticFiles();// existing default static files config
 ```
-
-- Build both projects, set the MVC Project as the STartup project, then run the MVC project.
-- If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
-![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/77248159-4866-44e9-a320-350ee72547c0)
- 
-> [!NOTE] 
-> You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 - In the Console project Program.cs:        
   - Change `static void Main` to `static async Task Main` (supports awaitable methods wrapping JS promises)
-  - Add the following to main:
+  - Add the following to main which initializes scripts for interop, and waits for JQuery document ready:
 ```
 SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();// declares javascript proxies needed for JSImport
 await JQueryPlain.Ready(); // Wait for document Ready
@@ -150,6 +155,13 @@ await JQueryPlain.Ready(); // Wait for document Ready
 JQueryPlainObject unoBody = JQueryPlain.Select("[id='uno-body'");            
 unoBody.Html("<div style='display:none'></div>");// triggers uno observer that hides the loading bar/splash screen
 ```
+
+- Build both projects, set the MVC Project as the startup project, then run the MVC project.
+- If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/77248159-4866-44e9-a320-350ee72547c0)
+ 
+> [!NOTE] 
+> You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 Rebuild the solution then launch the MVC project.  Verify you recieve no errors in browser console.
 
