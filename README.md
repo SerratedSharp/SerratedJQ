@@ -106,7 +106,7 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 ```
 
 The default MVC template places jquery, bootstrap, amd site.js script references at the bottom of `_Layout.cshtml`, but these will now fail due to use of RequireJS.  These can be converted to use require, but we will move them above RequireJS for now.  Move the following from the bottom and insert it just above `<!-- Setup: WASM Bootstrap -->` and commenting out one of the jquery references of your choice.  
-```
+```Razor
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
