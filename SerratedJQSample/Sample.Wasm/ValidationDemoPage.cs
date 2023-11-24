@@ -12,7 +12,7 @@ namespace Sample.Wasm
         {
             Console.WriteLine("Luhn Page WASM Executed.");
 
-			var inputElement = JQueryPlain.Select("#cardInput");
+            JQueryPlainObject inputElement = JQueryPlain.Select("#cardInput");
             inputElement.OnInput += Input_OnInput;// subscribe to HTML DOM input event on the #cardInput textbox, fire on each keystroke
         }
 

@@ -5,10 +5,8 @@ namespace Sample.Wasm.ClientSideModels
 {
 
     /// <summary>
-    /// This is a rough example of a UI "component".  
-    /// It provides it's own data model, 
-    /// a data driven HTML template,
-    /// events where appropriate.
+    /// This is a rough example of an unrefined UI component.  
+    /// It provides its own data model, a data driven HTML template, and events where appropriate.
     /// </summary>
     internal class ProductSaleRow
     {
@@ -19,20 +17,20 @@ namespace Sample.Wasm.ClientSideModels
 
         public ProductSalesModel Model { get; set; }
 
-        private JQueryPlainObject jQBox;
-        public JQueryPlainObject JQBox
+        private JQueryPlainObject jQueryObject;
+        public JQueryPlainObject JQueryObject
         {
             get
             {
-                if (this.jQBox == null)
+                if (this.jQueryObject == null)
                 {
-                    jQBox = JQueryPlain.ParseHtmlAsJQuery(GetHtml(Model).Trim() );
-                    jQBox.OnClick += JQRowOnClick;
+                    jQueryObject = JQueryPlain.ParseHtmlAsJQuery(GetHtml(Model).Trim() );
+                    jQueryObject.OnClick += JQRowOnClick;
 
                 }
-                return jQBox;
+                return jQueryObject;
             }
-            set => jQBox = value;
+            set => jQueryObject = value;
         }
 
         private static string GetHtml(ProductSalesModel model)
@@ -44,12 +42,7 @@ namespace Sample.Wasm.ClientSideModels
             ";
         }
 
-        // Callers could easily subscribe to row.JQBox.OnClick, but the handler of the event
-        // would be on a JQBox without the model.
-        // They'd be able to access the model through the DataBag, but would require
-        // a dirty cast from `object` to ProductSalesModel.
-        // Providing our own event here makes this more like a component and allows
-        // the model to be passed to the event strongly typed.
+        // Exposes click event with strongly typed model included
         private void JQRowOnClick(JQueryPlainObject sender, object e)
         {
             

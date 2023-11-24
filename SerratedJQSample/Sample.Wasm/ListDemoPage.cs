@@ -51,7 +51,7 @@ namespace Sample.Wasm
 				var page = new ListDemoPage();
 
                 singleton = page;
-				singleton.InitSingleton(); // handoff to instance initilizer
+				singleton.InitSingleton(); // handoff to instance initializer
 			}
 			return singleton;
 		}
@@ -68,7 +68,7 @@ namespace Sample.Wasm
             {
                 // Create row component which generates an unattached HTML DOM element and holds handle in it's .JQBox
                 var newRow = new ProductSaleRow(sale);                
-                Container.Append(newRow.JQBox);// Add element to DOM
+                Container.Append(newRow.JQueryObject);// Add element to DOM
 
                 // This is not necesary, but demonstrates possibility to do live updates to HTML based on the model
                 SetupModelBinding(sale, newRow);
@@ -111,12 +111,12 @@ namespace Sample.Wasm
                 return;
             }
             Console.WriteLine("start editing");
-            var priorEditRow = Rows.SingleOrDefault(r => r.JQBox.Data<bool?>("IsEditing") == true);
+            var priorEditRow = Rows.SingleOrDefault(r => r.JQueryObject.Data<bool?>("IsEditing") == true);
             if (priorEditRow != null) // Clear prior edit row styles (more appropriately would use css class instead of inline styles)
             {
-                priorEditRow.JQBox.Css("font-style", "");
-				priorEditRow.JQBox.Css("color", "");
-				priorEditRow.JQBox.Data("IsEditing", false);
+                priorEditRow.JQueryObject.Css("font-style", "");
+				priorEditRow.JQueryObject.Css("color", "");
+				priorEditRow.JQueryObject.Data("IsEditing", false);
             }
 
 			sender.Css("font-style", "italic");
@@ -157,7 +157,7 @@ namespace Sample.Wasm
         {
             Console.WriteLine("By Rep");
             Rows.OrderBy(r => r.Model.Rep.Name)
-                .ToList().ForEach(a => Container.Append(a.JQBox) // Append will move existing elements to the end, so we just need to call Append for all elements to reorder them
+                .ToList().ForEach(a => Container.Append(a.JQueryObject) // Append will move existing elements to the end, so we just need to call Append for all elements to reorder them
             );
         }
 
@@ -165,7 +165,7 @@ namespace Sample.Wasm
         {
             Console.WriteLine("By Prod");
             Rows.OrderBy(r => r.Model.Product.Name)
-                .ToList().ForEach(a => Container.Append(a.JQBox) 
+                .ToList().ForEach(a => Container.Append(a.JQueryObject) 
             );
         }
 
@@ -173,7 +173,7 @@ namespace Sample.Wasm
         {
             Console.WriteLine("By Revenue");
             Rows.OrderByDescending(r => r.Model.Price * r.Model.Quantity)
-                .ToList().ForEach(a => Container.Append(a.JQBox)
+                .ToList().ForEach(a => Container.Append(a.JQueryObject)
                 );
         }
 
@@ -188,7 +188,7 @@ namespace Sample.Wasm
                 if (property.PropertyType.IsPrimitive || property.PropertyType == typeof(string) || property.PropertyType == typeof(decimal))
                 {
                     var value = property.GetValue(sender);
-                    var elements = newRow.JQBox.Find($".br-{e.PropertyName}");
+                    var elements = newRow.JQueryObject.Find($".br-{e.PropertyName}");
                     if (elements.Length == 1)
                         elements.Text(value?.ToString() ?? "");
                 }

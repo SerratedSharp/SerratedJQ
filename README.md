@@ -4,16 +4,15 @@
 A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Leverages Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.
 
 ## Demo
-A demo is published as a static site at https://serratedsharp.github.io/CSharpWasmJQueryDemo/
 
-Emphasis on "static".  There's no server side code in this demo.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, and run inside a WebAssembly sandbox.  No .NET server side hosting is needed, but this approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic.
-
-A more extensive demo including integration with a MVC project and API requests from the WASM client to MVC host, including a walkthrough of the code:
-https://www.youtube.com/watch?v=0BrGf99K6CU
+Video demo of the SerratedJQSample project which includes integration with a MVC project and API requests from the WASM client to MVC host, including a walkthrough of the code: https://youtu.be/l_G3_WYZorE
 
 Code from Demo: https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample
 
+A demo is also published as a static site at https://serratedsharp.github.io/CSharpWasmJQueryDemo/.  The github.io hosted demo is a static site with no backing MVC host.  The .NET assemblies are downloaded to your browser as simple static files, the same way your browser would download *.js, *.css, or images, then run inside a WebAssembly sandbox.  This approach could easily be combined with any traditional web application such as MVC.  This makes this solution composable with existing architectures looking to provide greater agility in developing client side logic.
+
 ## Example
+
 This example C# WebAssembly code shows how you might select an HTML element, subscribe to an HTML click event, and respond to the event by manipulating the DOM, such as appending an element to the page.
 
 ```C#
@@ -60,8 +59,11 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 - .NET Core 8
 
 ### Quick Start Guide
+
+Video: https://youtu.be/VoNlFqst6LQ
+
 - Create a Blank Solution. 
-- Add new projects each targetting .NET 8:
+- Add new projects each targeting .NET 8:
   - .NET Console App
   - ASP.NET Core Web App (Model-View-Controller)
   - Class Library (to hold classes shared by the WASM client and MVC host).
