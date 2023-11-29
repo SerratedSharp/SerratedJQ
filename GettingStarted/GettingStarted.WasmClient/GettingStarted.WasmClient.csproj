@@ -10,8 +10,9 @@
 	<!-- Setup 1:  -->
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
-		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
+		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
+		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
 		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
 		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 	</ItemGroup>
@@ -24,10 +25,18 @@
 	<PropertyGroup>
 		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+		<WasmShellMode>BrowserEmbedded</WasmShellMode>
+
+
+		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
+		<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+
+		<!-- WasmShellEnableThreads must be false to allow breakpoints.  Note: async/promises interopt support still works even if set to false. -->
+		<WasmShellEnableThreads>false</WasmShellEnableThreads>
 	</PropertyGroup>
 
 	<!-- Setup: Reference build script that copies WASM distribution into MVC project. -->
-	<Import Project=".\Build.props" />
+	<!--<Import Project=".\CopyWasmPackage.props" />-->
 
 </Project>

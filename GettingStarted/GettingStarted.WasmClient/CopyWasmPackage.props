@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- Setup: Copy this Build.props file into your WASM client project and add <Import Project=".\Build.props" /> to your WasmClient *.csproj.  -->
+<!-- Setup: Change DestinationWebProjectName to match MVC project name, and WasmShellWebAppBasePath to relative URL for the web app base path URL. -->
+<!-- This MSBuild script copies the WASM distrbution into MVC web root. -->
+<Project>	
+	
+	<PropertyGroup>
+		<!-- Change this to the name/folder of your web project. Web Assembly package files will be copied to
+			SolutionDir/Sample.Mvc/wwwroot/
+			If your project folders are not in the standard location directly under the solution folder, 
+			then you will need to adjust the CopyWasmAfterBuild scripts.
+		-->
+		<DestinationWebProjectName>GettingStarted.Mvc</DestinationWebProjectName>
+
+		<!-- As the WASM bootstrapping scripts are loaded, they make additional URL requests for components 
+				which defaults to a base path of "./" which will fail for pages that aren't at the root of the application since this is a relative URL.
+			Set the WasmShellWebAppBasePath property to change the Uno.Boostrap base web path.
+			A setting of "/" (without quotes) would be appropriate for local dev where the application is served from https://example.com/
+			A setting of "/MyAppName/" would be appropriate where the application is served from https://example.com/MyAppName/
+			Ex: <WasmShellWebAppBasePath>/MyAppName/</WasmShellWebAppBasePath>
+			Here we tie the setting conditionally to our selected build configuration.
+			-->
+		<WasmShellWebAppBasePath Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">/</WasmShellWebAppBasePath>
+		<WasmShellWebAppBasePath Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">/GettingStartedMvc/</WasmShellWebAppBasePath>
+
+		<!-- This setting strips out unused classes and methods to reduce the WASM Package size. 
+			 It may remove code that isn't directly reference but accessed via reflection or dependency injection. 
+			 It is typically true, but can be set to false to troubleshoot, or refer to IL Linker documentation to limit types/namespaces affected.
+		-->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+
+		<!-- Condenses loading to a single embedded.js script -->
+		<WasmShellMode>BrowserEmbedded</WasmShellMode>
+
+	</PropertyGroup>
+
+	<Target Name="CopyWasmAfterBuild" AfterTargets="Build">
+
+		<Message Importance="high" Text="After Build Start" />
+		<Message Importance="high" Text="WASM Out Path: $(WasmShellOutputPackagePath)" />
+		<Message Importance="high" Text="WASM Dist Path: $(WasmShellOutputDistPath)" />
+	   
+		<ItemGroup>
+			<WasmDistFiles Include="$(WasmShellOutputDistPath)\**\*.*"/>
+		</ItemGroup>
+
+		<PropertyGroup>
+		  <WRoot>$(SolutionDir)$(DestinationWebProjectName)\wwwroot\</WRoot>
+		</PropertyGroup>
+		<Message Importance="high" Text="WRoot: $(WRoot)" />
+		
+		<ItemGroup>
+		  <OldWasmFiles Include="$([System.IO.Directory]::GetDirectories(`$(WRoot)`,`package_*`))" />
+		</ItemGroup>
+		<Message Importance="high" Text="OldWasmFiles: @(OldWasmFiles)"/>
+		<RemoveDir Directories="@(OldWasmFiles)" />
+
+		<Message Importance="high" Text="WasmDistFiles: @(WasmDistFiles)" />		
+		<Copy
+			  SourceFiles="@(WasmDistFiles)"
+			  DestinationFiles="@(WasmDistFiles->'$(WRoot)%(RecursiveDir)%(Filename)%(Extension)')"
+			  SkipUnchangedFiles="true" />    
+		<Message Importance="high" Text="After Build End" />
+	  
+	</Target>
+</Project>
