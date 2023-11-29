@@ -75,7 +75,7 @@ Video: https://youtu.be/VoNlFqst6LQ
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
 	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
-    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
+	<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
 	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
 	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 </ItemGroup>
@@ -84,6 +84,7 @@ Video: https://youtu.be/VoNlFqst6LQ
 Click Save All and you will likely be prompted to reload the project. (Be sure to Save All first or the project changes will be lost when reloading.)  
 
 A launchSettings.json file should be generated under the console project's /Properties/.  Open the file and note the https base URL's port which will be the URL that serves the WASM static files.  We will refer to this as the WASM Base URL for use later:
+
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/30dfd58f-3d63-4366-90c2-bf04be013101)
 
 Change the `"launchBrowser": true` setting to false, since we will only want one browser window launched from the MVC project, and not from the WASM project.
@@ -111,14 +112,17 @@ unoBody.Html("<div style='display:none'></div>");// triggers uno observer that h
 ```
 
 - Build both projects, then right click the solution and choose "Configure Startup Projects..." and set both the the MVC and Console/WASM projects as startup projects:
+
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/39387cef-df21-4f66-80b2-f7d69ef41c2f)
 
 - Start the solution in debug mode:
+
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/37d94a7e-b0e2-4fed-ba1c-3d21eaae9ac6)
 
 Two console windows will start, one hosting the MVC app, the other hosting the WASM app, and a browser window should launch pointing to the MVC URL.
 
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
+
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/77248159-4866-44e9-a320-350ee72547c0)
  
 > [!NOTE] 
