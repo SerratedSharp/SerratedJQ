@@ -23,17 +23,25 @@
 
 	<!-- Setup: WASM Configuration -->
 	<PropertyGroup>
-		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+		<!-- Required if you implement your own .NET JS interopt(i.e. [JSImport] attributes used by introp libraries) -->
+		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
+		
 		<WasmShellMode>BrowserEmbedded</WasmShellMode>
+	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<!-- Required values to support debugging breakpoints in WASM.  -->
 
-		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
+		<!-- Enable debugging.  Currently decreases performance significantly!-->
 		<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+		
+		<!-- IL Linker Trimming must be disabled to support breakpoints. -->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
 
-		<!-- WasmShellEnableThreads must be false to allow breakpoints.  Note: async/promises interopt support still works even if set to false. -->
-		<WasmShellEnableThreads>false</WasmShellEnableThreads>
+		<!--WasmShellEnableThreads must be false to allow breakpoints. 
+			It's default is false, but a reminder in case you set to true it will break debugging.
+			Note: async/promises interopt support still works even if set to false. -->
+		<!--<WasmShellEnableThreads>false</WasmShellEnableThreads>-->
 	</PropertyGroup>
 
 	<!-- Setup: Reference build script that copies WASM distribution into MVC project. -->

@@ -69,82 +69,34 @@ Video: https://youtu.be/VoNlFqst6LQ
   - Class Library (to hold classes shared by the WASM client and MVC host).
 - Build the MVC project
 - Right click the Console project -> Edit Project File
-- Add the following Nuget referenes:
+- Add the following Nuget references:
 ```XML
 <ItemGroup>
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
-	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
+	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
 	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
 	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 </ItemGroup>
 ```
-- Add a copy of this Build.props file to the Console app: [Build.props](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/Build.props)
-- Update `<DestinationWebProjectName>` to match your MVC app's project folder name.  You may need to adjust the release value of `<WasmShellWebAppBasePath` at a future time depending on the base path your app is hosted at.  The default debug value should work for the default configuration of a new MVC project.
-- Add `<Import Project=".\Build.props" />` inside the Console app's *.csproj just within the `</Project>` closing tag.
-- Place the following in the MVC project's Views/Shared/_Layout.cshtml in the bottom of the `<head>` tag, adjusting the jquery URL as appropriate for your inclusion approach. Note the below includes loading the jQuery javascript library:
-```Razor
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<!-- Move other non-RequireJS scripts here -->
 
-<!-- Setup: WASM Bootstrap -->
-@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
-@{
-    // Get most recently generated WASM package and reference it.      
-    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
-    string wasmPackageName = directories.First().Name;
-    string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";          
-}
-<script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
-<script type="module" src="@wasmBaseUrl/uno-bootstrap.js"></script>
-<link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css">
-<link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css">
-<link rel="prefetch" href="@wasmBaseUrl/uno-config.js">
-<link rel="prefetch" href="@wasmBaseUrl/dotnet.js">
-<link rel="prefetch" href="@wasmBaseUrl/mono-config.json">
-<link rel="prefetch" href="@wasmBaseUrl/dotnet.native.wasm">
-<link rel="prefetch" href="@wasmBaseUrl/dotnet.native.js">
-<link rel="prefetch" href="@wasmBaseUrl/dotnet.runtime.js">
+Click Save All and you will likely be prompted to reload the project. (Be sure to Save All first or the project changes will be lost when reloading.)  
+
+A launchSettings.json file should be generated under the console project's /Properties/.  Open the file and note the https base URL's port which will be the URL that serves the WASM static files.  We will refer to this as the WASM Base URL for use later:
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/30dfd58f-3d63-4366-90c2-bf04be013101)
+
+Change the `"launchBrowser": true` setting to false, since we will only want one browser window launched from the MVC project, and not from the WASM project.
+
+- Place the following in the MVC project's Views/Shared/_Layout.cshtml just above existing `RenderSectionAsync("Script"...)`.  It's assumed jquery.js is included above somewhere on the apge.  **Replace the port with the port identified above as your WASM Base URL.**  This is the Uno Bootstrap script that will load our WASM module client side:  
+```Razor
+    <script src="https://localhost:11111/embedded.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 ```
 
-The default MVC template places jquery, bootstrap, amd site.js script references at the bottom of `_Layout.cshtml`, but these will now fail due to use of RequireJS.  These can be converted to use require, but we will move them above RequireJS for now.  Move the following from the bottom and insert it just above `<!-- Setup: WASM Bootstrap -->` and commenting out one of the jquery references of your choice.  
-```Razor
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-@* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-
-<!-- Setup: WASM Bootstrap -->
-```
-
-- Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project)
+- Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project):
 ```HTML
-<div id="uno-body" class="container-fluid uno-body">
-    <div class="uno-loader"
-         loading-position="bottom"
-         loading-alert="none">
-
-        <!-- Logo: change src to customize the logo -->
-        <img class="logo"
-             src=""
-             title="Uno is loading your application" />
-
-        <progress></progress>
-        <span class="alert"></span>
-    </div>
-</div>
-<noscript>
-    <p>This application requires Javascript and WebAssembly to be enabled.</p>
-</noscript>
-```
-
-- In Startup.cs or in Program.cs for more current MVC project templates, add this code preceding the existing `app.UseStaticFiles();` to support serving static WASM files:
-```C#
-var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
-provider.Mappings[".clr"] = "application/octet-stream";
-provider.Mappings[".dat"] = "application/dat";
-app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
-app.UseStaticFiles();// existing default static files config
+<div id="uno-body"></div>
 ```
 
 - In the Console project Program.cs:        
@@ -158,16 +110,23 @@ JQueryPlainObject unoBody = JQueryPlain.Select("[id='uno-body'");
 unoBody.Html("<div style='display:none'></div>");// triggers uno observer that hides the loading bar/splash screen
 ```
 
-- Build both projects, set the MVC Project as the startup project, then run the MVC project.
+- Build both projects, then right click the solution and choose "Configure Startup Projects..." and set both the the MVC and Console/WASM projects as startup projects:
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/39387cef-df21-4f66-80b2-f7d69ef41c2f)
+
+- Start the solution in debug mode:
+![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/37d94a7e-b0e2-4fed-ba1c-3d21eaae9ac6)
+
+Two console windows will start, one hosting the MVC app, the other hosting the WASM app, and a browser window should launch pointing to the MVC URL.
+
 - If everything is working properly then you should see the Console.Writeline "Hello World" appear as message in the browser debug console, confirming your C# ran locally in the browser.
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/77248159-4866-44e9-a320-350ee72547c0)
  
 > [!NOTE] 
 > You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
-Rebuild the solution then launch the MVC project.  Verify you recieve no errors in browser console.
+At this point you have a working setup and can write code in Program.cs Main() to interact with the HTML DOM.  Stop the debug solution session.
 
-At this point you have a working setup and can interact with the DOM from Program.cs Main().  For a traditional multi-page web app, you will want a way to execute C# code specific to each page.  There are a variety of ways this could be supported, such as using `[JSExport]` and calling managed C# code from the page's javascript, but requires exporting and importing a module for each page.  
+For a traditional multi-page web app, you will want a way to execute C# code specific to each page.  There are a variety of ways this could be supported, such as using `[JSExport]` and calling managed C# code from the page's javascript, but requires exporting and importing a module for each page.  
 
 Another option is to use a simple enum declaration.
 - Add project references from both the MVC and Console projects to the shared Class Library project.
@@ -226,6 +185,27 @@ See the code for the [GettingStarted](https://github.com/SerratedSharp/SerratedJ
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
 
+### Configure Debugging
+
+- To support debugging, edit the MVC project's /Properties/launchSettings.json and update the inspectUri, using the port number of the WASM Base URL:
+`"inspectUri": "https://localhost:11111/_framework/debug/ws-proxy?browser={browserInspectUri}"`
+
+This will ensure the browser launched from the MVC project will connect to the WASM project's debugging websocket.  Setting a breakpoint in the WASM project's Program.cs Main() and running again should result in the breakpoint being hit.
+
+- Add the following the the WASM project's *.csproj to disable IL Linker trimming and enable the WASM debugger, using a condition so these are set only when running with the Debug config selected:
+```XML
+<PropertyGroup Condition="'$(Configuration)'=='Debug'">		
+	<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+	<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+</PropertyGroup>
+```
+
+Set a breakpoint in the WASM project's Program.cs Main() and Start the solution in debug mode.  It will take a moment to initialize WASM and the debugger, and then the debugger should pause at the breakpoint.  The browser is executing the code, but communicating the execution state back to Visual Studio.  You can now step through the client side WASM code in Visual Studio which is actually running in the context of the browser, and inspect variables in the debugger.  Breakpoints in event handlers should also be hit.  Note this can cause the browser to become unresponsive while the debugger is paused.
+
+### Troubleshooting
+
+RequireJS is used by embedded.js, and this requires some scripts such as jQuery to be included before embedded.js or otherwise be included using require instead of a `<script>` block.
+
 ## Usage
 
 Types suffixed with "Plain" seek to implement the jQuery API as-is.  Some liberties for security or consistency have been taken, such as not providing a `$()` equivalent, but rather providing separate `.Select` and `.ParseHtml` methods to ensure parameters are never interpreted as HTML when not intended, as this can be a security pitfall.  Seperate `.ParseHtml` and `.ParseHtmlAsJQuery` methods disambiguate pitfalls where jQuery ParseHtml can sometimes return an HtmlElement instead of a jQuery object.
@@ -240,6 +220,9 @@ Opinionated non-Plain API's are planned for future implementation which would mo
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
 ## Release Notes
+
+### Documentation Update
+Simplified Quick Start instructions, updated GettingStarted project, and adjusted setup to support debugging/breakpoints in the WASM client module.
 
 ### 0.1.2
 - Added awaitable JQueryPlain.Ready().
