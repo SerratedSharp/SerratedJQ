@@ -7,7 +7,6 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-	<!-- Setup 1:  -->
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
@@ -44,7 +43,7 @@
 		<!--<WasmShellEnableThreads>false</WasmShellEnableThreads>-->
 	</PropertyGroup>
 
-	<!-- Setup: Reference build script that copies WASM distribution into MVC project. -->
+	<!-- Build script that copies WASM distribution into MVC project. -->
 	<!--<Import Project=".\CopyWasmPackage.props" />-->
 
 </Project>

@@ -51,6 +51,24 @@ void Test_OnClick(JQueryPlainObject sender, dynamic e)
 }
 ```
 
+Since both the client and server are .NET based, then client API requests can be made to the server using .NET API's, and responses deserialized using the shared class models used by both the client and server:
+```C#
+// In MVC(or alternatively WebAPI):
+public class ListDemoController : Controller
+{       
+    public JsonResult GetSales()
+    {
+        List<ProductSalesModel> sales = Repo.GetProductSales();
+        return Json(sales);
+    }
+}
+
+// In WASM client:
+var response = await client.GetAsync("GetSales");
+var content = await response.Content.ReadAsStringAsync();
+var prods = JsonSerializer.Deserialize<List<ProductSalesModel>>(content);
+```
+
 ## Installation
 
 ### Prerequisites  
@@ -69,7 +87,7 @@ Video: https://youtu.be/VoNlFqst6LQ
   - Class Library (to hold classes shared by the WASM client and MVC host).
 - Build the MVC project
 - Right click the Console project -> Edit Project File
-- Add the following Nuget references:
+- Add the following Nuget references and config:
 ```XML
 <ItemGroup>
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -79,6 +97,13 @@ Video: https://youtu.be/VoNlFqst6LQ
 	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
 	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 </ItemGroup>
+<PropertyGroup>	
+	<WasmShellMode>BrowserEmbedded</WasmShellMode>
+</PropertyGroup>
+<PropertyGroup Condition="'$(Configuration)'=='Debug'">	
+	<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>	
+	<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+</PropertyGroup>
 ```
 
 Click Save All and you will likely be prompted to reload the project. (Be sure to Save All first or the project changes will be lost when reloading.)  
@@ -87,9 +112,9 @@ A launchSettings.json file should be generated under the console project's /Prop
 
 ![image](https://github.com/SerratedSharp/SerratedJQ/assets/97156524/30dfd58f-3d63-4366-90c2-bf04be013101)
 
-Change the `"launchBrowser": true` setting to false, since we will only want one browser window launched from the MVC project, and not from the WASM project.
+Change the `"launchBrowser": true` setting to `false`, since we will only want one browser window launched from the MVC project, and not from the WASM project.
 
-- Place the following in the MVC project's Views/Shared/_Layout.cshtml just above existing `RenderSectionAsync("Script"...)`.  It's assumed jquery.js is included above somewhere on the apge.  **Replace the port with the port identified above as your WASM Base URL.**  This is the Uno Bootstrap script that will load our WASM module client side:  
+- Place the following in the MVC project's Views/Shared/_Layout.cshtml just above existing `RenderSectionAsync("Script"...)`.  It's assumed jquery.js is included above somewhere on the page.  **Replace the port with the port identified above as your WASM Base URL.**  This is the Uno Bootstrap script that will load our WASM module client side:  
 ```Razor
     <script src="https://localhost:11111/embedded.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
@@ -188,23 +213,6 @@ See the code for the [GettingStarted](https://github.com/SerratedSharp/SerratedJ
 
 ### Overview
 This setup will generate the WebAssembly when the Console project is compiled and copy it into the wwwroot of the ASP.NET project.  When the ASP.NET project is launched and a page loads in the browser, then Uno Bootstrap will download and run our WebAssembly in the browser.  The `#uno-body` div displays a loading progress bar when downloading/initializing the WASM.  Typically issues with this process as well as exceptions generated from your WebAssembly will appear in the browser console.
-
-### Configure Debugging
-
-- To support debugging, edit the MVC project's /Properties/launchSettings.json and update the inspectUri, using the port number of the WASM Base URL:
-`"inspectUri": "https://localhost:11111/_framework/debug/ws-proxy?browser={browserInspectUri}"`
-
-This will ensure the browser launched from the MVC project will connect to the WASM project's debugging websocket.  Setting a breakpoint in the WASM project's Program.cs Main() and running again should result in the breakpoint being hit.
-
-- Add the following the the WASM project's *.csproj to disable IL Linker trimming and enable the WASM debugger, using a condition so these are set only when running with the Debug config selected:
-```XML
-<PropertyGroup Condition="'$(Configuration)'=='Debug'">		
-	<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
-	<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
-</PropertyGroup>
-```
-
-Set a breakpoint in the WASM project's Program.cs Main() and Start the solution in debug mode.  It will take a moment to initialize WASM and the debugger, and then the debugger should pause at the breakpoint.  The browser is executing the code, but communicating the execution state back to Visual Studio.  You can now step through the client side WASM code in Visual Studio which is actually running in the context of the browser, and inspect variables in the debugger.  Breakpoints in event handlers should also be hit.  Note this can cause the browser to become unresponsive while the debugger is paused.
 
 ### Troubleshooting
 

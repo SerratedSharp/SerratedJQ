@@ -20,7 +20,7 @@ namespace GettingStarted.WasmClient
 
             // We have a single WASM module for all pages, and dedicated classes that represent page specific scripts.
             // This Main will be called first for any page, then we determine what the current page is and start the appropriate script.
-
+            
             // Get the globalThis.WasmPageScript enum name that was declared in the CSHTML: `globalThis.WasmPageScript = '@( WasmPageScriptEnum.ValidationDemo.ToString() )';`
             var wasmPageScriptName = JSHost.GlobalThis.GetPropertyAsString("WasmPageScript");
             WasmPageScriptEnum? pageScript = null;
