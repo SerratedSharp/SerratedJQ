@@ -22,7 +22,8 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "inspectUri": "https://localhost:50044/_framework/debug/ws-proxy?browser={browserInspectUri}"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { config } from "/SerratedJQDemo/package_f7acbe7db0ecff22155c1473049762890a9b7ccd/uno-config.js";
+import { config } from "/package_ab0de366b29611d5afebd7dcd53b43110d6e3734/uno-config.js";
 
 if (config.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True") {
     console.debug("[ServiceWorker] Initializing");
@@ -6,7 +6,7 @@ if (config.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True") {
     self.addEventListener('install', function (e) {
         console.debug('[ServiceWorker] Installing offline worker');
         e.waitUntil(
-            caches.open('package_f7acbe7db0ecff22155c1473049762890a9b7ccd').then(async function (cache) {
+            caches.open('package_ab0de366b29611d5afebd7dcd53b43110d6e3734').then(async function (cache) {
                 console.debug('[ServiceWorker] Caching app binaries and content');
 
                 // Add files one by one to avoid failed downloads to prevent the

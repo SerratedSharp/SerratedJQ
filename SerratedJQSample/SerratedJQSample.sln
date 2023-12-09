@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WasmClient", "Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Mvc", "Sample.Mvc\Sample.Mvc.csproj", "{3CC72596-1439-45C5-AFF8-F21FDD64F320}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.ApiModels", "Sample.ApiModels\Sample.ApiModels.csproj", "{6F724BB2-739E-4ED3-9980-A18DBD66B4F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WasmShared", "Sample.ApiModels\Sample.WasmShared.csproj", "{6F724BB2-739E-4ED3-9980-A18DBD66B4F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

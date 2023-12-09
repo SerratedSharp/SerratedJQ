@@ -32,7 +32,7 @@ namespace Sample.Wasm
 			}
 		}
 
-		// This could be factored into a common class library so it could be used both client side and server side.
+		// This could be moved into Sample.WasmShared if the validation was needed both client and server side
         public static bool LuhnIsValid(string creditCardNumber) 
 		{
 			if (creditCardNumber.Any(c => !char.IsDigit(c)))

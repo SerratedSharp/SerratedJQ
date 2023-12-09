@@ -8,13 +8,16 @@
 	<!-- WASM Configuration -->
 	<PropertyGroup>
 		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
+		
+		<!-- Generate embedded.js -->
+		<WasmShellMode>BrowserEmbedded</WasmShellMode>
 	</PropertyGroup>
 		
 	<!-- WASM Environment specific config -->
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
-		<!-- Debugging the WASM package requires it be hosted in a Bootstrap.DevServer <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>-->		
+		<MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
 		<!-- Trimming, set to false to support breakpoints -->
 		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
 		<!-- WasmShellEnableThreads must be false to allow breakpoints.  Note: async/promises interopt support still works even if set to false. -->
@@ -25,25 +28,25 @@
 		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
 	</PropertyGroup>
 
-
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<!-- <DebugType>full</DebugType> will prevent breakpoints from working.  Using the Project Properties window can add <PropertyGroup> sections to other parts of the *.csproj that may override this property and break debugging -->
+	<!--<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		--><!-- <DebugType>full</DebugType> will prevent breakpoints from working.  Using the Project Properties window can add <PropertyGroup> sections to other parts of the *.csproj that may override this property and break debugging --><!--
 		<DebugType>portable</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
 		<Optimize>False</Optimize>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
 		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
+		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.3" />
 		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
 		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Sample.ApiModels\Sample.ApiModels.csproj" />
+		<ProjectReference Include="..\Sample.ApiModels\Sample.WasmShared.csproj" />
 	</ItemGroup>
 
 	<!--<ItemGroup>
@@ -56,6 +59,6 @@
 	</ItemGroup>-->
 
 	
-	<Import Project=".\Build.props" />
+	<!--<Import Project=".\Build.props" />-->
 
 </Project>

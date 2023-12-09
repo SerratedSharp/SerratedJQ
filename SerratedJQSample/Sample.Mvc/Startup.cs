@@ -44,10 +44,10 @@ namespace Sample.Mvc
             }
             app.UseHttpsRedirection();
 
-            var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
-            provider.Mappings[".clr"] = "application/octet-stream";
-            provider.Mappings[".dat"] = "application/dat";
-            app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
+            //var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            //provider.Mappings[".clr"] = "application/octet-stream";
+            //provider.Mappings[".dat"] = "application/dat";
+            //app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 
             app.UseStaticFiles();
 

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sample.ApiModels\Sample.ApiModels.csproj" />
+    <ProjectReference Include="..\Sample.ApiModels\Sample.WasmShared.csproj" />
   </ItemGroup>
 
 </Project>

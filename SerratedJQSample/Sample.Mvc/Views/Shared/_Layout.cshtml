@@ -1,33 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
-@{
-    // Get most recently generated WASM package and reference it.  A better approach would clear previous packages during each build.
-    var directories = new System.IO.DirectoryInfo(WebHostEnvironment.WebRootPath).GetDirectories("package_*").OrderByDescending(d => d.CreationTimeUtc);
-    string wasmPackageName = directories.First().Name;
-    string wasmBaseUrl = $"{Url.Content("~/")}{wasmPackageName}";
-    // Note we must also set the application base path in the build property <WasmShellWebAppBasePath>. See Sample.Wasm/Build.props
-}
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SerratedJQ Sample</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script type="text/javascript" src="@wasmBaseUrl/require.js"></script>
-    <script type="module" src="@wasmBaseUrl/uno-bootstrap.js"></script>
-    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/normalize.css">
-    <link rel="stylesheet" type="text/css" href="@wasmBaseUrl/uno-bootstrap.css">
-    <link rel="prefetch" href="@wasmBaseUrl/uno-config.js">
-    <link rel="prefetch" href="@wasmBaseUrl/dotnet.js">
-    <link rel="prefetch" href="@wasmBaseUrl/mono-config.json">
-    <link rel="prefetch" href="@wasmBaseUrl/dotnet.native.wasm">
-    <link rel="prefetch" href="@wasmBaseUrl/dotnet.native.js">
-    <link rel="prefetch" href="@wasmBaseUrl/dotnet.runtime.js">
 
 </head>
 <body>
@@ -53,23 +31,7 @@
         </nav>
     </header>
 
-    <div id="uno-body" class="container-fluid uno-body">
-        <div class="uno-loader"
-             loading-position="bottom"
-             loading-alert="none">
-
-            <!-- Logo: change src to customize the logo -->
-            <img class="logo"
-                 src=""
-                 title="Uno is loading your application" />
-
-            <progress></progress>
-            <span class="alert"></span>
-        </div>
-    </div>
-    <noscript>
-        <p>This application requires Javascript and WebAssembly to be enabled.</p>
-    </noscript>
+    <div id="uno-body"></div>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -79,11 +41,15 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            URL: @wasmBaseUrl &copy; SerratedSharpSolutions 2023 - Demo.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            SerratedSharpSolutions 2023 - Demo.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="https://localhost:50044/embedded.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
