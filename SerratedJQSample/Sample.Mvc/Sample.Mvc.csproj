@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Uno.Wasm.Bootstrap.Server" Version="8.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Sample.ApiModels\Sample.WasmShared.csproj" />
+    <ProjectReference Include="..\Sample.Wasm\Sample.WasmClient.csproj" />
   </ItemGroup>
 
 </Project>
