@@ -94,8 +94,8 @@ Video: https://youtu.be/VoNlFqst6LQ
 	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
 	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
 	<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
-	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.2" />
-	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.2" />
+	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.3" />
+	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.3" />
 </ItemGroup>
 <PropertyGroup>	
 	<WasmShellMode>BrowserEmbedded</WasmShellMode>
@@ -131,6 +131,7 @@ Change the `"launchBrowser": true` setting to `false`, since we will only want o
 ```
 SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();// declares javascript proxies needed for JSImport
 await JQueryPlain.Ready(); // Wait for document Ready
+JQueryPlain.Select("base").Remove();// Remove Uno's <base> element that can break relative URL's if embedded.js hosted remotely
 
 JQueryPlainObject unoBody = JQueryPlain.Select("[id='uno-body'");            
 unoBody.Html("<div style='display:none'></div>");// triggers uno observer that hides the loading bar/splash screen
@@ -235,6 +236,9 @@ The same security considerations when using JQuery apply when using this wrapper
 
 ### Documentation Update
 Simplified Quick Start instructions, updated GettingStarted project, and adjusted setup to support debugging/breakpoints in the WASM client module.
+
+### 0.1.3
+- Added missing `Microsoft.Windows.Compatibility` dependency required by Newtonsoft when using IL Linker trimming.
 
 ### 0.1.2
 - Added awaitable JQueryPlain.Ready().
