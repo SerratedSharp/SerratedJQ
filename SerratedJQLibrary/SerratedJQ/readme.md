@@ -234,11 +234,11 @@ The same security considerations when using JQuery apply when using this wrapper
 
 ## Release Notes
 
-### Documentation Update
-Simplified Quick Start instructions, updated GettingStarted project, and adjusted setup to support debugging/breakpoints in the WASM client module.
-
 ### 0.1.3
 - Added missing `Microsoft.Windows.Compatibility` dependency required by Newtonsoft when using IL Linker trimming.
+
+### Documentation Update
+Simplified Quick Start instructions, updated GettingStarted project, and adjusted setup to support debugging/breakpoints in the WASM client module.
 
 ### 0.1.2
 - Added awaitable JQueryPlain.Ready().
