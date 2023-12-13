@@ -114,11 +114,14 @@ A launchSettings.json file should be generated under the console project's /Prop
 
 Change the `"launchBrowser": true` setting to `false`, since we will only want one browser window launched from the MVC project, and not from the WASM project.
 
-- Place the following in the MVC project's Views/Shared/_Layout.cshtml just above existing `RenderSectionAsync("Script"...)`.  It's assumed jquery.js is included above somewhere on the page.  **Replace the port with the port identified above as your WASM Base URL.**  This is the Uno Bootstrap script that will load our WASM module client side:  
+- Place the following in the MVC project's Views/Shared/_Layout.cshtml just above existing `RenderSectionAsync("Script"...)`.  It's assumed jquery.js is included above somewhere on the page.  **Replace the port 11111 with the port identified above from the WASM project's launchSettings.json base URL.**  This is the Uno Bootstrap script that will load our WASM module client side:  
 ```Razor
     <script src="https://localhost:11111/embedded.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 ```
+
+- In the MVC project's launchSettings.json, add the following line inside the "https" section which will support connecting the debugger from the browser to the WASM project, again **replace the port 11111 with the port identified from the WASM project**:
+`,"inspectUri": "https://localhost:11111/_framework/debug/ws-proxy?browser={browserInspectUri}"`
 
 - Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project):
 ```HTML
@@ -155,6 +158,8 @@ Two console windows will start, one hosting the MVC app, the other hosting the W
 > You must explicitly build the WasmClient when making changes so it rebuilds the package.  Because there is no project reference from the MVC project to the WasmClient project, then it is not automatically rebuilt. 
 
 At this point you have a working setup and can write code in Program.cs Main() to interact with the HTML DOM.  Stop the debug solution session.
+
+
 
 For a traditional multi-page web app, you will want a way to execute C# code specific to each page.  There are a variety of ways this could be supported, such as using `[JSExport]` and calling managed C# code from the page's javascript, but requires exporting and importing a module for each page.  
 
