@@ -78,7 +78,7 @@ var prods = JsonSerializer.Deserialize<List<ProductSalesModel>>(content);
 
 ### Quick Start Guide
 
-Video: https://youtu.be/VoNlFqst6LQ
+Video: https://www.youtube.com/watch?v=h7c05KnybrQ
 
 - Create a Blank Solution. 
 - Add new projects each targeting .NET 8:
