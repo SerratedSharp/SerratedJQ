@@ -6,14 +6,20 @@
 	</PropertyGroup>
 
 	<!-- WASM Configuration -->
-	<PropertyGroup>
+	<PropertyGroup>		
 		<!-- Required for .NET JS interopt support(i.e. [JSImport] attributes used by introp libraries) -->
 		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
 		
 		<!-- Generate embedded.js -->
 		<WasmShellMode>BrowserEmbedded</WasmShellMode>
 	</PropertyGroup>
-		
+
+	
+	<ItemGroup>
+		<!-- Excludes WasmShared from IL Linker Trimming to preserve models used in reflection based deserialization  -->
+		<LinkerDescriptor Include="LinkerConfig.xml" />
+	</ItemGroup>
+	
 	<!-- WASM Environment specific config -->
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<!-- Set to true to enable debugging. Also enables line numbers in exceptions. Currently decreases performance significantly! -->
@@ -41,24 +47,16 @@
 		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
 		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
 		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.3" />
+		<!-- Note: Add Nuget Package Source to local /JQLibrary/SerratedJQ/bin/Release to validate packages locally. -->
 		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.3" />
 		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.3" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup>		
 		<ProjectReference Include="..\Sample.ApiModels\Sample.WasmShared.csproj" />
 	</ItemGroup>
 
-	<!--<ItemGroup>
-	  <Reference Include="SerratedSharp.JSInteropHelpers">
-	    <HintPath>..\..\SerratedJQLibrary\SerratedJQ\bin\Release\net8.0\SerratedSharp.JSInteropHelpers.dll</HintPath>
-	  </Reference>
-	  <Reference Include="SerratedSharp.SerratedJQ">
-	    <HintPath>..\..\SerratedJQLibrary\SerratedJQ\bin\Release\net8.0\SerratedSharp.SerratedJQ.dll</HintPath>
-	  </Reference>
-	</ItemGroup>-->
 
-	
 	<!--<Import Project=".\Build.props" />-->
 
 </Project>

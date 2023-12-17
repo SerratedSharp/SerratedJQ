@@ -36,10 +36,8 @@ namespace Sample.Wasm.ClientSideModels
 
         };
 
-     
 
-
-            public static List<ProductSalesModel> GetProductSales()
+        public static List<ProductSalesModel> GetProductSales()
         {
             List<ProductModel> prods = new List<ProductModel>();
             foreach (string name in ProductNames)

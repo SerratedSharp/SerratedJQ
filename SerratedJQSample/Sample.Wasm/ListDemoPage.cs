@@ -102,8 +102,8 @@ namespace Sample.Wasm
 
 
         private void ItemRow_OnClick(JQueryPlainObject sender, ProductSaleRow component, object e)
-        {
-            GlobalJS.Console.Log("ItemRow_OnClick", sender.JSObject, e, sender.Data() );
+        {            
+            GlobalJS.Console.Log("ItemRow_OnClick", sender.JSObject, e);
 
             if (sender.Data<bool?>("IsEditing") == true)// ignore click if current item being edited
             {
@@ -115,24 +115,24 @@ namespace Sample.Wasm
             if (priorEditRow != null) // Clear prior edit row styles (more appropriately would use css class instead of inline styles)
             {
                 priorEditRow.JQueryObject.Css("font-style", "");
-				priorEditRow.JQueryObject.Css("color", "");
-				priorEditRow.JQueryObject.Data("IsEditing", false);
+                priorEditRow.JQueryObject.Css("color", "");
+                priorEditRow.JQueryObject.Data("IsEditing", false);
             }
 
-			sender.Css("font-style", "italic");
-			sender.Css("color", "blue");
+            sender.Css("font-style", "italic");
+            sender.Css("color", "blue");
             sender.Data("IsEditing", true);
 
             sender.Append(editFormRow);
-            
+
             //If we were using the JQueryPlainObject events directly, we'd have to do this hoop jumping to get the model
             //var model = ((ProductSaleRow)sender.DataBag.Control).Model; // ProductSalesModel
             // Instead of doing dirty cast from object to model, we use the strongly typed component to access its model
             var model = component.Model;
 
             // prepopulate form
-            quantityInput.Val( model.Quantity.ToString());
-            quantityInput.Data( "Model", model);
+            quantityInput.Val(model.Quantity.ToString());
+            quantityInput.Data("Model", model);
             priceInput.Val(model.Price.ToString());
             priceInput.Data("Model", model);
         }

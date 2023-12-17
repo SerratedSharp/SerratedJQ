@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+	<!-- Preserve client API models since reflection based deserializers need all properties/constructors. -->
+	<assembly fullname="Sample.WasmShared" preserve="all" />
+</linker>

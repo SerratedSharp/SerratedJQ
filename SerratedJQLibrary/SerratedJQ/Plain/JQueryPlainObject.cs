@@ -456,7 +456,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public T Data<T>(string key) => this.CallJSOfSameName<T>(key);
     public JQueryPlainObject Data(string key, object value) => this.CallJSOfSameNameAsWrapped(key, value);
-    public dynamic Data() => this.CallJSOfSameName<dynamic>();
+    //TODO: public dynamic Data() => this.CallJSOfSameName<dynamic>();
 
     #endregion
 
