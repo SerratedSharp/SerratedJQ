@@ -102,8 +102,9 @@ namespace Sample.Wasm
 
 
         private void ItemRow_OnClick(JQueryPlainObject sender, ProductSaleRow component, object e)
-        {            
-            GlobalJS.Console.Log("ItemRow_OnClick", sender.JSObject, e);
+        {          
+            // Can log the event and data to the browser console for troubleshooting. These will appear as expandable JS objects in the browser console that can be inspected in great detail.
+            GlobalJS.Console.Log("ItemRow_OnClick", sender.JSObject, e, sender.DataAsJSObject());
 
             if (sender.Data<bool?>("IsEditing") == true)// ignore click if current item being edited
             {

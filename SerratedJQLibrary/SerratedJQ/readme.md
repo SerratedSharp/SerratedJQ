@@ -222,11 +222,13 @@ This setup will generate the WebAssembly when the Console project is compiled an
 
 ### Troubleshooting
 
-RequireJS is used by embedded.js, and this requires some scripts such as jQuery to be included before embedded.js or otherwise be included using require instead of a `<script>` block.
+- RequireJS is used by embedded.js, and this requires some scripts such as jQuery to be included before embedded.js or otherwise be included using require instead of a `<script>` block.
+- Support for IL Linker Trimming is possible with appropriate configuration.  SerratedJQSample demonstrates a project where the Release build implements IL Linker trimming, along with configuration to demonstrate suppressing trimming where necessary such as for the API client models used in reflection based deserializers.  A more refined solution would use compile time serialization source generators to eliminate use of reflection based JSON deserializers.
+- Support for AoT compilation has not been tested.
 
 ## Usage
 
-Types suffixed with "Plain" seek to implement the jQuery API as-is.  Some liberties for security or consistency have been taken, such as not providing a `$()` equivalent, but rather providing separate `.Select` and `.ParseHtml` methods to ensure parameters are never interpreted as HTML when not intended, as this can be a security pitfall.  Seperate `.ParseHtml` and `.ParseHtmlAsJQuery` methods disambiguate pitfalls where jQuery ParseHtml can sometimes return an HtmlElement instead of a jQuery object.
+Types suffixed with "Plain" seek to implement the jQuery API as-is.  Some liberties for security or consistency have been taken, such as not providing a `$()` equivalent, but rather providing separate `.Select` and `.ParseHtml` methods to ensure parameters are never interpreted as HTML when not intended, as this can be a security pitfall.  Separate `.ParseHtml` and `.ParseHtmlAsJQuery` methods disambiguate pitfalls where jQuery ParseHtml can sometimes return an HtmlElement instead of a jQuery object.
 
 Opinionated non-Plain API's are planned for future implementation which would more closely align with a typical .NET framework API.
 
@@ -239,8 +241,15 @@ The same security considerations when using JQuery apply when using this wrapper
 
 ## Release Notes
 
+### 0.1.4
+- Replaced `JQueryPlainObject.Data()` with `.DataAsJSObject()` to disambiguate return type.  Returns the entire data object as a JSObject reference.  Use JSObject.GetPropertyAs* methods to access properties or pass the returned reference to `GlobalJS.Console.Log(jqObj.DataAsJSObject())` to log entire object graph in browser console.  This method is generally useful for troubleshooting or discovering structure of the data object.  Typically you would use the existing strongly typed method `.Data<string>("one");` to access specific data properties of specific types.
+
+This version has been tested with Uno.Wasm.Bootstrap 8.0.3, Uno.Foundation.Runtime.WebAssembly 5.0.19, and SerratedSharp.JSInteropHelpers 0.1.3 under .NET Core 8.
+
 ### 0.1.3
 - Added missing `Microsoft.Windows.Compatibility` dependency required by Newtonsoft when using IL Linker trimming.
+
+This version has been tested with Uno.Wasm.Bootstrap 8.0.3, Uno.Foundation.Runtime.WebAssembly 5.0.19, and SerratedSharp.JSInteropHelpers 0.1.3 under .NET Core 8.
 
 ### Documentation Update
 Simplified Quick Start instructions, updated GettingStarted project, and adjusted setup to support debugging/breakpoints in the WASM client module.

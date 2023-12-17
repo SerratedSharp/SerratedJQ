@@ -32,6 +32,21 @@ public partial class TestsContainer
         }
     }
 
+    public class Data_Data_JSObject : JQTest
+    {
+        public override void Run()
+        {
+            JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
+            stubs.Data("one", "uno");
+
+            JSObject obj = tc.Find(".a").DataAsJSObject();
+            GlobalJS.Console.Log("Data() test: ", obj);
+            string val = obj.GetPropertyAsString("one");
+
+            Assert(val == "uno");
+        }
+    }
+
     //public class Data_Data_Json : JQTest
     //{
     //    public override void Run()

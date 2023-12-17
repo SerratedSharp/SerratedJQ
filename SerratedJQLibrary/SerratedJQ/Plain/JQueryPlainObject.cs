@@ -456,7 +456,10 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     public T Data<T>(string key) => this.CallJSOfSameName<T>(key);
     public JQueryPlainObject Data(string key, object value) => this.CallJSOfSameNameAsWrapped(key, value);
-    //TODO: public dynamic Data() => this.CallJSOfSameName<dynamic>();
+    /// <summary>
+    /// Calls JQuery.Data() returning the entire data object as a JSObject reference.  Use JSObject.GetPropertyAs* methods to access properties or pass reference to GlobalJS.Console.Log(obj) to log entire object graph in browser console.
+    /// </summary>
+    public JSObject DataAsJSObject() => this.CallJSOfSameName<JSObject>(funcName: "data");
 
     #endregion
 
