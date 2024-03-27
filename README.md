@@ -162,11 +162,6 @@ Change the `"launchBrowser": true` setting to `false`, since we will only want o
 - In the MVC project's launchSettings.json, add the following line inside the "https" section which will support connecting the debugger from the browser to the WASM project, again **replace the port 11111 with the port identified from the WASM project**:
 `,"inspectUri": "https://localhost:11111/_framework/debug/ws-proxy?browser={browserInspectUri}"`
 
-- Place the following just after the ending `</header>` (this should be inside the <body> for a default MVC project):
-```HTML
-<div id="uno-body"></div>
-```
-
 - In the Console project Program.cs:        
   - Change `static void Main` to `static async Task Main` (supports awaitable methods wrapping JS promises)
   - Add the following to main which initializes scripts for interop, and waits for JQuery document ready:
