@@ -22,6 +22,7 @@
 		<Copyright>Copyright (c) SerratedSharpSolutions 2024</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>WebAssembly, Uno</PackageTags>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="WasmScripts\SerratedInteropHelpers.js" />

@@ -1,7 +1,7 @@
 
 # SerratedJQ
 
-A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Leverages Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.
+A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements. Can be used from a .NET 8 wasmbrowser project or Uno.Wasm.Bootstrap project to support compilation to WebAssembly format.
 
 ## Demo
 
@@ -72,12 +72,51 @@ var prods = JsonSerializer.Deserialize<List<ProductSalesModel>>(content);
 ## Installation
 
 ### Prerequisites  
-- SerratedSharp.SerratedJQ, Uno.Wasm.Bootstrap, Uno.Foundation.Runtime.WebAssembly, NewtonSoft.Json
-- See Release Notes for specific dependency versions that have been validated.
+- SerratedSharp.SerratedJQ, SerratedSharp.JSInteropHelpers, NewtonSoft.Json
+- A project either using the .NET 8 wasmbrowser project(`<Project Sdk="Microsoft.NET.Sdk.WebAssembly">`) or Uno.Wasm.Bootstrap
 - .NET Core 8
 
-### Quick Start Guide
+### Minimal Setup
 
+Sets up a single project to build the WASM module using either .NET wasmbrowser or Uno.Wasm.Bootstrap. Both approaches include a self hosted HTTP dev server for delivering the WASM package to the browser to test locally. 
+
+#### .NET 8 wasmbrowser Projects
+
+- Create a new project using the "WebAssembly Browser App" template.
+  - For more information about adding this template: https://learn.microsoft.com/en-us/aspnet/core/client-side/dotnet-interop?view=aspnetcore-8.0
+- Add Nuget reference to SerratedSharp.SerratedJQ
+- Add the following calls to Program.Main(). `LoadJQuery` can be ommitted if jQuery has been included in the page prior to loading WASM.
+
+```
+await SerratedSharp.SerratedJQ.JSDeclarations.LoadScriptsForWasmBrowser();
+await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+await SerratedSharp.SerratedJQ.Plain.JQueryPlain.Ready();
+Console.WriteLine("JQuery Document Ready!");
+
+// Do something with JQuery. Assumes default template has element with id="out"
+JQueryPlain.Select("#out").Append("<b>Appended</b>");```
+```
+
+#### Uno.Wasm.Bootstrap Project
+
+- Create a new Console App project.
+- Add a Nuget reference to Uno.Wasm.Bootstrap and Uno.Wasm.Bootstrap.DevServer.
+- Add a Nuget reference to SerratedSharp.SerratedJQ
+- Add the following calls to Program.Main(). `LoadJQuery` can be ommitted if jQuery has been included in the page prior to loading WASM.
+
+```
+await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+await SerratedSharp.SerratedJQ.Plain.JQueryPlain.Ready();
+Console.WriteLine("JQuery Document Ready!");
+
+// Do something with JQuery. Assumes default template has element with id="out"
+JQueryPlain.Select("body").Append("<span>Appended</span>");```
+```
+
+### Detailed Walkthru
+
+This walkthru results in a project to produce the client-side WASM module, which is then consumed by a separate ASP.NET MVC project.
+s
 Video: https://www.youtube.com/watch?v=h7c05KnybrQ
 
 - Create a Blank Solution. 
@@ -94,8 +133,8 @@ Video: https://www.youtube.com/watch?v=h7c05KnybrQ
 	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
 	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
 	<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
-	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.3" />
-	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.3" />
+	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.6" />
+	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.6" />
 </ItemGroup>
 <PropertyGroup>	
 	<WasmShellMode>BrowserEmbedded</WasmShellMode>
@@ -240,6 +279,33 @@ Opinionated non-Plain API's are planned for future implementation which would mo
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
 
 ## Release Notes
+
+### 0.1.6
+
+> [!IMPORTANT] 
+> Breaking Change: Loading and initialization is slightly different due to necesary changes to support both .NET 8 wasmbrowser and Uno.Wasm.Bootstrap.
+> Consumers using Uno.Wasm.Bootstrap no longer need to call `JSDeclarations.LoadScripts`, as the JS declarations are now imported automatically using AMD modules supported through Uno's support of scripts embedded in WasmScripts.  These typically are generated as part of the package during publish, and automatically imported at runtime when Uno.Wasm.Bootstrap loads.
+
+See [Uno.Wasm.Bootstrap Project](#unowasmbootstrap-project) for updated initialization.
+
+- Added support for .NET 8 wasmbrowser templates. .NET wasmbrowser is a project template that provides a clean WASM project without dependencies on Blazor nor Uno.  It is the .NET native analog to Uno.Wasm.Bootstrap, and supports many of the same interop features from System.Runtime.InteropServices.JavaScript such as `JSImport`.  See [.NET 8 wasmbrowser Projects](#net-8-wasmbrowser-projects) for setup instructions.
+- This template uses `Sdk="Microsoft.NET.Sdk.WebAssembly"` as it's project type and would typically look like this after initial setup:
+```XML
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>  
+  <ItemGroup>
+    <PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.6" />
+    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.6" />
+  </ItemGroup>
+</Project>
+```
+
+- Added test project Tests.NetWasmBrowser.csproj to validate usage of SerratedJQ with .NET 8 wasmbrowser template and exercise all unit tests in this JS host.  
+- Removed dependency Uno.Foundation.Runtime.WebAssembly.  
+  - SerratedJQ and JSInteropHelpers no longer have any Uno dependencies, but are still compatible with those consuming the library from Uno.Wasm.Bootstrap.
 
 ### 0.1.4
 - Replaced `JQueryPlainObject.Data()` with `.DataAsJSObject()` to disambiguate return type.  Returns the entire data object as a JSObject reference.  Use JSObject.GetPropertyAs* methods to access properties or pass the returned reference to `GlobalJS.Console.Log(jqObj.DataAsJSObject())` to log entire object graph in browser console.  This method is generally useful for troubleshooting or discovering structure of the data object.  Typically you would use the existing strongly typed method `.Data<string>("one");` to access specific data properties of specific types.
