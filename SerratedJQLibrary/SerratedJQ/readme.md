@@ -286,9 +286,9 @@ The same security considerations when using JQuery apply when using this wrapper
 > Breaking Change: Loading and initialization is slightly different due to necesary changes to support both .NET 8 wasmbrowser and Uno.Wasm.Bootstrap.
 > Consumers using Uno.Wasm.Bootstrap no longer need to call `JSDeclarations.LoadScripts`, as the JS declarations are now imported automatically using AMD modules supported through Uno's support of scripts embedded in WasmScripts.  These typically are generated as part of the package during publish, and automatically imported at runtime when Uno.Wasm.Bootstrap loads.
 
-See [Uno.Wasm.Bootstrap Project](#uno-wasm-bootstrap-project) for updated initialization.
+See [Uno.Wasm.Bootstrap Project](#unowasmbootstrap-project) for updated initialization.
 
-- Added support for .NET 8 wasmbrowser templates. .NET wasmbrowser is a project template that provides a clean WASM project without dependencies on Blazor nor Uno.  It is the .NET native analog to Uno.Wasm.Bootstrap, and supports many of the same interop features from System.Runtime.InteropServices.JavaScript such as `JSImport`.  See [.NET 8 wasmbrowser Projects](-NET-8-wasmbrowser-projects) for setup instructions.
+- Added support for .NET 8 wasmbrowser templates. .NET wasmbrowser is a project template that provides a clean WASM project without dependencies on Blazor nor Uno.  It is the .NET native analog to Uno.Wasm.Bootstrap, and supports many of the same interop features from System.Runtime.InteropServices.JavaScript such as `JSImport`.  See [.NET 8 wasmbrowser Projects](#net-8-wasmbrowser-projects) for setup instructions.
 - This template uses `Sdk="Microsoft.NET.Sdk.WebAssembly"` as it's project type and would typically look like this after initial setup:
 ```XML
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
