@@ -34,9 +34,11 @@ public class Program
 
         Console.WriteLine("The main entry point is executed on page load once WASM is bootstrapped/loaded. This message should appear in the browser console confirming the WASM is loaded.");
 
-        // In this sample jQuery is referenced from the Layout.cshtml.  Optionally load jQuery from a URL(this method creates a script tag and awaits the onload as a promise), this example would be the relative URL if jQuery was hosted in the root of our application:
-        //      await HelpersJS.LoadJQuery("jquery-3.7.1.js");
-        //await JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+        // If using .NET 8 wasmbrowser template instead of Uno.Wasm.Bootstrap, then this initialization call is necessary:
+        // await JSDeclarations.LoadScriptsForWasmBrowser();
+
+        // In this sample, jQuery is referenced from the Layout.cshtml.  Optionally load jQuery from a URL(this method creates a script tag and awaits the onload as a promise)
+        // await JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
 
         await JQueryPlain.Ready(); // Wait for document Ready
         JQueryPlain.Select("base").Remove();// Remove incorrect <base> element added by embedded.js that changes the base URL for entire site

@@ -109,14 +109,14 @@ await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapi
 await SerratedSharp.SerratedJQ.Plain.JQueryPlain.Ready();
 Console.WriteLine("JQuery Document Ready!");
 
-// Do something with JQuery. Assumes default template has element with id="out"
+// Do something with JQuery.
 JQueryPlain.Select("body").Append("<span>Appended</span>");```
 ```
 
 ### Detailed Walkthru
 
 This walkthru results in a project to produce the client-side WASM module, which is then consumed by a separate ASP.NET MVC project.
-s
+
 Video: https://www.youtube.com/watch?v=h7c05KnybrQ
 
 - Create a Blank Solution. 

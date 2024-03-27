@@ -35,6 +35,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="readme.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
 		<Compile Update="EmbeddedFiles.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
