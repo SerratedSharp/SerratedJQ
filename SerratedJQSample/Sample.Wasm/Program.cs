@@ -1,5 +1,6 @@
 ﻿using Sample.Wasm.ClientSideModels;
 using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJQ;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
 using System.Collections.Generic;
@@ -32,14 +33,13 @@ public class Program
     {
 
         Console.WriteLine("The main entry point is executed on page load once WASM is bootstrapped/loaded. This message should appear in the browser console confirming the WASM is loaded.");
-        SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
+
         // In this sample jQuery is referenced from the Layout.cshtml.  Optionally load jQuery from a URL(this method creates a script tag and awaits the onload as a promise), this example would be the relative URL if jQuery was hosted in the root of our application:
         //      await HelpersJS.LoadJQuery("jquery-3.7.1.js");
+        //await JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
 
         await JQueryPlain.Ready(); // Wait for document Ready
-
         JQueryPlain.Select("base").Remove();// Remove incorrect <base> element added by embedded.js that changes the base URL for entire site
-
         JQueryPlainObject unoBody = JQueryPlain.Select("[id='uno-body'");
         int unoBodyCount = (int)unoBody.Length;
         if (unoBodyCount != 1)
@@ -47,7 +47,7 @@ public class Program
             Console.WriteLine($"Warning: {unoBodyCount} #uno-body elements found, this may indicate a failure or incorrect initialization of Uno Bootstrap.");
         }
         unoBody.Html("<div></div>");// triggers uno observer that hides the loading bar/splash screen
-
+        Console.WriteLine("uno body updated");
         // We have a single WASM module for all pages, and dedicated classes that represent page specific scripts.
         // This Main will be called first for any page, then we determine what the current page is and start the appropriate script.
 
@@ -61,7 +61,7 @@ public class Program
                 ValidationDemoPage.Init();// start the page specific script
                 break;
             case WasmPageScriptEnum.ListDemo:
-                    ListDemoPage.Init();// start the page specific script
+                ListDemoPage.Init();// start the page specific script
                 break;
             default:
                 break;

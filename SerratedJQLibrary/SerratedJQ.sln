@@ -5,14 +5,18 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratedJQ", "SerratedJQ\SerratedJQ.csproj", "{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Wasm", "Tests.Wasm\Tests.Wasm.csproj", "{A9B5C877-4C44-4C59-A953-783ED3023801}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.UnoWasm", "Tests.Wasm\Tests.UnoWasm.csproj", "{A9B5C877-4C44-4C59-A953-783ED3023801}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC0BDDF1-35D9-4DC2-9A1F-CFB148CADAE8}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSInteropHelpers", "JSInteropHelpers\JSInteropHelpers.csproj", "{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSInteropHelpers", "JSInteropHelpers\JSInteropHelpers.csproj", "{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.NetWasmBrowser", "Tests.NetWasmBrowser\Tests.NetWasmBrowser.csproj", "{84B9B2C6-7AA6-40F0-8A2B-B3FB30669DD1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Shared", "Tests.Shared\Tests.Shared.csproj", "{0A6A1A07-D82D-4844-8C4B-653061E7D9D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84B9B2C6-7AA6-40F0-8A2B-B3FB30669DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84B9B2C6-7AA6-40F0-8A2B-B3FB30669DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84B9B2C6-7AA6-40F0-8A2B-B3FB30669DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84B9B2C6-7AA6-40F0-8A2B-B3FB30669DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A6A1A07-D82D-4844-8C4B-653061E7D9D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A6A1A07-D82D-4844-8C4B-653061E7D9D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A6A1A07-D82D-4844-8C4B-653061E7D9D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A6A1A07-D82D-4844-8C4B-653061E7D9D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

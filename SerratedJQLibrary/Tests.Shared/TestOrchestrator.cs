@@ -6,47 +6,30 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SerratedSharp.JSInteropHelpers;
-using System.Runtime.InteropServices.JavaScript;
 
 //using SerratedSharp.JSInteropHelpers;
 using SerratedSharp.SerratedJQ.Plain;
 using Tests.Wasm;
 
+
+
 namespace Wasm;
 
-public static class Program
+public class TestOrchestrator
 {
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Program))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(SerratedSharp.SerratedJQ.Plain.JQueryPlainObject))]
-    static async Task Main(string[] args)
-    {
-        Console.WriteLine("Beginning test...");
+    public List<IJQTest> Tests = new List<IJQTest>();
 
-#if DEBUG
-        Console.WriteLine("DEBUG DEFINED");
-#endif
 
-        Trace.Listeners.Add(new ThrowingTraceListener());
-
-        await Begin();
-    }
-
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TestsContainer))]    
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TestsContainer))]
     public static async Task Begin()
     {
-        Console.WriteLine("Begin()");
-        //Console.WriteLine(JSHost.GlobalThis.GetPropertyAsJSObject("SerratedInteropHelpers"));
         //  WebAssemblyRuntime.InvokeAsync("globalThis.SerratedExports = await Module.getAssemblyExports(\"SerratedSharp.SerratedJQ\")");
-        //GlobalJS.Console.Log("SerratedExports", JSHost.GlobalThis.GetPropertyAsJSObject("SerratedInteropHelpers"));
-        //Thread.Sleep(2000);
-        //Console.WriteLine("Slept()");
-        //TestJS.Check();
+
         // Run javascript files that add proxy declarations
-        //await SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
+        //await SerratedSharp.SerratedJQ.JSDeclarations.LoadScriptsForWasmBrowser();
         //await HelpersJS.LoadJQuery("jquery-3.7.1.js");
-        await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
-        await JQueryPlain.Ready();
-        //// Fixes scrolling for unit test output
+        //await JQueryPlain.Ready();
+        // Fixes scrolling for unit test output
         JQueryPlain.Select("body").Css("position", "static");
         JQueryPlain.Select("body").Css("overflow", "auto");
 
@@ -77,17 +60,11 @@ public static class Program
 
     }
 
-}
 
-public class TestOrchestrator
-{
-    public List<IJQTest> Tests = new List<IJQTest>();
-
-   
     public void Run()
     {
         int i = 1;
-        foreach(IJQTest test in Tests)
+        foreach (IJQTest test in Tests)
         {
             Exception exc = null; JQueryPlainObject status = null;
             try
@@ -98,8 +75,9 @@ public class TestOrchestrator
                 test.BeginTest(out status);
                 test.Run();
             }
-            catch (Exception ex) {
-                exc = ex; 
+            catch (Exception ex)
+            {
+                exc = ex;
             }
             test.EndTest(status, exc);
             ++i;
@@ -136,10 +114,10 @@ public abstract class JQTest : IJQTest
     public void BeginTest(out JQueryPlainObject status)
     {
         string htmlTemplate = $"<div id='t{TestNum}'><div class='status'>T{TestNum}:</div><div class='tc'></div></div>";
-        
+
         body.Append(htmlTemplate);
         status = JQueryPlain.Select($"#t{TestNum} .status");
-        
+
         // tc or tcm will hold reference to test container HTML that the test implementation should use as a sandbox for the text
         // For now let test case add it's own JqueryBox inside the test container.
         //if (IsModelTest)
@@ -160,11 +138,11 @@ public abstract class JQTest : IJQTest
         else
         {
             Console.WriteLine(exc);
-            
+
             status.Append($"<span style='color:red'>Failed - <b>{testName}</b>: {exc.ToString()}</span>");
 
             status.Append("<div class='excontext'></div>");
-            
+
             status.Find(".excontext").Text("Test Container: " + tc.Html());
             status.Append("<div class='resultcontext'></div>");
             status.Find(".resultcontext").Text("Result: " + result.Html());
@@ -197,16 +175,3 @@ public abstract class JQTest : IJQTest
 }
 
 
-public class ThrowingTraceListener : TraceListener
-{
-    public override void Write(string msg)
-    {
-        Console.WriteLine(msg);
-        throw new Exception(msg);
-    }
-    public override void WriteLine(string msg)
-    {
-        Console.WriteLine(msg);
-        throw new Exception(msg);
-    }
-}

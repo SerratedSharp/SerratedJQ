@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Tests.Wasm {
+namespace Tests.UnoWasm {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Tests.Wasm {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tests.Wasm.EmbeddedTestFiles", typeof(EmbeddedTestFiles).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tests.UnoWasm.EmbeddedTestFiles", typeof(EmbeddedTestFiles).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,30 +57,6 @@ namespace Tests.Wasm {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to function loadScript(url) {
-        ///    return new Promise(function (resolve, reject) {
-        ///        var script = document.createElement(&quot;script&quot;);
-        ///        script.onload = resolve;
-        ///        script.onerror = reject;
-        ///        script.src = url;
-        ///        document.getElementsByTagName(&quot;head&quot;)[0].appendChild(script);
-        ///    });
-        ///}
-        ///
-        ///function loadjQuery() {
-        ///    if (window.jQuery) {
-        ///        // already loaded and ready to go
-        ///        return Promise.resolve();
-        ///    } else {
-        ///        return loadScript(&apos;https://ajax.googleapis.c [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string TestWasm {
-            get {
-                return ResourceManager.GetString("TestWasm", resourceCulture);
             }
         }
         

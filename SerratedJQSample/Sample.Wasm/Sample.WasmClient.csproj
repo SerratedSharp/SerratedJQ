@@ -31,7 +31,8 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<MonoRuntimeDebuggerEnabled>false</MonoRuntimeDebuggerEnabled>
-		<WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
+		<!--<WasmShellEnableJiterpreter>true</WasmShellEnableJiterpreter>-->
 	</PropertyGroup>
 
 	<!--<PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -44,12 +45,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.6" />
+		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.6" />
 		<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" />
 		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.3" />
 		<!-- Note: Add Nuget Package Source to local /JQLibrary/SerratedJQ/bin/Release to validate packages locally. -->
-		<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.3" />
-		<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.4" />
 	</ItemGroup>
 
 	<ItemGroup>		

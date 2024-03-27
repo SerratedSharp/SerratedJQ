@@ -69,7 +69,7 @@ namespace SerratedSharp.JSInteropHelpers {
         /////    .then(module =&gt; globalThis.SerratedExports = module);
         ///
         ///// TODO: Consider object literal notation instead of IIFE and export as module
-        ///var Serrated = globalThis.Serrated || {};
+        ///var Serrated = Serrated || {};
         /// [rest of string was truncated]&quot;;.
         /// </summary>
         public static string JQueryProxy {
@@ -87,7 +87,7 @@ namespace SerratedSharp.JSInteropHelpers {
         /////    .then(module =&gt; globalThis.SerratedExports = module);
         ///
         ///// TODO: Consider object literal notation instead of IIFE and export as module
-        ///var Serrated = globalThis.Serrated ||  [rest of string was truncated]&quot;;.
+        ///var Serrated = Serrated ||  [rest of string was truncated]&quot;;.
         /// </summary>
         public static string JSInteropProxies {
             get {

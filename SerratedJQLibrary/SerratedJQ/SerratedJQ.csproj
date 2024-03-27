@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -16,12 +16,12 @@
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
     <Description>A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Intended for us in assemblies that leverage Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.</Description>
-    <Copyright>Copyright (c) SerratedSharpSolutions 2023</Copyright>
-    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 8.0.3 and Uno.Foundation.Runtime.WebAssembly 5.0.19 under .NET Core 8.</PackageReleaseNotes>
+    <Copyright>Copyright (c) SerratedSharpSolutions 2024</Copyright>
+    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 8.0.3 and alternatively .NET 8 wasmbrowser under .NET Core 8.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
-	        <Version>0.1.4</Version>
-	<AssemblyVersion>0.1.4.0</AssemblyVersion>
-        <FileVersion>0.1.4.0</FileVersion>
+	        <Version>0.1.6</Version>
+	<AssemblyVersion>0.1.6.2</AssemblyVersion>
+        <FileVersion>0.1.6.2</FileVersion>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -47,11 +47,21 @@
     <EmbeddedResource Remove="Resources\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <None Remove="WasmScripts\SerratedJQ.js" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <EmbeddedResource Include="WasmScripts\SerratedJQ.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
 	 <None Include="readme.md" Pack="true" PackagePath="\" />
-	 <PackageReference Include="Newtonsoft.Json" Version="13.0.3" /> 
-	 <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" />
+	 <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <!-- Required by Newtonsoft when IL Linker is enabled -->
 	 <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
   </ItemGroup>

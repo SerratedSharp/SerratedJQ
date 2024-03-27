@@ -64,8 +64,7 @@
 
 	<!-- Nuget packages -->
 	<ItemGroup>
-		<!-- Legacy JS interop APIs still used for easily loading embedded JS files with WebAssemblyRuntime.InvokeJS.  Should be phased out for other recommended JS embedding options. -->
-		 <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.19" /> 
+		<!-- Legacy JS interop APIs still used for easily loading embedded JS files with WebAssemblyRuntime.InvokeJS.  Should be phased out for other recommended JS embedding options. --> 
 		<!-- Supports compilation and packaging to WebAssembly format -->
 		 <PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.3" /> 
 		<!-- Self hosted dev server -->
@@ -113,6 +112,10 @@
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>EmbeddedTestFiles.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="EmbeddedJavascript\" />
 	</ItemGroup>
 
 </Project>

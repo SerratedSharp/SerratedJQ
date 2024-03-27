@@ -382,12 +382,12 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     private JSObject InnerOn(string events, Action<string, string, JSObject> interopListener, string selector)
     {
         // TODO: Make shouldConvertHtmlElement configurable when we support HtmlElement
-        return JSInstanceProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener, selector);
+        return JQueryProxy.BindListener(jsObject, events, shouldConvertHtmlElement: true, interopListener, selector);
     }
 
     private void InnerOff(string events, JSObject handlerToRemove, string selector)
     {
-        JSInstanceProxy.UnbindListener(jsObject, events, handlerToRemove, selector);
+        JQueryProxy.UnbindListener(jsObject, events, handlerToRemove, selector);
     }
 
 

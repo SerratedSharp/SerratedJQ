@@ -224,7 +224,7 @@ This setup will generate the WebAssembly when the Console project is compiled an
 
 - RequireJS is used by embedded.js, and this requires some scripts such as jQuery to be included before embedded.js or otherwise be included using require instead of a `<script>` block.
 - Support for IL Linker Trimming is possible with appropriate configuration.  SerratedJQSample demonstrates a project where the Release build implements IL Linker trimming, along with configuration to demonstrate suppressing trimming where necessary such as for the API client models used in reflection based deserializers.  A more refined solution would use compile time serialization source generators to eliminate use of reflection based JSON deserializers.
-- Support for AoT compilation has not been tested.
+- Support for AoT compilation has not been tested with SerratedJQ.
 
 ## Usage
 
