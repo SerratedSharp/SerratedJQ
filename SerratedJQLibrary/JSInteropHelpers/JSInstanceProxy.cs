@@ -51,7 +51,6 @@ public static class JSInstanceProxy
 }
 
 
-
 public static partial class JSInstanceProxyForDotNet
 {
     private const string baseJSNamespace = "SerratedInteropHelpers.HelpersProxy";
@@ -96,35 +95,34 @@ public static partial class JSInstanceProxyForDotNet
 public static partial class JSInstanceProxyForUno
 {
     private const string baseJSNamespace = "globalThis.SerratedInteropHelpers.HelpersProxy";
-
-    private const string moduleName = "SerratedInteropHelpers";
+    private const string moduleName = "";
 
     #region Instance Proxies
 
-    [JSImport(baseJSNamespace + ".PropertyByNameToObject")]
+    [JSImport(baseJSNamespace + ".PropertyByNameToObject", moduleName)]
     [return: JSMarshalAs<JSType.Any>]
     public static partial
         object PropertyByNameToObject(JSObject jqObject, string propertyName);
 
 
     // Proxy for any instance methods taking any number of parameters and returning any type
-    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    [JSImport(baseJSNamespace + ".FuncByNameToObject", moduleName)]
     [return: JSMarshalAs<JSType.Any>]
     public static partial
         object FuncByNameAsObject(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
     // The difficulty with using this proxy is a new array must be created for each call,
     // for example to cast a object[] to string[] requires iterating the array
-    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    [JSImport(baseJSNamespace + ".FuncByNameToObject", moduleName)]
     [return: JSMarshalAs<JSType.Array<JSType.Any>>]
     public static partial
         object[] FuncByNameAsArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
-    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    [JSImport(baseJSNamespace + ".FuncByNameToObject", moduleName)]
     public static partial
         string[] FuncByNameAsStringArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 
-    [JSImport(baseJSNamespace + ".FuncByNameToObject")]
+    [JSImport(baseJSNamespace + ".FuncByNameToObject", moduleName)]
     public static partial
         double[] FuncByNameAsDoubleArray(JSObject jqObject, string funcName, [JSMarshalAs<JSType.Array<JSType.Any>>] object[] parameters);
 

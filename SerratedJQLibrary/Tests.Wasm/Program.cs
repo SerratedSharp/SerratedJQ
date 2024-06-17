@@ -44,7 +44,7 @@ public static class Program
         // Run javascript files that add proxy declarations
         //await SerratedSharp.SerratedJQ.JSDeclarations.LoadScripts();
         //await HelpersJS.LoadJQuery("jquery-3.7.1.js");
-        await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+        await SerratedSharp.SerratedJQ.SerratedJQModule.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
         await JQueryPlain.Ready();
         //// Fixes scrolling for unit test output
         JQueryPlain.Select("body").Css("position", "static");

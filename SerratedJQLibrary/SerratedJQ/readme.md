@@ -269,9 +269,18 @@ Opinionated non-Plain API's are planned for future implementation which would mo
 - The GettingStarted project demonstrates basic DOM manipulation and event subscription: [GettingStarted IndexClient.cs](https://github.com/SerratedSharp/SerratedJQ/blob/main/GettingStarted/GettingStarted.WasmClient/IndexClient.cs)
 - The SerratedJQSample project includes more advanced examples as well as API requests to the MVC project from the WASM client: [SerratedJQSample](https://github.com/SerratedSharp/SerratedJQ/tree/main/SerratedJQSample)
 
-# Security Considerations
+## Security Considerations
 
 The same security considerations when using JQuery apply when using this wrapper.  Some JQuery methods could be vulnerable to XSS where uncleaned data originating from different users is passed into library methods.  (This is not a unique risk to JQuery, and applies in some form to virtually all templating and UI frameworks where one might interpolate user data and content.)   See Security Considerations in https://api.jquery.com/jquery.parsehtml/ and https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html to understand the contexts where different sanitization must occur.  Typically this means the appropriate encoding or escaping is applied to HTML or Javascript, depending on the context of where the user generated content is being interpolated.
+
+## Why JQuery?
+
+JQuery's design simplifies the amount of interop needed to enable HTML DOM manipulation:
+
+- The primary instance type is the JQuery object, which presents a consistent interface for a variety of underlying object types.  This minimizes the number of types that need to be wrappd.
+- In the vast majority of cases a JQuery collection does not need to be materialized as an array in .NET, minimizing the overhead of JSObject references.
+- Operations can be bundled to operate on collections, allowing a single interop call to perform bulk operations.
+- More expressive API enables greater capability in a reduced API surface area.
 
 ## Release Notes
 
