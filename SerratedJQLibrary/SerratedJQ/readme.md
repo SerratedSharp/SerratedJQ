@@ -277,12 +277,15 @@ The same security considerations when using JQuery apply when using this wrapper
 
 JQuery's design simplifies the amount of interop needed to enable HTML DOM manipulation:
 
-- The primary instance type is the JQuery object, which presents a consistent interface for a variety of underlying object types.  This minimizes the number of types that need to be wrappd.
+- The primary instance type is the JQuery object, which presents a consistent interface for a variety of underlying object types.  This minimizes the number of types that need to be wrapped for interop.
 - In the vast majority of cases a JQuery collection does not need to be materialized as an array in .NET, minimizing the overhead of JSObject references.
 - Operations can be bundled to operate on collections, allowing a single interop call to perform bulk operations.
 - More expressive API enables greater capability in a reduced API surface area.
 
 ## Release Notes
+
+### 0.1.7
+- Fix handling of multiple params in `JSInteropHelpers.GlobalJS.Console.Log`.
 
 ### 0.1.6
 

@@ -1,6 +1,4 @@
-﻿//using Uno.Extensions;
-//using Uno.Foundation.Interop;
-//using Uno.Foundation.Interop;
+﻿using System.Runtime.InteropServices.JavaScript;
 
 namespace SerratedSharp.JSInteropHelpers
 {
@@ -10,14 +8,15 @@ namespace SerratedSharp.JSInteropHelpers
     {
         public static class Console
         {
+            static Lazy<JSObject> _console = new(() => JSHost.GlobalThis.GetPropertyAsJSObject("console"));
 
             /// <summary>
             /// console.log, but note all params gets logged as a single array
             /// </summary>
             /// <param name="parameters">JSObjects or strings to log.</param>
             public static void Log(params object[] parameters)
-            {
-                GlobalProxy.Console.Log( JSImportInstanceHelpers.UnwrapJSObjectParams(parameters) );
+            {   
+                _console.Value.CallJSOfSameName<object>(parameters);
             }
         }
     }

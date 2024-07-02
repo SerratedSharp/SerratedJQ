@@ -284,6 +284,9 @@ JQuery's design simplifies the amount of interop needed to enable HTML DOM manip
 
 ## Release Notes
 
+### 0.1.7
+- Fix handling of multiple params in `JSInteropHelpers.GlobalJS.Console.Log`.
+
 ### 0.1.6
 
 > [!IMPORTANT] 
