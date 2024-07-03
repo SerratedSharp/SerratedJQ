@@ -88,13 +88,15 @@ Sets up a single project to build the WASM module using either .NET wasmbrowser 
 - Add the following calls to Program.Main(). `LoadJQuery` can be ommitted if jQuery has been included in the page prior to loading WASM.
 
 ```
-await SerratedSharp.SerratedJQ.JSDeclarations.LoadScriptsForWasmBrowser();
-await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+// Typically use ".." for the base URL when app is loaded by WASM from root(since the loader introduces one subpath segment).
+// May need additional subpath segments or baseUrl in other environments if hosted in a subpath.
+await SerratedSharp.SerratedJQ.SerratedJQModule.ImportAsync(".."); 
+await SerratedSharp.SerratedJQ.SerratedJQModule.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
 await SerratedSharp.SerratedJQ.Plain.JQueryPlain.Ready();
 Console.WriteLine("JQuery Document Ready!");
 
 // Do something with JQuery. Assumes default template has element with id="out"
-JQueryPlain.Select("#out").Append("<b>Appended</b>");```
+JQueryPlain.Select("#out").Append("<b>Appended</b>");
 ```
 
 #### Uno.Wasm.Bootstrap Project
@@ -105,12 +107,12 @@ JQueryPlain.Select("#out").Append("<b>Appended</b>");```
 - Add the following calls to Program.Main(). `LoadJQuery` can be ommitted if jQuery has been included in the page prior to loading WASM.
 
 ```
-await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+await SerratedSharp.SerratedJQ.SerratedJQModule.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
 await SerratedSharp.SerratedJQ.Plain.JQueryPlain.Ready();
 Console.WriteLine("JQuery Document Ready!");
 
 // Do something with JQuery.
-JQueryPlain.Select("body").Append("<span>Appended</span>");```
+JQueryPlain.Select("body").Append("<span>Appended</span>");
 ```
 
 ### Detailed Walkthru
