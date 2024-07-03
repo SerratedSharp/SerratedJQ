@@ -117,8 +117,31 @@ JQueryProxy.Select = function (selector) {
 };
 ```
 
-
 ## Prerequisites  
 - This can be leveraged where the final downstream consuming assembly will be either a .NET 8 WASMBrowser assembly or Uno.Wasm.Bootstrap assembly.
 - .NET 8 Core
 
+## Quick Start
+
+This describes two different approaches to setting up a WASM project.  Both approaches include a self hosted HTTP dev server for delivering the WASM package to the browser to test locally. 
+
+#### .NET 8 wasmbrowser Projects
+
+- Create a new project using the "WebAssembly Browser App" template.
+  - For more information about adding this template: https://learn.microsoft.com/en-us/aspnet/core/client-side/dotnet-interop?view=aspnetcore-8.0
+- Add Nuget reference to SerratedSharp.JSInteropHelpers
+- Add the following call to Program.Main() to load the JS module:
+
+```
+await SerratedSharp.JSInteropHelpers.JSInteropHelpersModule.ImportAsync("..");
+```
+
+The ".." base URL is typically used because the WASM module is loaded from a one level deep subpath, and the JS module is relative to the root of the app.  This could be adjusted to include your full base URL/domain or additional subpath segments if needed.
+
+#### Uno.Wasm.Bootstrap Project
+
+- Create a new Console App project.
+- Add a Nuget reference to Uno.Wasm.Bootstrap and Uno.Wasm.Bootstrap.DevServer.
+- Add a Nuget reference to SerratedSharp.JSInteropHelpers
+
+The JS module is imported automatically by Uno.Wasm.Bootstrap.
