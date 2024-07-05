@@ -4,11 +4,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.6.4" />
-    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.6" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--<ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />-->
+    <!--<ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
+    <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />-->
     <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
+	  <PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.7" />
+	  <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.7.1" />
   </ItemGroup>
 </Project>

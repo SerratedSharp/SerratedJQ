@@ -250,8 +250,8 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     // TODO: Write unit tests
     //public JQueryPlainObject ReplaceAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
     //public JQueryPlainObject ReplaceAll(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    //public JQueryPlainObject ReplaceWith(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    //public JQueryPlainObject ReplaceWith(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    public JQueryPlainObject ReplaceWith(string htmlString) => this.CallJSOfSameNameAsWrapped(htmlString);
+    public JQueryPlainObject ReplaceWith(IJQueryContentParameter contentObject) => this.CallJSOfSameNameAsWrapped(contentObject);
 
     #endregion
 
