@@ -17,6 +17,14 @@ public static class JSImportInstanceHelpers
         return GetProperty<J>(jsObject, propertyName); //CallJSFuncAsJSObject(jsObject, funcName, parameters);
     }
 
+    // Added: Returns property as a wrapped instance of W
+    public static W GetPropertyOfSameNameAsWrapped<W>(JSObject jsObject, Breaker _ = default(Breaker), [CallerMemberName] string propertyName = null)
+        where W : IJSObjectWrapper<W>
+    {
+        JSObject jsProp = GetPropertyOfSameName<JSObject>(jsObject, _, propertyName);
+        return W.WrapInstance(jsProp);
+    }
+
     // J should be a JSObject or other prmitiive JS type
     public static J GetProperty<J>(JSObject jsObject, string propertyName)
     {
