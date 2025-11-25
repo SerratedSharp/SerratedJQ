@@ -1,39 +1,76 @@
-//using SerratedSharp.SerratedJQ.Plain;
+using SerratedSharp.JSInteropHelpers;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using Wasm;
 
 internal class Program
 {
-    private static async Task Main(string[] args)
+    private static async global::System.Threading.Tasks.Task Main(string[] args)
     {
         Console.WriteLine("Hello, Browser!");
 
-        await SerratedSharp.SerratedJQ.JSDeclarations.LoadScriptsForWasmBrowser();
-        await SerratedSharp.SerratedJQ.JSDeclarations.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+        await SerratedSharp.SerratedJQ.SerratedJQModule.ImportAsync("..");
+        await SerratedSharp.SerratedJQ.SerratedJQModule.LoadJQuery("https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js");
+
         await JQueryPlain.Ready();
         Console.WriteLine("JQuery Document Ready!");
 
-        // Do something with JQuery
+        // Example JQuery usage
         JQueryPlain.Select("#out").Append("<b>Appended</b>");
-        
+
         // Run Suite of Tests
         await TestOrchestrator.Begin();
+
+        if (args.Length == 1 && args[0] == "start")
+            StopwatchSample.Start();
+
+        while (true)
+        {
+            StopwatchSample.Render();
+            await Task.Delay(1000);
+        }
     }
 }
 
-public partial class MyClass
+partial class StopwatchSample
 {
+    private static Stopwatch stopwatch = new();
+
+    public static void Start() => stopwatch.Start();
+    public static void Render() => SetInnerText("#time", stopwatch.Elapsed.ToString(@"mm\:ss"));
+
+    [JSImport("dom.setInnerText", "main.js")]
+    internal static partial void SetInnerText(string selector, string content);
+
     [JSExport]
-    internal static string Greeting()
+    internal static bool Toggle()
     {
-        var text = $"Hello, World! Greetings from {GetHRef()}";
-        Console.WriteLine(text);
-        return text;
+        if (stopwatch.IsRunning)
+        {
+            stopwatch.Stop();
+            return false;
+        }
+        else
+        {
+            stopwatch.Start();
+            return true;
+        }
     }
 
-    [JSImport("window.location.href", "main.js")]
-    internal static partial string GetHRef();
+    [JSExport]
+    internal static void Reset()
+    {
+        if (stopwatch.IsRunning)
+            stopwatch.Restart();
+        else
+            stopwatch.Reset();
+
+        Render();
+    }
+
+    [JSExport]
+    internal static bool IsRunning() => stopwatch.IsRunning;
 }
