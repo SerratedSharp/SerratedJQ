@@ -1,4 +1,3 @@
-
 // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
 //console.log("Declaring SerratedInteropHelpers Shims for Bootstrap");
 
@@ -53,6 +52,13 @@ define(()=> {
             const rtn = jsObject[propertyName];
             //console.log('Return proxy: ', rtn);
             return rtn;
+        };
+
+        // New: set a property value by name on any JS object
+        HelpersProxy.SetPropertyByName = function (jsObject, propertyName, value) {
+            // Use Reflect.set to properly trigger setters/proxies when present
+            Reflect.set(jsObject, propertyName, value);
+            return jsObject[propertyName];
         };
 
         HelpersProxy.Check = function () {

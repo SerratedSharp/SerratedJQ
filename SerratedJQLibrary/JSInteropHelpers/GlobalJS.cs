@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
+using SerratedSharp.JSInteropHelpers;
 
 namespace SerratedSharp.JSInteropHelpers
 {
@@ -15,8 +16,8 @@ namespace SerratedSharp.JSInteropHelpers
             /// </summary>
             /// <param name="parameters">JSObjects or strings to log.</param>
             public static void Log(params object[] parameters)
-            {   
-                _console.Value.CallJSOfSameName<object>(parameters);
+            {
+                JSImportInstanceHelpers.CallJSOfSameName<object>(_console.Value, parameters);
             }
         }
     }

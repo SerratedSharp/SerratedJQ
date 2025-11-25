@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
+    <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
+    <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
+  </ItemGroup>
+</Project>

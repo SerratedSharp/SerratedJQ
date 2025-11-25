@@ -13,6 +13,14 @@ public static class JSInstanceProxy
             return JSInstanceProxyForDotNet.PropertyByNameToObject(jqObject, propertyName);
     }
 
+    public static object SetPropertyByName(JSObject jqObject, string propertyName, object value)
+    {
+        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+            return JSInstanceProxyForUno.SetPropertyByName(jqObject, propertyName, value);
+        else
+            return JSInstanceProxyForDotNet.SetPropertyByName(jqObject, propertyName, value);
+    }
+
 
     public static object FuncByNameAsObject(JSObject jqObject, string funcName, object[] parameters)
     {
@@ -63,6 +71,11 @@ public static partial class JSInstanceProxyForDotNet
     public static partial
         object PropertyByNameToObject(JSObject jqObject, string propertyName);
 
+    [JSImport(baseJSNamespace + ".SetPropertyByName", moduleName)]
+    [return: JSMarshalAs<JSType.Any>]
+    public static partial
+        object SetPropertyByName(JSObject jqObject, string propertyName, [JSMarshalAs<JSType.Any>] object value);
+
 
     // Proxy for any instance methods taking any number of parameters and returning any type
     [JSImport(baseJSNamespace + ".FuncByNameToObject", moduleName)]
@@ -103,6 +116,11 @@ public static partial class JSInstanceProxyForUno
     [return: JSMarshalAs<JSType.Any>]
     public static partial
         object PropertyByNameToObject(JSObject jqObject, string propertyName);
+
+    [JSImport(baseJSNamespace + ".SetPropertyByName", moduleName)]
+    [return: JSMarshalAs<JSType.Any>]
+    public static partial
+        object SetPropertyByName(JSObject jqObject, string propertyName, [JSMarshalAs<JSType.Any>] object value);
 
 
     // Proxy for any instance methods taking any number of parameters and returning any type

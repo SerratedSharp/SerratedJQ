@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <!--<ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
-	  <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />-->
-    <PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.7" />
-    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.7.1" />
+	  <ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
+	  <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
+    <!--<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.7" />
+    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.7.1" />-->
   </ItemGroup>
 
 </Project>

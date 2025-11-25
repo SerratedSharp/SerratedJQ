@@ -26,8 +26,12 @@ public static class JSImportInstanceHelpers
     }
 
 
+    public static void SetProperty(JSObject jsObject, string propertyName, object value)
+        => JSInstanceProxy.SetPropertyByName(jsObject, ToJSCasing(propertyName), value);
 
 
+    public static void SetPropertyOfSameName(JSObject jsObject, object value, Breaker _ = default(Breaker), [CallerMemberName] string propertyName = null)
+        => SetProperty(jsObject, propertyName, value);
 
     // TODO: Move static helpers to separete library
 

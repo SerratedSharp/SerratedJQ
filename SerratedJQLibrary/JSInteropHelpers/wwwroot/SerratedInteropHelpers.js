@@ -64,6 +64,12 @@ var SerratedInteropHelpers = globalThis.SerratedInteropHelpers || {};
         return rtn;
     };
 
+    HelpersProxy.SetPropertyByName = function (jsObject, propertyName, value) {
+        // Use Reflect.set to properly trigger setters/proxies when present
+        Reflect.set(jsObject, propertyName, value);
+        return jsObject[propertyName];
+    };
+
     SerratedInteropHelpers.HelpersProxy = HelpersProxy; // add to parent namespace
     
 
