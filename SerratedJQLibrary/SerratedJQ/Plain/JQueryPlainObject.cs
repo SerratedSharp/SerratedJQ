@@ -1,16 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using static System.Console;
 using System.Linq;
 using System.Dynamic;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
-using SerratedSharp.JSInteropHelpers;
-using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
-using System.Net;
+using SerratedSharp.SerratedJSInterop;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SerratedSharp.SerratedJQ.Plain;
+
+internal static class SerratedJQParams
+{
+    internal static object[] Merge(object first, object[] rest) =>
+        rest == null || rest.Length == 0 ? new[] { first } : new[] { first }.Concat(rest).ToArray();
+    internal static object[] Prepend(object first, object[] rest) =>
+        rest == null || rest.Length == 0 ? new[] { first } : new[] { first }.Concat(rest).ToArray();
+}
 
 // Wrapper that references a JQuery instance object, i.e. the collection returned from selectors/queries
 public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryContentParameter
@@ -25,7 +31,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     // instances can only be created thru factory methods like Select()/ParseHtml()
     internal JQueryPlainObject() { }
     public JQueryPlainObject(JSObject jsObject) { this.jsObject = jsObject; }
-    // This static factory method defined by the IJSObjectWrapper enables generic code such as CallJSOfSameNameAsWrapped to automatically wrap JSObjectsWrap
+    // This static factory method defined by the IJSObjectWrapper enables generic code such as CallJS<JQueryPlainObject> to automatically wrap JSObject results
     static JQueryPlainObject IJSObjectWrapper<JQueryPlainObject>.WrapInstance(JSObject jsObject)
     {
         return new JQueryPlainObject(jsObject);
@@ -41,16 +47,16 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     #region Traversal - Filtering - https://api.jquery.com/category/traversing/filtering/
 
-    public JQueryPlainObject First() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject Last() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject Eq(int index) => this.CallJSOfSameNameAsWrapped(index);
-    public JQueryPlainObject Slice(int start, int end) => this.CallJSOfSameNameAsWrapped(start, end);
-    public JQueryPlainObject Filter(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Has(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Not(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public bool Is(string selector) => this.CallJSOfSameName<bool>(selector);
-    public JQueryPlainObject Odd() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject Even() => this.CallJSOfSameNameAsWrapped();
+    public JQueryPlainObject First() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject Last() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject Eq(int index) => this.CallJS<JQueryPlainObject>(index);
+    public JQueryPlainObject Slice(int start, int end) => this.CallJS<JQueryPlainObject>(start, end);
+    public JQueryPlainObject Filter(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Has(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Not(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public bool Is(string selector) => this.CallJS<bool>(selector);
+    public JQueryPlainObject Odd() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject Even() => this.CallJS<JQueryPlainObject>();
     //Map only takes a predicate: https://api.jquery.com/map/#map-callback
     //public JQueryObject Map(
 
@@ -58,107 +64,107 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     //      A collection of Elements: https://api.jquery.com/filter/#filter-elements
     //      A collection of JQuery object collection: https://api.jquery.com/filter/#filter-selection
     //      Unsure if we can implement a predicate parameter: https://api.jquery.com/filter/#filter-function
-    //public JQueryObject Filter(Func<int, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
-    //public JQueryObject Filter(Func<int, JQueryObject, bool> predicate) => this.CallJSOfSameNameAsWrapped(predicate);
+    //public JQueryObject Filter(Func<int, bool> predicate) => this.CallJS<JQueryPlainObject>(predicate);
+    //public JQueryObject Filter(Func<int, JQueryObject, bool> predicate) => this.CallJS<JQueryPlainObject>(predicate);
 
     #endregion
     #region Traversal - Tree Traversal - https://api.jquery.com/category/traversing/tree-traversal/
 
-    public JQueryPlainObject Children(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Closest(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Find(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Next(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject NextAll(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+    public JQueryPlainObject Children(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Closest(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Find(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Next(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject NextAll(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
     public JQueryPlainObject NextUntil(string stopAtSelector = null, string filterResultsSelector = null)
-        => this.CallJSOfSameNameAsWrapped(stopAtSelector, filterResultsSelector);
-    public JQueryPlainObject OffsetParent() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject Parent(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Parents(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+        => this.CallJS<JQueryPlainObject>(stopAtSelector, filterResultsSelector);
+    public JQueryPlainObject OffsetParent() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject Parent(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Parents(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
     public JQueryPlainObject ParentsUntil(string stopAtSelector = null, string filterResultsSelector = null)
-        => this.CallJSOfSameNameAsWrapped(stopAtSelector, filterResultsSelector);
-    public JQueryPlainObject Prev(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject PrevAll(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+        => this.CallJS<JQueryPlainObject>(stopAtSelector, filterResultsSelector);
+    public JQueryPlainObject Prev(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject PrevAll(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
     public JQueryPlainObject PrevUntil(string stopAtSelector = null, string filterResultsSelector = null)
-        => this.CallJSOfSameNameAsWrapped(stopAtSelector, filterResultsSelector);
-    public JQueryPlainObject Siblings(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+        => this.CallJS<JQueryPlainObject>(stopAtSelector, filterResultsSelector);
+    public JQueryPlainObject Siblings(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
 
     #endregion
     #region Traversal - Miscellaneous - https://api.jquery.com/category/traversing/miscellaneous-traversal/
 
-    public JQueryPlainObject Add(string selector) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Add(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject Add(string selector, JQueryPlainObject context) => this.CallJSOfSameNameAsWrapped(selector, context);
-    public JQueryPlainObject AddBack(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Contents() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject End() => this.CallJSOfSameNameAsWrapped();
+    public JQueryPlainObject Add(string selector) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Add(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject Add(string selector, JQueryPlainObject context) => this.CallJS<JQueryPlainObject>(selector, context);
+    public JQueryPlainObject AddBack(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Contents() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject End() => this.CallJS<JQueryPlainObject>();
 
     #endregion
 
     #region General Attributes - https://api.jquery.com/category/attributes/general-attributes/
 
-    public string Attr(string attributeName) => this.CallJSOfSameName<string>(attributeName);
-    public void Attr(string attributeName, string value) => this.CallJSOfSameName<object>(attributeName, value);
-    //public void Attr(string attributeName, bool value) => this.CallJSOfSameName<object>(attributeName, value);        
-    public void Attr(string attributeName, int? value) => this.CallJSOfSameName<object>(attributeName, value);
-    public void Attr(string attributeName, double? value) => this.CallJSOfSameName<object>(attributeName, value);
-    //public void Attr(string attributeName, object value) => this.CallJSOfSameName<object>(attributeName, value);
-    public void RemoveAttr(string attributeName) => this.CallJSOfSameName<object>(attributeName);
+    public string Attr(string attributeName) => this.CallJS<string>(attributeName);
+    public void Attr(string attributeName, string value) => this.CallJS<object>(attributeName, value);
+    //public void Attr(string attributeName, bool value) => this.CallJS<object>(attributeName, value);        
+    public void Attr(string attributeName, int? value) => this.CallJS<object>(attributeName, value);
+    public void Attr(string attributeName, double? value) => this.CallJS<object>(attributeName, value);
+    //public void Attr(string attributeName, object value) => this.CallJS<object>(attributeName, value);
+    public void RemoveAttr(string attributeName) => this.CallJS<object>(attributeName);
     // TODO: Implementat validation and throw NotImplemented for return types <R> which are not supported by JQuery, perhaps using method attributes to declare valid types
-    public R Prop<R>(string propertyName) => this.CallJSOfSameName<R>(propertyName);
-    public void Prop(string propertyName, string value) => this.CallJSOfSameName<object>(propertyName, value);
-    //public void Prop(string propertyName, bool value) => this.CallJSOfSameName<object>(propertyName, value);        
-    //public void Prop(string propertyName, int? value) => this.CallJSOfSameName<object>(propertyName, value);
-    public void Prop(string propertyName, double? value) => this.CallJSOfSameName<object>(propertyName, value);
-    //public void Prop(string propertyName, object value) => this.CallJSOfSameName<object>(propertyName, value);
-    public void RemoveProp(string propertyName) => this.CallJSOfSameName<object>(propertyName);
+    public R Prop<R>(string propertyName) => this.CallJS<R>(propertyName);
+    public void Prop(string propertyName, string value) => this.CallJS<object>(propertyName, value);
+    //public void Prop(string propertyName, bool value) => this.CallJS<object>(propertyName, value);        
+    //public void Prop(string propertyName, int? value) => this.CallJS<object>(propertyName, value);
+    public void Prop(string propertyName, double? value) => this.CallJS<object>(propertyName, value);
+    //public void Prop(string propertyName, object value) => this.CallJS<object>(propertyName, value);
+    public void RemoveProp(string propertyName) => this.CallJS<object>(propertyName);
 
 
-    public string Val() => this.CallJSOfSameName<string>();
-    public T Val<T>() => this.CallJSOfSameName<T>();
+    public string Val() => this.CallJS<string>();
+    public T Val<T>() => this.CallJS<T>();
     
-    public JQueryPlainObject Val(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject Val(double value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject Val(string[] value) => this.CallJSOfSameNameAsWrapped(new object[] { value });
+    public JQueryPlainObject Val(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject Val(double value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject Val(string[] value) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(new object[] { value }));
 
     #endregion
 
     #region Style Properties - https://api.jquery.com/category/manipulation/style-properties/
     // Also include the couple of items from CSS that aren't in any other category: https://api.jquery.com/category/css/    
 
-    public string Css(string propertyName) => this.CallJSOfSameName<string>(propertyName);
-    public JQueryPlainObject Css(string propertyName, string value) => this.CallJSOfSameNameAsWrapped(propertyName, value);
+    public string Css(string propertyName) => this.CallJS<string>(propertyName);
+    public JQueryPlainObject Css(string propertyName, string value) => this.CallJS<JQueryPlainObject>(propertyName, value);
 
     // TODO: cssNumber https://api.jquery.com/jQuery.cssNumber/ 
 
-    public double Height() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject Height(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject Height(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double Height() => this.CallJS<double>();
+    public JQueryPlainObject Height(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject Height(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double Width() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject Width(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject Width(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double Width() => this.CallJS<double>();
+    public JQueryPlainObject Width(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject Width(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double InnerHeight() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject InnerHeight(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject InnerHeight(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double InnerHeight() => this.CallJS<double>();
+    public JQueryPlainObject InnerHeight(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject InnerHeight(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double InnerWidth() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject InnerWidth(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject InnerWidth(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double InnerWidth() => this.CallJS<double>();
+    public JQueryPlainObject InnerWidth(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject InnerWidth(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double OuterHeight() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject OuterHeight(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject OuterHeight(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double OuterHeight() => this.CallJS<double>();
+    public JQueryPlainObject OuterHeight(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject OuterHeight(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double OuterWidth() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject OuterWidth(string value) => this.CallJSOfSameNameAsWrapped(value);
-    public JQueryPlainObject OuterWidth(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double OuterWidth() => this.CallJS<double>();
+    public JQueryPlainObject OuterWidth(string value) => this.CallJS<JQueryPlainObject>(value);
+    public JQueryPlainObject OuterWidth(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double ScrollLeft() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject ScrollLeft(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double ScrollLeft() => this.CallJS<double>();
+    public JQueryPlainObject ScrollLeft(double value) => this.CallJS<JQueryPlainObject>(value);
 
-    public double ScrollTop() => this.CallJSOfSameName<double>();
-    public JQueryPlainObject ScrollTop(double value) => this.CallJSOfSameNameAsWrapped(value);
+    public double ScrollTop() => this.CallJS<double>();
+    public JQueryPlainObject ScrollTop(double value) => this.CallJS<JQueryPlainObject>(value);
 
     // TODO: Position Getter, returns X/Y object "coosrdinates" https://api.jquery.com/position/
     // TODO: Offset, takes cordinates object https://api.jquery.com/offset/
@@ -167,91 +173,120 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
 
     #region Instance Properties - https://api.jquery.com/category/properties/jquery-object-instance-properties/
 
-    public double Length => this.GetPropertyOfSameName<double>();
-    public string JQueryVersion => this.GetPropertyOfSameName<string>(propertyName: "jquery");
+    public double Length => this.GetJSProperty<double>();
+    public string JQueryVersion => this.GetJSProperty<string>("jquery");
+
+    #endregion
+
+    #region DOM Element Methods - https://api.jquery.com/get/
+
+    /// <summary>
+    /// <para>Retrieve one of the underlying native DOM elements wrapped by this jQuery collection, as a <see cref="JSObject"/>.</para>
+    /// <para>Mirrors jQuery's <c>.get(index)</c>: <c>var el = jq.Get(0);</c></para>
+    /// </summary>
+    /// <param name="index">Zero-based index of the element to retrieve. Negative indices are counted from the end, matching jQuery's semantics.</param>
+    /// <returns>The underlying DOM element as <see cref="JSObject"/>; may be <c>null</c> if the index is out of range.</returns>
+    public JSObject Get(int index) => this.CallJS<JSObject>(index);
+
+    /// <summary>
+    /// <para>Retrieve all underlying native DOM elements wrapped by this jQuery collection as an array of <see cref="JSObject"/>.</para>
+    /// <para>Mirrors jQuery's parameterless <c>.get()</c>: <c>var elements = jq.Get();</c></para>
+    /// </summary>
+    /// <returns>An array of <see cref="JSObject"/> references for each element in the collection.</returns>
+    public JSObject[] Get()
+    {
+        // jQuery .get() (no args) returns a native JS array of elements.
+        // Use the shimmed MarshalAsArrayOfObjects helper to marshal that array
+        // into a JSObject[] on the .NET side.
+        var jsArray = this.CallJS<JSObject[]>();
+        // TODO: Fails for JSObject[] array: GlobalJS.Console.Log("jsArray", jsArray);
+        return jsArray;
+            //jsArray.Cast<JSObject>().ToArray();
+        //  jsArray.MarshalAsArrayOfObjects();
+    }
 
     #endregion
 
     #region Class Attributes - https://api.jquery.com/category/manipulation/class-attribute/
     // CONSIDER: Validating that className parameters don't start with "." since this is a pitfall
-    public bool HasClass(string className) => this.CallJSOfSameName<bool>(className);
+    public bool HasClass(string className) => this.CallJS<bool>(className);
     // NOTE: The native method only takes a single item or a seperate overload that takes an array, which is why we need to pass as `new object []`.  This is different from other methods that take one to many seperate params.
-    // WORKS but doesn't match interface exactly: public JQueryPlainObject AddClass(string className, params string[] classNames) => this.CallJSOfSameNameAsWrapped( new object[] { Params.PrependToArray(className, ref classNames) } ); // new object[] { Params.Merge(className, classNames) });
-    public JQueryPlainObject AddClass(string className) => this.CallJSOfSameNameAsWrapped(className);
-    public JQueryPlainObject AddClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames }); // Have to wrap in an extra array because javacsript .apply() will split the array into seperate params
-    public JQueryPlainObject RemoveClass(string className) => this.CallJSOfSameNameAsWrapped(className);
-    public JQueryPlainObject RemoveClass(string[] classNames) => this.CallJSOfSameNameAsWrapped(new object[] { classNames });
-    public JQueryPlainObject ToggleClass(string className, bool? state = null) => this.CallJSOfSameNameAsWrapped(className, state);
-    public JQueryPlainObject ToggleClass(string[] classNames, bool? state = null) => this.CallJSOfSameNameAsWrapped(classNames, state);
+    // WORKS but doesn't match interface exactly: public JQueryPlainObject AddClass(string className, params string[] classNames) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Prepend(className, classNames)));
+    public JQueryPlainObject AddClass(string className) => this.CallJS<JQueryPlainObject>(className);
+    public JQueryPlainObject AddClass(string[] classNames) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(new object[] { classNames })); // Have to wrap in an extra array because javacsript .apply() will split the array into seperate params
+    public JQueryPlainObject RemoveClass(string className) => this.CallJS<JQueryPlainObject>(className);
+    public JQueryPlainObject RemoveClass(string[] classNames) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(new object[] { classNames }));
+    public JQueryPlainObject ToggleClass(string className, bool? state = null) => this.CallJS<JQueryPlainObject>(className, state);
+    public JQueryPlainObject ToggleClass(string[] classNames, bool? state = null) => this.CallJS<JQueryPlainObject>(classNames, state);
 
     #endregion
     #region Copying - https://api.jquery.com/category/manipulation/copying/
 
-    public JQueryPlainObject Clone() => this.CallJSOfSameNameAsWrapped();
+    public JQueryPlainObject Clone() => this.CallJS<JQueryPlainObject>();
     // TODO: Impkement other overloads
 
     #endregion
     #region DOM Insertion, Around, and Removal - https://api.jquery.com/category/manipulation/dom-insertion-around/
 
-    public JQueryPlainObject Unwrap(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Wrap(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject Wrap(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject WrapAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject WrapAll(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject WrapInner(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
+    public JQueryPlainObject Unwrap(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Wrap(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject Wrap(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject WrapAll(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject WrapAll(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject WrapInner(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
 
     // Only works correctly if passed HTMLElement. When passed JQ object created form our ParseHtml, it inserts only into one parent
-    //public JQueryObject WrapInner(JQueryObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    //public JQueryObject WrapInner(JQueryObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
 
     #endregion
     #region DOM Insertion, Inside - https://api.jquery.com/category/manipulation/dom-insertion-inside/
 
-    public JQueryPlainObject Append(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
-    public JQueryPlainObject Append(string html) => this.CallJSOfSameNameAsWrapped(html);
+    public JQueryPlainObject Append(string html, params string[] htmls) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(html, htmls)));
+    public JQueryPlainObject Append(string html) => this.CallJS<JQueryPlainObject>(html);
     // TODO: Follow this pattern for implementing other methods that take JQuery's "content" params that support both JQuery objects and HtmlElement objects
-    public JQueryPlainObject Append(IJQueryContentParameter contentObject, params IJQueryContentParameter[] contentObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(contentObject, ref contentObjects));
-    //public JQueryPlainObject Append(HtmlElement html) => this.CallJSOfSameNameAsWrapped(html);
-    //public JQueryPlainObject Append(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.PrependToArray(jqObject, ref jqObjects));
-    public JQueryPlainObject AppendTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject AppendTo(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject Prepend(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
-    public JQueryPlainObject Prepend(HtmlElement html) => this.CallJSOfSameNameAsWrapped(html);
-    public JQueryPlainObject Prepend(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.Merge(jqObject, jqObjects));
-    public JQueryPlainObject PrependTo(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject PrependTo(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    public JQueryPlainObject Append(IJQueryContentParameter contentObject, params IJQueryContentParameter[] contentObjects) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Prepend(contentObject, contentObjects)));
+    //public JQueryPlainObject Append(HtmlElement html) => this.CallJS<JQueryPlainObject>(html);
+    //public JQueryPlainObject Append(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Prepend(jqObject, jqObjects)));
+    public JQueryPlainObject AppendTo(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject AppendTo(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject Prepend(string html, params string[] htmls) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(html, htmls)));
+    public JQueryPlainObject Prepend(HtmlElement html) => this.CallJS<JQueryPlainObject>(html);
+    public JQueryPlainObject Prepend(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(jqObject, jqObjects)));
+    public JQueryPlainObject PrependTo(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject PrependTo(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
 
-    public string Html() => this.CallJSOfSameName<string>();
-    public JQueryPlainObject Html(string htmlString) => this.CallJSOfSameNameAsWrapped(htmlString);
+    public string Html() => this.CallJS<string>();
+    public JQueryPlainObject Html(string htmlString) => this.CallJS<JQueryPlainObject>(htmlString);
 
-    public string Text() => this.CallJSOfSameName<string>();
-    public JQueryPlainObject Text(string text) => this.CallJSOfSameNameAsWrapped(text);
+    public string Text() => this.CallJS<string>();
+    public JQueryPlainObject Text(string text) => this.CallJS<JQueryPlainObject>(text);
 
     #endregion
     #region DOM Insertion, Outside - https://api.jquery.com/category/manipulation/dom-insertion-outside/
 
-    public JQueryPlainObject After(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
-    public JQueryPlainObject After(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.Merge(jqObject, jqObjects));
-    public JQueryPlainObject Before(string html, params string[] htmls) => this.CallJSOfSameNameAsWrapped(Params.Merge(html, htmls));
-    public JQueryPlainObject Before(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJSOfSameNameAsWrapped(Params.Merge(jqObject, jqObjects));
-    public JQueryPlainObject InsertAfter(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject InsertAfter(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject InsertBefore(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    public JQueryPlainObject InsertBefore(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
+    public JQueryPlainObject After(string html, params string[] htmls) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(html, htmls)));
+    public JQueryPlainObject After(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(jqObject, jqObjects)));
+    public JQueryPlainObject Before(string html, params string[] htmls) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(html, htmls)));
+    public JQueryPlainObject Before(JQueryPlainObject jqObject, params JQueryPlainObject[] jqObjects) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(jqObject, jqObjects)));
+    public JQueryPlainObject InsertAfter(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject InsertAfter(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject InsertBefore(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    public JQueryPlainObject InsertBefore(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
 
     #endregion
     #region DOM Removal - https://api.jquery.com/category/manipulation/dom-removal/
 
-    public JQueryPlainObject Detach(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
-    public JQueryPlainObject Empty() => this.CallJSOfSameNameAsWrapped();
-    public JQueryPlainObject Remove(string selector = null) => this.CallJSOfSameNameAsWrapped(selector);
+    public JQueryPlainObject Detach(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
+    public JQueryPlainObject Empty() => this.CallJS<JQueryPlainObject>();
+    public JQueryPlainObject Remove(string selector = null) => this.CallJS<JQueryPlainObject>(selector);
 
     #endregion
     #region DOM Replacement - https://api.jquery.com/category/manipulation/dom-replacement/
     // TODO: Write unit tests
-    //public JQueryPlainObject ReplaceAll(string htmlOrSelector) => this.CallJSOfSameNameAsWrapped(htmlOrSelector);
-    //public JQueryPlainObject ReplaceAll(JQueryPlainObject jqObject) => this.CallJSOfSameNameAsWrapped(jqObject);
-    public JQueryPlainObject ReplaceWith(string htmlString) => this.CallJSOfSameNameAsWrapped(htmlString);
-    public JQueryPlainObject ReplaceWith(IJQueryContentParameter contentObject) => this.CallJSOfSameNameAsWrapped(contentObject);
+    //public JQueryPlainObject ReplaceAll(string htmlOrSelector) => this.CallJS<JQueryPlainObject>(htmlOrSelector);
+    //public JQueryPlainObject ReplaceAll(JQueryPlainObject jqObject) => this.CallJS<JQueryPlainObject>(jqObject);
+    public JQueryPlainObject ReplaceWith(string htmlString) => this.CallJS<JQueryPlainObject>(htmlString);
+    public JQueryPlainObject ReplaceWith(IJQueryContentParameter contentObject) => this.CallJS<JQueryPlainObject>(contentObject);
 
     #endregion
 
@@ -346,7 +381,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
                {
                    //Console.WriteLine("Event Encoded: " + eventEncoded);
                    // unpack the single ArrayObject into it's individual elements, wrapping them as JQueryObjects
-                   var replacements = HelpersJS.GetArrayObjectItems(arrayObject).Select(j => new JQueryPlainObject(j)).ToList();
+                   var replacements = SerratedSharp.SerratedJSInterop.HelpersJS.GetArrayObjectItems(arrayObject).Select(j => new JQueryPlainObject(j)).ToList();
                    // Deserialize the eventEncoded JSON string, and restore the native JS objects
                    dynamic eventData = EncodedEventToDynamic(eventEncoded, replacements);
 
@@ -449,17 +484,17 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>, IJQueryCon
     // Incomplete - Not all members implemented
 
     // .trigger( eventType [, extraParameters ] )
-    public JQueryPlainObject Trigger(string eventType, params object[] extraParameters) => this.CallJSOfSameNameAsWrapped(Params.Merge(eventType, new object[] { extraParameters }));
+    public JQueryPlainObject Trigger(string eventType, params object[] extraParameters) => this.CallJS<JQueryPlainObject>(SerratedJS.Params(SerratedJQParams.Merge(eventType, extraParameters)));
 
     #endregion
     #region Data - https://api.jquery.com/category/data/
 
-    public T Data<T>(string key) => this.CallJSOfSameName<T>(key);
-    public JQueryPlainObject Data(string key, object value) => this.CallJSOfSameNameAsWrapped(key, value);
+    public T Data<T>(string key) => this.CallJS<T>(key);
+    public JQueryPlainObject Data(string key, object value) => this.CallJS<JQueryPlainObject>(key, value);
     /// <summary>
     /// Calls JQuery.Data() returning the entire data object as a JSObject reference.  Use JSObject.GetPropertyAs* methods to access properties or pass reference to GlobalJS.Console.Log(obj) to log entire object graph in browser console.
     /// </summary>
-    public JSObject DataAsJSObject() => this.CallJSOfSameName<JSObject>(funcName: "data");
+    public JSObject DataAsJSObject() => this.CallJS<JSObject>(funcName:"data");
 
     #endregion
 

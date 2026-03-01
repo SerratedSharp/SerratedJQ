@@ -1,4 +1,3 @@
-using SerratedSharp.JSInteropHelpers;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
 using System.Diagnostics;
@@ -20,7 +19,10 @@ internal class Program
         Console.WriteLine("JQuery Document Ready!");
 
         // Do something with JQuery
-        JQueryPlain.Select("#out").Append("<b>Appended</b>");
+        var outElem = JQueryPlain.Select("#out");
+        Console.WriteLine("Appending...");
+        outElem.Append("<b>Appended</b>");
+        Console.WriteLine("TestOrchestrator.Begin()");
 
         await TestOrchestrator.Begin();
 

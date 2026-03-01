@@ -1,11 +1,8 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratedJQ", "SerratedJQ\SerratedJQ.csproj", "{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.UnoWasm", "Tests.Wasm\Tests.UnoWasm.csproj", "{A9B5C877-4C44-4C59-A953-783ED3023801}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC0BDDF1-35D9-4DC2-9A1F-CFB148CADAE8}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,10 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Shared", "Tests.Share
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project2", "Project2\Project2.csproj", "{AD3E89CF-962F-423E-A497-90A41A563879}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpawnDev.BlazorJS", "..\SpawnDev.BlazorJS\SpawnDev.BlazorJS.csproj", "{A0AAE788-4109-50A2-18D2-53F3636908ED}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpawnDev.BlazorJS.PixiJS", "..\SpawnDev.BlazorJS.PixiJS\SpawnDev.BlazorJS.PixiJS.csproj", "{57FAB462-9D03-5EA3-7CD6-E118F221396B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +27,6 @@ Global
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56FD46D6-6986-4717-AC0F-A73A7CEC20DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9B5C877-4C44-4C59-A953-783ED3023801}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8692DA-95E6-4F9E-B9C4-FBB14FBAACC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -54,14 +43,6 @@ Global
 		{AD3E89CF-962F-423E-A497-90A41A563879}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD3E89CF-962F-423E-A497-90A41A563879}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD3E89CF-962F-423E-A497-90A41A563879}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0AAE788-4109-50A2-18D2-53F3636908ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0AAE788-4109-50A2-18D2-53F3636908ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0AAE788-4109-50A2-18D2-53F3636908ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0AAE788-4109-50A2-18D2-53F3636908ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57FAB462-9D03-5EA3-7CD6-E118F221396B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57FAB462-9D03-5EA3-7CD6-E118F221396B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57FAB462-9D03-5EA3-7CD6-E118F221396B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57FAB462-9D03-5EA3-7CD6-E118F221396B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

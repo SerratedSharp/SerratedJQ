@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJSInterop;
 using System.Runtime.InteropServices.JavaScript;
 
-//using SerratedSharp.JSInteropHelpers;
+//using SerratedSharp.SerratedJSInterop;
 using SerratedSharp.SerratedJQ.Plain;
 using Tests.Wasm;
 

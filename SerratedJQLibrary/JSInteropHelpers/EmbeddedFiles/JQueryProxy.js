@@ -42,11 +42,16 @@ var Serrated = globalThis.Serrated || {};
     };
 
 
-
+    // Binds .on() events
+    // The approach uses a hybrid of passing serilized event object JSON and an array of HTMLElements/JQuery objects that the JSON references.
+    // Replacement placeholders are flagged in the JSON, and the C# side can unpack the array and re-associate the objects as needed.
+    // The goal is to allow native access to primitive values without needing interop for property accesses, nor mapping the entire event object structure.
     JQueryProxy.BindListener = function (jsObject, events, shouldConvertHtmlElement, action, selector)
     {
         let handler = function (e) {
             //console.log('On Fired');
+
+ 
             // declare a javascript array called replacers, and implement JSON.stringify with a replacer that adds items which are of type HTMLElements to the array
             var replacements = [];
             var eEncoded = JSON.stringify(e, function (key, value) {
@@ -63,7 +68,7 @@ var Serrated = globalThis.Serrated || {};
                 }
                 return value;
             });
-            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecesary interop call).
+            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecessary interop call).
             action(eEncoded, e.type, new ArrayObject(replacements));
        }.bind(jsObject);
 

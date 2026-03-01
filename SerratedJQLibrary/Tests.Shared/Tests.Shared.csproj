@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -12,10 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
-	  <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
-    <!--<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.7" />
-    <PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.7.1" />-->
+
+	  <!-- Use ProjectReference when building with SerratedJSInterop repo alongside (e.g. multi-root workspace). For package-only consumers, use PackageReference to SerratedSharp.SerratedJSInterop 0.3.1. -->
+	  <ProjectReference Include="..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj" Condition="Exists('..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj')" />
+	  <PackageReference Include="SerratedSharp.SerratedJSInterop" Version="0.3.2" Condition="!Exists('..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference SerratedJQ so shared tests can use its types -->
+    <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
   </ItemGroup>
 
 </Project>

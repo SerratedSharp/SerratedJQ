@@ -1,6 +1,4 @@
-﻿using SerratedSharp.JSInteropHelpers;
-using SerratedSharp.JSInteropHelpers.Internal;
-using System.Collections.Generic;
+using SerratedSharp.SerratedJSInterop;
 
 namespace SerratedSharp.SerratedJQ;
 
@@ -17,8 +15,8 @@ public class JQIndexer<TWrapper, TKey1, TValue1> where TWrapper : IJSObjectWrapp
 
     public TValue1 this[TKey1 key]
     {
-        get => jsWrapper.CallJSOfSameName<TValue1>(key, default(Breaker), funcName);
-        set => jsWrapper.CallJSOfSameName<object>(key, value, default(Breaker), funcName);
+        get => jsWrapper.CallJS<TValue1>(funcName: funcName, key);
+        set => jsWrapper.CallJS<object>(funcName: funcName, key, value);
     }
 }
 
@@ -36,14 +34,14 @@ public class JQIndexer<TWrapper, TKey1, TValue1, TKey2, TValue2> where TWrapper 
 
     public TValue1 this[TKey1 key]
     {
-        get => jsWrapper.CallJSOfSameName<TValue1>(key, default(Breaker), funcName);
-        set => jsWrapper.CallJSOfSameName<object>(key, value, default(Breaker), funcName);
+        get => jsWrapper.CallJS<TValue1>(funcName: funcName, key);
+        set => jsWrapper.CallJS<object>(funcName: funcName, key, value);
     }
 
     public TValue2 this[TKey2 key]
     {
-        get => jsWrapper.CallJSOfSameName<TValue2>(key, default(Breaker), funcName);
-        set => jsWrapper.CallJSOfSameName<object>(key, value, default(Breaker), funcName);
+        get => jsWrapper.CallJS<TValue2>(funcName: funcName, key);
+        set => jsWrapper.CallJS<object>(funcName: funcName, key, value);
     }
 }
 
@@ -60,6 +58,6 @@ public class ReadOnlyJQIndexer<TWrapper, TKey1, TValue1> where TWrapper : IJSObj
 
     public TValue1 this[TKey1 key]
     {
-        get => jsWrapper.CallJSOfSameName<TValue1>(key, default(Breaker), funcName);
+        get => jsWrapper.CallJS<TValue1>(funcName: funcName, key);
     }
 }

@@ -1,4 +1,6 @@
-// TODO: Rename file to HelpersProxy
+define(() => {
+
+// TODO: Rename file to HelpersProxy.
 
 // This javascript declaration is an embedded resource, and is emitted client side by C# startup code at runtime.
 console.log("Declaring SerratedJQ Shims");
@@ -7,8 +9,7 @@ console.log("Declaring SerratedJQ Shims");
 //Module.getAssemblyExports("SerratedSharp.SerratedJQ")
 //    .then(module => globalThis.SerratedExports = module);
 
-define(() => {
-
+// TODO: Consider object literal notation instead of IIFE, and export as module
 var SerratedJQ = globalThis.SerratedJQ || {};
 (function (SerratedJQ) {
 
@@ -55,7 +56,7 @@ var SerratedJQ = globalThis.SerratedJQ || {};
                 }
                 return value;
             });
-            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecesary interop call).
+            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecessary interop call).
             action(eEncoded, e.type, new ArrayObject(replacements));
         }.bind(jsObject);
 
@@ -72,6 +73,14 @@ var SerratedJQ = globalThis.SerratedJQ || {};
 
     JQueryProxy.Check = function () { console.log("check"); }
 
+    JQueryProxy.LoadJQuery = function (relativeUrl) {
+        if (window.jQuery) {
+            return Promise.resolve();
+        } else {
+            return loadScript(relativeUrl);
+        }
+    };
+
     //JQueryProxy.Init = function () {
     //    globalThis.SerratedExports = await Module.getAssemblyExports("SerratedSharp.SerratedJQ");
     //}
@@ -83,6 +92,24 @@ var SerratedJQ = globalThis.SerratedJQ || {};
     }
 
     SerratedJQ.JQueryProxy = JQueryProxy; // add to parent namespace
+
+    // jQuery-specific: load jQuery from URL, or resolve immediately if already loaded
+    function loadScript(relativeUrl) {
+        return new Promise(function (resolve, reject) {
+            var script = document.createElement("script");
+            script.onload = resolve;
+            script.onerror = reject;
+            script.src = relativeUrl;
+            document.getElementsByTagName("head")[0].appendChild(script);
+        });
+    }
+    SerratedJQ.LoadJQuery = function (relativeUrl) {
+        if (window.jQuery) {
+            return Promise.resolve();
+        } else {
+            return loadScript(relativeUrl);
+        }
+    };
 
 })(SerratedJQ = globalThis.SerratedJQ || (globalThis.SerratedJQ = {}));
 

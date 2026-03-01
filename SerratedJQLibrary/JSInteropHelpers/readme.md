@@ -1,4 +1,9 @@
 
+
+> [!IMPORTANT] 
+> The JSInteropHelpers library was originally created for personal use in private projects and shared for reference.  It has been refined for broader usage and published under a new name: SerratedJSInterop.  This includes simplified naming, simplified usage, and generally more refined for general use.  The new NuGet package can be found under SerratedSharp.SerratedJSInterop and now has a dedicated repository at https://github.com/SerratedSharp/SerratedJSInterop 
+
+
 # SerratedSharp.JSInteropHelpers
 
 A class library to simplify creating .NET WASM wrappers on JS instances.  This library is leveraged by SerratedJQ, but is designed to be agnostic.  Otherwise it has not been thoroughly refined, but may be of use to others.
@@ -32,7 +37,7 @@ public class JQueryPlainObject : IJSObjectWrapper<JQueryPlainObject>
 
 `CallJSOFSameName*` methods leverage `[CallerMemberName]` to determine name of containing C# function, convert it to lower camel case, then call a method of that name on `this`'s containing `JSObject`.  The instance wrapper should implement IJSObjectWrapper<W> where W is the wrapping type, and holds a reference to the `JSObject` instance that it wraps. A C# call such as `instance.Filter(index)` would be translated to the javascript `jsObject["filter"].apply(jsObject, index);` which is a generic approach equivilant to `jsObject.filter(index);`.
 
-Note in the above examples, use of `Params.Merge` and `Params.PrependToArray` which is necesary in some cases where the C# params and Javascript params differ in regards to repeating params.
+Note in the above examples, use of `Params.Merge` and `Params.PrependToArray` which is necessary in some cases where the C# params and Javascript params differ in regards to repeating params.
 
 A wrapper would contain a reference to a JSObject, which is the .NET handle for the javascript object it wraps:
 

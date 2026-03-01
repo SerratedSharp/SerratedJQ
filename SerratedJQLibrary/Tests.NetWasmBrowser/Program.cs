@@ -1,4 +1,3 @@
-using SerratedSharp.JSInteropHelpers;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
 using System.Diagnostics;

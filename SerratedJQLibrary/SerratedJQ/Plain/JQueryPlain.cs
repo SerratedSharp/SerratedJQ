@@ -1,8 +1,7 @@
-﻿//using Uno.Extensions;
+//using Uno.Extensions;
 //using Uno.Foundation.Interop;
 //using Uno.Foundation.Interop;
 
-using SerratedSharp.JSInteropHelpers;
 using System;
 using System.Threading.Tasks;
 

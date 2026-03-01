@@ -72,7 +72,7 @@ var prods = JsonSerializer.Deserialize<List<ProductSalesModel>>(content);
 ## Installation
 
 ### Prerequisites  
-- SerratedSharp.SerratedJQ, SerratedSharp.JSInteropHelpers, NewtonSoft.Json
+- SerratedSharp.SerratedJQ, SerratedSharp.SerratedJSInterop, NewtonSoft.Json
 - A project either using the .NET 8 wasmbrowser project(`<Project Sdk="Microsoft.NET.Sdk.WebAssembly">`) or Uno.Wasm.Bootstrap
 - .NET Core 8
 
@@ -135,7 +135,7 @@ Video: https://www.youtube.com/watch?v=h7c05KnybrQ
 	<PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="5.0.48" />
 	<PackageReference Include="Uno.Wasm.Bootstrap" Version="8.0.4" />
 	<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="8.0.4" />
-	<PackageReference Include="SerratedSharp.JSInteropHelpers" Version="0.1.6" />
+	<PackageReference Include="SerratedSharp.SerratedJSInterop" Version="0.3.1" />
 	<PackageReference Include="SerratedSharp.SerratedJQ" Version="0.1.6" />
 </ItemGroup>
 <PropertyGroup>	
@@ -295,7 +295,7 @@ JQuery's design simplifies the amount of interop needed to enable HTML DOM manip
 ### 0.1.6
 
 > [!IMPORTANT] 
-> Breaking Change: Loading and initialization is slightly different due to necesary changes to support both .NET 8 wasmbrowser and Uno.Wasm.Bootstrap.
+> Breaking Change: Loading and initialization is slightly different due to necessary changes to support both .NET 8 wasmbrowser and Uno.Wasm.Bootstrap.
 > Consumers using Uno.Wasm.Bootstrap no longer need to call `JSDeclarations.LoadScripts`, as the JS declarations are now imported automatically using AMD modules supported through Uno's support of scripts embedded in WasmScripts.  These typically are generated as part of the package during publish, and automatically imported at runtime when Uno.Wasm.Bootstrap loads.
 
 See [Uno.Wasm.Bootstrap Project](#unowasmbootstrap-project) for updated initialization.

@@ -1,13 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading;
 using System.Threading.Tasks;
-using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJSInterop;
 
-//using SerratedSharp.JSInteropHelpers;
+//using SerratedSharp.SerratedJSInterop;
 using SerratedSharp.SerratedJQ.Plain;
 using Tests.Wasm;
 
@@ -75,11 +76,19 @@ public class TestOrchestrator
                 test.BeginTest(out status);
                 test.Run();
             }
-            catch (Exception ex)
+            catch (Exception ex) // Important: JSException often doesn't include stack in Message
             {
                 exc = ex;
             }
-            test.EndTest(status, exc);
+            try
+            {
+                test.EndTest(status, exc);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception in EndTest: " + ex);
+            }
+
             ++i;
         }
     }
@@ -137,16 +146,21 @@ public abstract class JQTest : IJQTest
         }
         else
         {
-            Console.WriteLine(exc);
+            string exMessage = exc.ToString();
+            if (exc is JSException jsEx)
+            {
+                exMessage += Environment.NewLine + jsEx.StackTrace;
+            }
+            Console.WriteLine(exMessage);
 
-            status.Append($"<span style='color:red'>Failed - <b>{testName}</b>: {exc.ToString()}</span>");
+            status.Append($"<span style='color:red'>Failed - <b>{testName}</b>: {exMessage.Replace(Environment.NewLine, "<br>")}</span>");
 
             status.Append("<div class='excontext'></div>");
 
             status.Find(".excontext").Text("Test Container: " + tc.Html());
             status.Append("<div class='resultcontext'></div>");
-            status.Find(".resultcontext").Text("Result: " + result.Html());
-            GlobalJS.Console.Log(testName, tc, result);
+            status.Find(".resultcontext").Text("Result: " + result?.Html());
+            GlobalJS.Console.Log(testName, tc.JSObject, result?.JSObject, exMessage);
             // if exc contains data key "html" then Append it to the test container
             //if (exc.Data.Contains("html"))
             //{
