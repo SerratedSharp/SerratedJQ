@@ -1,12 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using static System.Console;
 using System.Linq;
 using System.Dynamic;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices.JavaScript;
-using SerratedSharp.JSInteropHelpers;
-using Params = SerratedSharp.JSInteropHelpers.ParamsHelpers;
+using SerratedSharp.SerratedJSInterop;
 using SerratedSharp.SerratedJQ.Plain;
 
 namespace SerratedSharp.SerratedJQ;
@@ -21,7 +20,7 @@ public class HtmlElement : IJSObjectWrapper<HtmlElement>, IJQueryContentParamete
         // instances can only be created thru factory methods like Select()/ParseHtml()
         internal HtmlElement() { }
         public HtmlElement(JSObject jsObject) { this.jsObject = jsObject; }
-        // This static factory method defined by the IJSObjectWrapper enables generic code such as CallJSOfSameNameAsWrapped to automatically wrap JSObjectsWrap
+        // This static factory method defined by the IJSObjectWrapper enables generic code such as CallJS<HtmlElement> to automatically wrap JSObject results
         static HtmlElement IJSObjectWrapper<HtmlElement>.WrapInstance(JSObject jsObject)
         {
             return new HtmlElement(jsObject); 

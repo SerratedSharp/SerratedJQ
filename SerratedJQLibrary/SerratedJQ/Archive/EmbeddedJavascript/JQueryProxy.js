@@ -63,7 +63,7 @@ var Serrated = globalThis.Serrated || {};
                 }
                 return value;
             });
-            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecesary interop call).
+            // TODO: If we don't find any replacements then send null and supress the unpack GetArrayObjectItems call on C# side(unnecessary interop call).
             action(eEncoded, e.type, new ArrayObject(replacements));
        }.bind(jsObject);
 

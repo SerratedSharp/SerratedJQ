@@ -4,7 +4,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
     <ProjectReference Include="..\SerratedJQ\SerratedJQ.csproj" />
     <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>

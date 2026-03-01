@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices.JavaScript;
 using System;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices.JavaScript;
+using SerratedSharp.SerratedJSInterop;
 
-namespace SerratedSharp.JSInteropHelpers;
+namespace SerratedSharp.SerratedJQ;
 
 // Proxy for javascript declaration in JQueryProxy.js
 //internal static partial class JQueryProxy //: IJSObject
@@ -48,7 +49,7 @@ internal static class JQueryProxy //: IJSObject
 
     public static Task Ready()
     {
-        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+        if (AgnosticRuntime.IsUnoWasmBootstrapLoaded)
             return JQueryProxyForUno.Ready();
         else
             return JQueryProxyForDotNet.Ready();
@@ -56,7 +57,7 @@ internal static class JQueryProxy //: IJSObject
 
     public static  JSObject Select(string selector)
     {
-        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+        if (AgnosticRuntime.IsUnoWasmBootstrapLoaded)
             return JQueryProxyForUno.Select(selector);
         else
             return JQueryProxyForDotNet.Select(selector);
@@ -64,7 +65,7 @@ internal static class JQueryProxy //: IJSObject
 
     public static  JSObject ParseHtml(string html, bool keepScript)
         {
-        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+        if (AgnosticRuntime.IsUnoWasmBootstrapLoaded)
             return JQueryProxyForUno.ParseHtml(html, keepScript);
         else
             return JQueryProxyForDotNet.ParseHtml(html, keepScript);
@@ -73,7 +74,7 @@ internal static class JQueryProxy //: IJSObject
     public static JSObject BindListener(JSObject jqObject, string events, bool shouldConvertHtmlElement,
      Action<string, string, JSObject> handler, string selector)
     {
-        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+        if (AgnosticRuntime.IsUnoWasmBootstrapLoaded)
             return JQueryProxyForUno.BindListener(jqObject, events, shouldConvertHtmlElement, handler, selector);
         else
             return JQueryProxyForDotNet.BindListener(jqObject, events, shouldConvertHtmlElement, handler, selector);
@@ -81,14 +82,13 @@ internal static class JQueryProxy //: IJSObject
 
     public static void UnbindListener(JSObject jqObject, string events, JSObject handler, string selector)
     {
-        if (HelpersJS.IsUnoWasmBootstrapLoaded)
+        if (AgnosticRuntime.IsUnoWasmBootstrapLoaded)
             JQueryProxyForUno.UnbindListener(jqObject, events, handler, selector);
         else
             JQueryProxyForDotNet.UnbindListener(jqObject, events, handler, selector);
     }
 
 }
-
 
 // JQueryProxyForDotNet
 internal static partial class JQueryProxyForDotNet //: IJSObject

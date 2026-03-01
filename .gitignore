@@ -284,6 +284,8 @@ node_modules/
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
 
+*.code-workspace
+
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
@@ -352,4 +354,3 @@ MigrationBackup/
 /SerratedJQ/$tf1
 /SerratedJQLibrary/$tf1
 /SerratedJQSample/Sample.Mvc/wwwroot/package_*
-

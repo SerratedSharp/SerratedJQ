@@ -1,4 +1,4 @@
-﻿using SerratedSharp.JSInteropHelpers;
+using SerratedSharp.SerratedJSInterop;
 using SerratedSharp.SerratedJQ;
 using SerratedSharp.SerratedJQ.Plain;
 using System;
@@ -38,8 +38,13 @@ public partial class TestsContainer
         {
             JQueryPlainObject stubs = StubHtmlIntoTestContainer(1);
             stubs.Data("one", "uno");
-
             JSObject obj = tc.Find(".a").DataAsJSObject();
+            var jqObj = tc.Find(".a");
+            // Test of JS obj is null/undefined
+            //jqObj.JSObject.GetPropertyAsJSObject("");
+            obj = jqObj.DataAsJSObject();
+
+
             GlobalJS.Console.Log("Data() test: ", obj);
             string val = obj.GetPropertyAsString("one");
 

@@ -10,18 +10,18 @@
 
   <PropertyGroup>
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>SerratedSharp.SerratedJQ</RootNamespace>
     <PackageId>SerratedSharp.SerratedJQ</PackageId>
     <Authors>SerratedSharpSolutions</Authors>
     <Company>SerratedSharpSolutions</Company>
     <Description>A C# WebAssembly wrapper for jQuery, intended to enable implementation of client side logic in C# for a traditional web application such as ASP.NET MVC.  Provides the capability to read and manipulate the HTML DOM, create .NET event handlers subscribed to HTML DOM events, hold references to DOM elements from a .NET WebAssembly, and attach primitive data or managed object references to elements.  Intended for us in assemblies that leverage Uno.Wasm.Bootstrap for compilation to WebAssembly format, but does not require consumers to use the full Uno Platform.</Description>
     <Copyright>Copyright (c) SerratedSharpSolutions 2024</Copyright>
-    <PackageReleaseNotes>This version has been tested with Uno.Wasm.Bootstrap 8.0.3 and alternatively .NET 8 wasmbrowser under .NET Core 8.</PackageReleaseNotes>
+    <PackageReleaseNotes>This version has been tested with .NET 9 wasmbrowser under .NET Core 9.  Testing for Uno WASM is no longer occurring, but volunteers are sought.</PackageReleaseNotes>
     <PackageTags>WebAssembly, Uno, JQuery</PackageTags>
-	        <Version>0.1.9</Version>
-	<AssemblyVersion>0.1.9.0</AssemblyVersion>
-        <FileVersion>0.1.9.0</FileVersion>
+	        <Version>0.2.1</Version>
+	<AssemblyVersion>0.2.1.0</AssemblyVersion>
+        <FileVersion>0.2.1.0</FileVersion>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
 	<AssemblyName>SerratedSharp.SerratedJQ</AssemblyName>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -48,6 +48,11 @@
     <None Remove="Resources\**" />
   </ItemGroup>
 	
+  <PropertyGroup>
+    <SerratedJQScriptSourcePath>$(ProjectDir)wwwroot\SerratedJQ.js</SerratedJQScriptSourcePath>
+    <SerratedJQScriptWasmScriptsPath>$(ProjectDir)WasmScripts\SerratedJQ.js</SerratedJQScriptWasmScriptsPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="WasmScripts\SerratedJQ.js" />
   </ItemGroup>
@@ -58,6 +63,11 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="CopySerratedJQToWasmScripts" BeforeTargets="BeforeBuild" Condition="Exists('$(SerratedJQScriptSourcePath)')">
+    <MakeDir Directories="$(ProjectDir)WasmScripts" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)CopySerratedJQToWasmScripts.ps1&quot; -SourcePath &quot;$(SerratedJQScriptSourcePath)&quot; -DestPath &quot;$(SerratedJQScriptWasmScriptsPath)&quot;" />
+  </Target>
 
   <ItemGroup>
 	 <None Include="readme.md" Pack="true" PackagePath="\" />
@@ -91,7 +101,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JSInteropHelpers\JSInteropHelpers.csproj" />
+	  <!-- Use ProjectReference when building with SerratedJSInterop repo alongside (e.g. multi-root workspace). For package-only consumers, use PackageReference to SerratedSharp.SerratedJSInterop 0.3.1. -->
+	  <ProjectReference Include="..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj" Condition="Exists('..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj')" />
+	  <PackageReference Include="SerratedSharp.SerratedJSInterop" Version="0.3.2" Condition="!Exists('..\..\..\SerratedJSInterop\SerratedJSInterop\SerratedJSInterop.csproj')" />
   </ItemGroup>
 
   <ItemGroup>

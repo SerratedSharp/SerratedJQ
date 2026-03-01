@@ -17,7 +17,8 @@ namespace SerratedSharp.JSInteropHelpers
             /// <param name="parameters">JSObjects or strings to log.</param>
             public static void Log(params object[] parameters)
             {
-                JSImportInstanceHelpers.CallJSOfSameName<object>(_console.Value, parameters);
+                throw new NotImplementedException();
+                //JSImportInstanceHelpers.CallJSOfSameName<object>(_console.Value, parameters);
             }
         }
     }
